@@ -1,4 +1,4 @@
-source('~/Documents/NGSProject/HLI/R/util.R', echo = FALSE)
+source('util.R', echo = FALSE)
 
 # read GRCh38 Gene list
 # GRCh38_gene_list <- read.table(file = "../UCSCgenome/database/refGene.txt", header = FALSE, sep = "\t")
