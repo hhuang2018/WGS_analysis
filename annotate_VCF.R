@@ -1,0 +1,18 @@
+# list .vcf.gz files
+original_file_dir = "/mnt/cloudbiodata_nfs_1/hli_data/"
+destination_dir = "/mnt/scratch/hli_vcf_annotated/"
+
+filenames <- list.files(original_file_dir, pattern = "\\.vcf.gz$")
+filenames <- gsub(".vcf.gz", "", filenames)
+
+num_files <- length(filenames)
+
+for(id in 1:num_files){
+  t1 <- system(paste0("java -Xmx4g -jar ../../Tools/snpEff/snpEff.jar -v GRCh38.82 ",
+                      original_file_dir, filenames, ".vcf.gz > ", 
+                      destination_dir, filenames,"_annotated.vcf"), 
+               intern = TRUE)
+  system(paste0("bgzip ", destination_dir, filenames,"_annotated.vcf"))
+  system(paste0("tabix -p vcf ", destination_dir, filenames,"_annotated.vcf.gz"))
+  save(t1, file = paste0(destination_dir, filenames,"_annotated.out.RData"))
+}

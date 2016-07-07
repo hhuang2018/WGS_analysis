@@ -25,7 +25,8 @@ load("../Data/HLI_ID_pairs_table.RData")
 # write.csv(HLI_outcome_list, file = "../Data/HLI_outcome.csv", row.names = F)
 load("../Data/HLI_outcome_table.RData")
 
-filenames <- list.files("../HLI_VCF_files/")
+#filenames <- list.files("/mnt/cloudbiodata_nfs_1/hli_data/", pattern = "\\.vcf.gz$")
+filenames <- list.files("../HLI_VCF_files/", pattern = "\\.vcf.gz$")
 filenames <- gsub(".vcf.gz", "", filenames)
 
 unassigned_files_index <- which(!grepl("[[:alpha:]]", filenames))
@@ -54,8 +55,12 @@ for(id in 1:length(unassigned_files_index)){
   }
   
   if(Index !=0){
+#     file.rename(from = paste0("/mnt/cloudbiodata_nfs_1/hli_data/",filenames[unassigned_files_index[id]], ".vcf.gz.tbi"), 
+#                 to = paste0("/mnt/cloudbiodata_nfs_1/hli_data/", GVHD, "_", Index,"_", R_D, "_", filenames[unassigned_files_index[id]], ".vcf.gz.tbi"))
+    
     file.rename(from = paste0("../HLI_VCF_files/",filenames[unassigned_files_index[id]], ".vcf.gz"), 
                 to = paste0("../HLI_VCF_files/", GVHD, "_", Index,"_", R_D, "_", filenames[unassigned_files_index[id]], ".vcf.gz"))
+    
   }
   Index <- 0
 }
