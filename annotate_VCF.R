@@ -13,7 +13,7 @@ for(id in 1:num_files){
                       original_file_dir, filenames[id], ".vcf.gz > ", 
                       destination_dir, filenames[id],"_annotated.vcf"), 
                intern = TRUE)
-  system(paste0("bgzip ", destination_dir, filenames,"_annotated.vcf"))
-  system(paste0("tabix -p vcf ", destination_dir, filenames,"_annotated.vcf.gz"))
-  save(t1, file = paste0(destination_dir, filenames,"_annotated.out.RData"))
+  system(paste0("bgzip ", destination_dir, filenames[id],"_annotated.vcf"))
+  system(paste0("tabix -p vcf ", destination_dir, filenames[id],"_annotated.vcf.gz"))
+  save(t1, file = paste0(destination_dir, filenames[id],"_annotated.out.RData"))
 }
