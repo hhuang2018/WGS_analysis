@@ -15,5 +15,7 @@ for(id in 1:num_files){
                intern = TRUE)
   system(paste0("bgzip ", destination_dir, filenames[id],"_annotated.vcf"))
   system(paste0("tabix -p vcf ", destination_dir, filenames[id],"_annotated.vcf.gz"))
+  system(paste0("mv snpEff_genes.txt ",  destination_dir, filenames[id], "_snpEff_genes.txt"))
+  system(paste0("mv snpEff_summary.html ",  destination_dir, filenames[id], "_snpEff_summary.html"))
   save(t1, file = paste0(destination_dir, filenames[id],"_annotated.out.RData"))
 }
