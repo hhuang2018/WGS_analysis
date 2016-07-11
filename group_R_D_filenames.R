@@ -73,12 +73,15 @@ for(id in 1:length(unassigned_files_index)){
     
 #     file.rename(from = paste0("../HLI_VCF_files/",filenames[unassigned_files_index[id]], ".vcf.gz"), 
 #                 to = paste0("../HLI_VCF_files/", GVHD, "_", Index,"_", R_D, "_", filenames[unassigned_files_index[id]], ".vcf.gz"))
-    file.copy(from = paste0(data_source_dir, source_filenames[unassigned_files_index[id]], "vcf.gz"),
+
+    file.copy(from = paste0(data_source_dir, source_filenames[unassigned_files_index[id]], ".vcf.gz"),
               to = paste0(data_dest_dir, GVHD, "_", Index, "_", R_D, "_", source_filenames2[unassigned_files_index[id]], ".vcf.gz"))
     
-    file.copy(from = paste0(data_source_dir, source_filenames[unassigned_files_index[id]], "vcf.gz.tbi"),
+    file.copy(from = paste0(data_source_dir, source_filenames[unassigned_files_index[id]], ".vcf.gz.tbi"),
               to = paste0(data_dest_dir, GVHD, "_", Index, "_", R_D, "_", source_filenames2[unassigned_files_index[id]], ".vcf.gz.tbi"))
-    
+#     system(paste0("cp ", data_source_dir, source_filenames[unassigned_files_index[id]], ".vcf.gz ",
+#                   data_dest_dir, GVHD, "_", Index, "_", R_D, "_", source_filenames2[unassigned_files_index[id]], ".vcf.gz")
+#            )
   }
   Index <- 0
 }
