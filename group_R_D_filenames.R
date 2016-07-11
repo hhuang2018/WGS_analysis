@@ -1,4 +1,7 @@
 
+data_source_dir = "/mnt/cloudbiodata_nfs_1/hli_data/"
+data_dest_dir = "/mnt/scratch/hhuang/hli_vcf_renamed/"
+  
 # HLI_R_D_list <- read.csv("../Data/HLI_ID_pairs.csv")
 # colnames(HLI_R_D_list) <- c("Index", "RID", "DID", "BMT")
 # 
@@ -25,20 +28,30 @@ load("../Data/HLI_ID_pairs_table.RData")
 # write.csv(HLI_outcome_list, file = "../Data/HLI_outcome.csv", row.names = F)
 load("../Data/HLI_outcome_table.RData")
 
-#filenames <- list.files("/mnt/cloudbiodata_nfs_1/hli_data/", pattern = "\\.vcf.gz$")
-filenames <- list.files("../HLI_VCF_files/", pattern = "\\.vcf.gz$")
-filenames <- gsub(".vcf.gz", "", filenames)
+source_filenames <- list.files(data_source_dir, pattern = "\\.vcf.gz$")
+source_filenames <- gsub(".vcf.gz", "", source_filenames)
+source_filenames2 <- gsub("-", "", source_filenames)
 
-unassigned_files_index <- which(!grepl("[[:alpha:]]", filenames))
+dest_filenames <- list.files(data_dest_dir, pattern = "\\.vcf.gz$")
+dest_filenames <- gsub(".vcf.gz", "", dest_filenames)
+
+dest_ids <- sapply(1:length(dest_filenames), function(x) unlist(strsplit(dest_filenames[x], "_"))[4])
+unassigned_files_index <- which(!(source_filenames2 %in% dest_ids))
+#filenames <- list.files("../HLI_VCF_files/", pattern = "\\.vcf.gz$")
+#filenames <- gsub(".vcf.gz", "", filenames)
+
+#unassigned_files_index <- which(!grepl("[[:alpha:]]", filenames))
+
+
 for(id in 1:length(unassigned_files_index)){
   
-  Rindex <- which(HLI_R_D_list$RID %in% as.integer(filenames[unassigned_files_index[id]]))
+  Rindex <- which(HLI_R_D_list$RID %in% as.integer(source_filenames2[unassigned_files_index[id]]))
   if(length(Rindex) == 0){
-    Dindex <- which(HLI_R_D_list$DID %in% as.integer(filenames[unassigned_files_index[id]]))
+    Dindex <- which(HLI_R_D_list$DID %in% as.integer(source_filenames2[unassigned_files_index[id]]))
     R_D <- "D"
     Index <- Dindex
     
-    outcomeDindex <- which(HLI_outcome_list$did %in% as.integer(filenames[unassigned_files_index[id]]))
+    outcomeDindex <- which(HLI_outcome_list$did %in% as.integer(source_filenames2[unassigned_files_index[id]]))
     if(length(outcomeDindex) == 1){
       if(HLI_outcome_list$newagvhdgrp[outcomeDindex] == 1) GVHD <- "n" else GVHD <- "a"
     } else GVHD <- "X"
@@ -48,7 +61,7 @@ for(id in 1:length(unassigned_files_index)){
     R_D <- "R"
     Index <- Rindex
     
-    outcomeDindex <- which(HLI_outcome_list$rid %in% as.integer(filenames[unassigned_files_index[id]]))
+    outcomeDindex <- which(HLI_outcome_list$rid %in% as.integer(source_filenames2[unassigned_files_index[id]]))
     if(length(outcomeDindex) == 1){
       if(HLI_outcome_list$newagvhdgrp[outcomeDindex] == 1) GVHD <- "n" else GVHD <- "a"
     } else GVHD <- "X"
@@ -58,22 +71,32 @@ for(id in 1:length(unassigned_files_index)){
 #     file.rename(from = paste0("/mnt/cloudbiodata_nfs_1/hli_data/",filenames[unassigned_files_index[id]], ".vcf.gz.tbi"), 
 #                 to = paste0("/mnt/cloudbiodata_nfs_1/hli_data/", GVHD, "_", Index,"_", R_D, "_", filenames[unassigned_files_index[id]], ".vcf.gz.tbi"))
     
-    file.rename(from = paste0("../HLI_VCF_files/",filenames[unassigned_files_index[id]], ".vcf.gz"), 
-                to = paste0("../HLI_VCF_files/", GVHD, "_", Index,"_", R_D, "_", filenames[unassigned_files_index[id]], ".vcf.gz"))
+#     file.rename(from = paste0("../HLI_VCF_files/",filenames[unassigned_files_index[id]], ".vcf.gz"), 
+#                 to = paste0("../HLI_VCF_files/", GVHD, "_", Index,"_", R_D, "_", filenames[unassigned_files_index[id]], ".vcf.gz"))
+    file.copy(from = paste0(data_source_dir, source_filenames[unassigned_files_index[id]], "vcf.gz"),
+              to = paste0(data_dest_dir, GVHD, "_", Index, "_", R_D, "_", source_filenames2[unassigned_files_index[id]], ".vcf.gz"))
+    
+    file.copy(from = paste0(data_source_dir, source_filenames[unassigned_files_index[id]], "vcf.gz.tbi"),
+              to = paste0(data_dest_dir, GVHD, "_", Index, "_", R_D, "_", source_filenames2[unassigned_files_index[id]], ".vcf.gz.tbi"))
     
   }
   Index <- 0
 }
 
 #### Undo
-filenames <- list.files("../HLI_VCF_files/")
-filenames <- gsub(".vcf.gz", "", filenames)
+# filenames <- list.files("../HLI_VCF_files/")
+# filenames <- gsub(".vcf.gz", "", filenames)
+# 
+# assigned_files_index <- which(grepl("[[:alpha:]]", filenames))
+# 
+# for(id in 1:length(assigned_files_index)){
+#   new_filename <- strsplit(filenames[assigned_files_index[id]], "_")[[1]][4]
+#   file.rename(from = paste0("../HLI_VCF_files/",filenames[assigned_files_index[id]], ".vcf.gz"), 
+#               to = paste0("../HLI_VCF_files/", new_filename, ".vcf.gz"))
+#   
+# }
 
-assigned_files_index <- which(grepl("[[:alpha:]]", filenames))
-
-for(id in 1:length(assigned_files_index)){
-  new_filename <- strsplit(filenames[assigned_files_index[id]], "_")[[1]][4]
-  file.rename(from = paste0("../HLI_VCF_files/",filenames[assigned_files_index[id]], ".vcf.gz"), 
-              to = paste0("../HLI_VCF_files/", new_filename, ".vcf.gz"))
-  
-}
+#####
+# D_R_HLA_typing <- read.csv("../HLI_hla_mg_v1.csv")
+# 
+# aa <- intersect(D_R_HLA_typing$bmt_case_num, HLI_R_D_list$BMT)
