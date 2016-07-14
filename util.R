@@ -1,4 +1,7 @@
 gene_variant_stats <- function(geneInfo, geneVariants){
+  #
+  # returns the variant statistics by functional regions (introns, exons)
+  #
   
   startIndex <- as.integer(unlist(strsplit(as.character(geneInfo$exonStarts), ",")))
   endIndex <- as.integer(unlist(strsplit(as.character(geneInfo$exonEnds), ",")))
