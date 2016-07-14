@@ -1,0 +1,1 @@
+install.packages("vcfR", repos='http://cran.us.r-project.org')
