@@ -52,39 +52,3 @@ R_same_variants <- R_stats$all_variants[which(R_stats$all_variants$POS %in% D_st
 D_diff_variants <- D_stats$all_variants[-which(D_stats$all_variants$POS %in% R_stats$all_variants$POS), ]
 R_diff_variants <- R_stats$all_variants[-which(R_stats$all_variants$POS %in% D_stats$all_variants$POS), ]
 
-
-#######
-# Check all the genes in the list
-#######
-GRCh38_gene_list_chr <- GRCh38_gene_list[which(GRCh38_gene_list$chrom == Chrom), ]
-gene_names <- unique(GRCh38_gene_list_chr$GeneName)
-num_genes <- length(gene_names)
-
-diff_num <- data.frame(total = vector(mode = "integer", length = num_genes),
-                       intron =  vector(mode = "integer", length = num_genes),
-                       exon =  vector(mode = "integer", length = num_genes))
-
-for (id in 1:num_genes){
-  
-  GeneName <- gene_names[id]
-  geneInfo <- GRCh38_gene_list_chr[which(GRCh38_gene_list_chr$GeneName == GeneName)[1], ]
-  
-  D_stats <- gene_variant_stats(geneInfo, D_chr)
-  R_stats <- gene_variant_stats(geneInfo, R_chr)
-
-  D_same_variants <- D_stats$all_variants[which(D_stats$all_variants$POS %in% R_stats$all_variants$POS), ]
-  R_same_variants <- R_stats$all_variants[which(R_stats$all_variants$POS %in% D_stats$all_variants$POS), ]
-  
-#   if(!identical(D_same_variants$ALT, R_same_variants$ALT)){
-#     
-#   }
-  
-  D_diff_variants <- D_stats$all_variants[-which(D_stats$all_variants$POS %in% R_stats$all_variants$POS), ]
-  R_diff_variants <- R_stats$all_variants[-which(R_stats$all_variants$POS %in% D_stats$all_variants$POS), ]
-  
-  diff_num$total[id] <- dim(D_diff_variants)[1] + dim(R_diff_variants)[1]
-  diff_num$intron[id] <- length(which(grepl("Intron", D_diff_variants$ID))) + length(which(grepl("Intron", R_diff_variants$ID)))
-  diff_num$exon[id] <- length(which(grepl("Exon", D_diff_variants$ID))) + length(which(grepl("Exon", R_diff_variants$ID)))      
-
-}
-
