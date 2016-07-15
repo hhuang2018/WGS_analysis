@@ -8,6 +8,14 @@ VCF_file_dir <- "/mnt/scratch/hhuang/hli_vcf_annotated/"
 Donor_file <- "a_208_D_528085277_annotated.vcf.gz"
 Recipient_file <- "a_208_R_1018111_annotated.vcf.gz"
 
+# donor's VCF - Chromosome 
+vcf_file_D <- paste0(VCF_file_dir, Donor_file)
+vcf_D <- read.vcfR(vcf_file_D, verbose = FALSE)
+
+# recipient's VCF - Chromosome 
+vcf_file_R <- paste0(VCF_file_dir, Recipient_file)
+vcf_R <- read.vcfR(vcf_file_R, verbose = FALSE)
+
 output_filename <- paste0(unlist(strsplit(Donor_file, "_"))[1], "_",
                           unlist(strsplit(Donor_file, "_"))[2], "_",
                           "R_D_diff_variants")
@@ -19,24 +27,16 @@ for(chr in 1:22){
   Chrom <- paste0("chr", chr)
   
   # donor's VCF - Chromosome 
-  vcf_file_D <- paste0(VCF_file_dir, Donor_file)
-  vcf_D <- read.vcfR(vcf_file_D, verbose = FALSE)
-  
-  # donor_table <- as.data.frame(vcf_D@fix, stringsAsFactors = FALSE)
-  
   D_chr <- as.data.frame(vcf_D@fix[vcf_D@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
   D_chr$POS <- as.integer(D_chr$POS)
   
-  rm(vcf_D)
+  # rm(vcf_D)
   
   # recipient's VCF - Chromosome 
-  vcf_file_R <- paste0(VCF_file_dir, Recipient_file)
-  vcf_R <- read.vcfR(vcf_file_R, verbose = FALSE)
-  
   R_chr <- as.data.frame(vcf_R@fix[vcf_R@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
   R_chr$POS <- as.integer(R_chr$POS)
   
-  rm(vcf_R)
+  # rm(vcf_R)
   
   #######
   # Check all the genes in the list
@@ -88,7 +88,7 @@ for(chr in 1:22){
   
   save(diff_num, file = paste0("../Output/",output_filename, "_chr", chr,".RData"))
   
-  cat("Done!")
+  cat("Done!\n")
 }
 
 dev.off()
