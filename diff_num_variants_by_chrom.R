@@ -64,3 +64,4 @@ for (id in 1:num_genes){
 }
 
 save(diff_num, file = "../Output/a_208_R_D_diff_variants.RData")
+# save(diff_num, file = "../Data/a_197_R_D_diff_variants.RData")
