@@ -14,7 +14,8 @@ output_filename <- paste0(unlist(strsplit(Donor_file, "_"))[1], "_",
 pdf(paste0("../Output/",output_filename,".pdf"))
 
 for(chr in 1:22){
-  cat("Chromosome ", chr)
+  cat("Chromosome ", chr, ": ")
+  
   Chrom <- paste0("chr", chr)
   
   # donor's VCF - Chromosome 
@@ -86,6 +87,8 @@ for(chr in 1:22){
        ylab = "Number of different variants")
   
   save(diff_num, file = paste0("../Output/",output_filename, "_chr", chr,".RData"))
+  
+  cat("Done!")
 }
 
 dev.off()
