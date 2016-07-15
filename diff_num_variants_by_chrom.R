@@ -9,10 +9,10 @@ Chrom <- "chr6"
 VCF_file_dir <- "/mnt/scratch/hhuang/hli_vcf_annotated/"
 
 # donor's VCF - Chromosome 
-vcf_file_D <- paste0(VCF_file_dir, "n_197_D_annotated.vcf.gz")
+vcf_file_D <- paste0(VCF_file_dir, "a_208_D_528085277_annotated.vcf.gz")
 vcf_D <- read.vcfR(vcf_file_D, verbose = FALSE)
 
-donor_table <- as.data.frame(vcf_D@fix, stringsAsFactors = FALSE)
+# donor_table <- as.data.frame(vcf_D@fix, stringsAsFactors = FALSE)
 
 D_chr <- as.data.frame(vcf_D@fix[vcf_D@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
 D_chr$POS <- as.integer(D_chr$POS)
@@ -20,18 +20,13 @@ D_chr$POS <- as.integer(D_chr$POS)
 rm(vcf_D)
 
 # recipient's VCF - Chromosome 
-vcf_file_R <- paste0(VCF_file_dir, "n_197_R_annotated.vcf.gz")
+vcf_file_R <- paste0(VCF_file_dir, "a_208_R_1018111_annotated.vcf.gz")
 vcf_R <- read.vcfR(vcf_file_R, verbose = FALSE)
 
 R_chr <- as.data.frame(vcf_R@fix[vcf_R@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
 R_chr$POS <- as.integer(R_chr$POS)
 
 rm(vcf_R)
-
-# Check HLA genes
-GeneName <- "HLA-A"
-geneInfo <- GRCh38_gene_list[which(GRCh38_gene_list$GeneName == GeneName)[1], ]
-
 
 #######
 # Check all the genes in the list
@@ -67,3 +62,5 @@ for (id in 1:num_genes){
   diff_num$exon[id] <- length(which(grepl("Exon", D_diff_variants$ID))) + length(which(grepl("Exon", R_diff_variants$ID)))      
   
 }
+
+save(diff_num, file = "../Output/a_208_R_D_diff_variants.RData")
