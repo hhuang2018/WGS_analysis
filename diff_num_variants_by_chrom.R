@@ -13,9 +13,9 @@ output_filename <- paste0(unlist(strsplit(Donor_file, "_"))[1], "_",
                           "R_D_diff_variants")
 pdf(paste0("../Output/",output_filename,".pdf"))
 
-for(id in 1:22){
-  
-  Chrom <- paste0("chr", id)
+for(chr in 1:22){
+  cat("Chromosome ", chr)
+  Chrom <- paste0("chr", chr)
   
   # donor's VCF - Chromosome 
   vcf_file_D <- paste0(VCF_file_dir, Donor_file)
@@ -73,19 +73,19 @@ for(id in 1:22){
   }
   
   plot(diff_num$total, 
-       main = paste0("Full Gene region (Chormosome", id,")"),
+       main = paste0("Full Gene region (Chormosome", chr,")"),
        xlab = "Gene Index",
        ylab = "Number of different variants")
   plot(diff_num$intron, 
-       main = paste0("Gene Intron regions (Chormosome", id,")"),
+       main = paste0("Gene Intron regions (Chormosome", chr,")"),
        xlab = "Gene Index",
        ylab = "Number of different variants")
   plot(diff_num$exon, 
-       main = paste0("Gene Exon regions (Chormosome", id,")"),
+       main = paste0("Gene Exon regions (Chormosome", chr,")"),
        xlab = "Gene Index",
        ylab = "Number of different variants")
   
-  save(diff_num, file = paste0("../Output/a_208_R_D_diff_variants_chr", id,".RData"))
+  save(diff_num, file = paste0("../Output/",output_filename, "_chr", chr,".RData"))
 }
 
 dev.off()
