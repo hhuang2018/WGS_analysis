@@ -60,7 +60,9 @@ GRCh38_gene_list_chr <- GRCh38_gene_list[which(GRCh38_gene_list$chrom == Chrom),
 gene_names <- unique(GRCh38_gene_list_chr$GeneName)
 num_genes <- length(gene_names)
 
-diff_num <- vector(mode = "integer", length = num_genes)
+diff_num <- data.frame(total = vector(mode = "integer", length = num_genes),
+                       intron =  vector(mode = "integer", length = num_genes),
+                       exon =  vector(mode = "integer", length = num_genes))
 
 for (id in 1:num_genes){
   
@@ -80,5 +82,9 @@ for (id in 1:num_genes){
   D_diff_variants <- D_stats$all_variants[-which(D_stats$all_variants$POS %in% R_stats$all_variants$POS), ]
   R_diff_variants <- R_stats$all_variants[-which(R_stats$all_variants$POS %in% D_stats$all_variants$POS), ]
   
-  diff_num[id] <- dim(D_diff_variants)[1] + dim(R_diff_variants)[1]
+  diff_num$total[id] <- dim(D_diff_variants)[1] + dim(R_diff_variants)[1]
+  diff_num$intron[id] <- length(which(grepl("Intron", D_diff_variants$ID))) + length(which(grepl("Intron", R_diff_variants$ID)))
+  diff_num$exon[id] <- length(which(grepl("Exon", D_diff_variants$ID))) + length(which(grepl("Exon", R_diff_variants$ID)))      
+
 }
+
