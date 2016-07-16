@@ -5,8 +5,8 @@ load("../Data/GRCh38_gene_list.RData")
 library(vcfR)
 
 VCF_file_dir <- "/mnt/scratch/hhuang/hli_vcf_annotated/"
-Donor_file <- "a_208_D_528085277_annotated.vcf.gz"
-Recipient_file <- "a_208_R_1018111_annotated.vcf.gz"
+Donor_file <- "n_197_D_62284237_annotated.vcf.gz"
+Recipient_file <- "n_197_R_1005928_annotated.vcf.gz"
 
 # donor's VCF - Chromosome 
 vcf_file_D <- paste0(VCF_file_dir, Donor_file)
