@@ -26,11 +26,15 @@ info_id <- which(grepl("INFO=", D_chr_meta))
 strsplit(gsub("##FORMAT=", "",D_chr_meta[format_id]), ",")
 
 # Annotation
-#D_chr_meta[info_id]
-ANN_id <- which(grepl("ANN", D_chr_meta[info_id]))
-ann_colnames <- gsub(" ", "", unlist(strsplit(unlist(strsplit(D_chr_meta[info_id[ANN_id]],"'"))[2], "\\|")))
 
-aa <- sapply(1:length(D_chr_variants$INFO), 
-             function(x) unlist(strsplit(unlist(strsplit(D_chr_variants$INFO[x], split = "ANN="))[2], "\\|")))
-ab <- as.data.frame(aa)
-#
+annotation_info <- parse_meta_info(D_chr_meta[info_id], D_chr_variants$INFO)
+
+
+# #D_chr_meta[info_id]
+# ANN_id <- which(grepl("ANN", D_chr_meta[info_id]))
+# ann_colnames <- gsub(" ", "", unlist(strsplit(unlist(strsplit(D_chr_meta[info_id[ANN_id]],"'"))[2], "\\|")))
+# 
+# aa <- sapply(1:length(D_chr_variants$INFO), 
+#              function(x) unlist(strsplit(unlist(strsplit(D_chr_variants$INFO[x], split = "ANN="))[2], "\\|")))
+# ab <- as.data.frame(aa)
+# #

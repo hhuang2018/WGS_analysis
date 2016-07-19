@@ -55,21 +55,21 @@ RegionNumber2RegionName <- function(RegionNumber, num_reigons){
 ###############
 # Extract SnpEff Annotation from VCF file
 ###############
-extract_annotation <- function(annotation, Chrom_meta_info, Chrom_variants_info){
+extract_annotation <- function(annotation, Chrom_meta_info, Chrom_variants_info1){
   
-  if(is.na(Chrom_variants_info) || is.na(Chrom_meta_info)) stop("Empty info!")
+  if(is.na(Chrom_variants_info1) || is.na(Chrom_meta_info)) stop("Empty info!")
   annotation_id <- which(grepl(annotation, Chrom_meta_info))
   ann_colnames <- gsub(" ", "", unlist(strsplit(unlist(strsplit(Chrom_meta_info[annotation_id],"'"))[2], "\\|")))
   ann_colnames <- c("PredictionID", ann_colnames)
   num_columns <- length(ann_colnames)
   
-  num_rows <- length(Chrom_variants_info)
+  num_rows <- length(Chrom_variants_info1)
   
   Chrom_ANN_info <- as.data.frame(matrix(data = "", nrow = num_rows, ncol = num_columns), stringsAsFactors = FALSE)
   colnames(Chrom_ANN_info) <- ann_colnames
   
 #  for(id in 1:num_rows){
-    all_info <- unlist(strsplit(Chrom_variants_info, ";"))
+    all_info <- unlist(strsplit(Chrom_variants_info1, ";"))
     all_info <- gsub("\\(", "", all_info)
     all_info <- gsub("\\)", "", all_info)
     ann_index <- which(grepl(annotation, all_info))
@@ -82,16 +82,27 @@ extract_annotation <- function(annotation, Chrom_meta_info, Chrom_variants_info)
         ann_info <- c(ann_info, rep("", num_columns - length(ann_info)))
       }
       names(ann_info) <- ann_colnames
+      
+      Chrom_ANN_info <- t(as.data.frame(ann_info, row.names = NULL, stringsAsFactors = FALSE))
     }else{ # if there are more than one allele info
       ann_info <- c(1, unlist(strsplit(unlist(strsplit(allele_info[1], split = paste0(annotation,"=")))[2], "\\|")))
-      ann_info <- rbind(ann_info, t(sapply(2:length(allele_info), function(x) c(x, unlist(strsplit(allele_info[x], "\\|"))))))
-      if(dim(ann_info)[2] < num_columns) {
-        ann_info <- cbind(ann_info, rep("", num_columns -dim(ann_info)[2]))
+      if(length(ann_info) < num_columns) {
+        ann_info <- c(ann_info, rep("", num_columns - length(ann_info)))
+      }
+      ann_info <- t(as.data.frame(ann_info, row.names = NULL, stringsAsFactors = FALSE))
+      for(kd in 2:length(allele_info)){
+        temp_info <- t(as.data.frame(c(kd, unlist(strsplit(allele_info[kd], "\\|"))), 
+                                     row.names = NULL, stringsAsFactors = FALSE))
+        if(dim(temp_info)[2] < num_columns) {
+          ann_info <- rbind(ann_info, cbind(temp_info, rep("", num_columns - dim(temp_info)[2])))
+        } else ann_info <- rbind(ann_info, temp_info)
       }
       colnames(ann_info) <- ann_colnames
+      rownames(ann_info) <- NULL
+      Chrom_ANN_info <- ann_info # as.data.frame(ann_info, row.names = NULL, stringsAsFactors = FALSE)
     }
     # Chrom_ANN_info[id, ] <- ann_info
-    Chrom_ANN_info <- ann_info
+    
 #  }
   return(Chrom_ANN_info)
 }
