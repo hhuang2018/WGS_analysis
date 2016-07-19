@@ -120,13 +120,15 @@ parse_meta_info <- function(Chrom_meta_info, Chrom_variants_info){
   original_INFO <- as.data.frame(matrix(data = NA, nrow = num_rows, ncol = num_info_ID - 3))
   colnames(original_INFO) <- INFO_colnames
   
-  ANNotation_info <- NULL
+  ANNotation_info <- as.data.frame(matrix("", nrow = num_rows*3, ncol = 18), 
+                                   row.names = NULL, stringsAsFactors = FALSE)
   LOF_info <- NULL
   NMD_info <- NULL
-  
+  ann_counter <- 0
   for(id in 1:num_rows){
     all_info <- unlist(strsplit(Chrom_variants_info[id], ";"))
     ann_index <-which(grepl("ANN=", all_info))
+    ann_counter <- ann_counter + 1
     
     if(ann_index > 1){ # if there is original info, in addition to ANNotation
       
@@ -136,8 +138,20 @@ parse_meta_info <- function(Chrom_meta_info, Chrom_variants_info){
       }
       
       temp_info <- extract_annotation("ANN", Chrom_meta_info, Chrom_variants_info[id])
-      ANNotation_info <- rbind(ANNotation_info, cbind(index = rep(id, dim(temp_info)[1]), temp_info))
-
+      #ANNotation_info <- rbind(ANNotation_info, cbind(index = rep(id, dim(temp_info)[1]), temp_info))
+      repeat_num <- dim(temp_info)[1]
+      if((ann_counter+repeat_num) < dim(ANNotation_info)[1]){
+        ANNotation_info[ann_counter:(ann_counter+repeat_num), ] <- cbind(index = rep(id, repeat_num), temp_info)
+      }else if(ann_counter < dim(ANNotation_info)[1]){
+        within_ids <-  dim(ANNotation_info)[1] - ann_counter
+        ANNotation_info[ann_counter:dim(ANNotation_info)[1], ] <- cbind(index = rep(id, within_ids), temp_info[1:within_ids, ])
+        ANNotation_info <- rbind(ANNotation_info, cbind(index = rep(id, (repeat_num-within_ids), temp_info[(within_ids+1):repeat_num,])))
+        ann_counter <- dim(ANNotation_info)[1]
+      }else{
+        ANNotation_info <- rbind(ANNotation_info, cbind(index = rep(id, repeat_num), temp_info))
+        ann_counter <- dim(ANNotation_info)[1]
+      }
+      
       if(ann_index < length(all_info)){ # if there is LOF information
         temp_info <- cbind(id, extract_annotation("LOF", Chrom_meta_info, Chrom_variants_info[id]))
         LOF_info <- rbind(LOF_info, cbind(index = rep(id, dim(temp_info)[1]), temp_info))
@@ -150,7 +164,19 @@ parse_meta_info <- function(Chrom_meta_info, Chrom_variants_info){
     }else if(ann_index == 1){ # if there is no original info
       
       temp_info <- extract_annotation("ANN", Chrom_meta_info, Chrom_variants_info[id])
-      ANNotation_info <- rbind(ANNotation_info, cbind(index = rep(id, dim(temp_info)[1]), temp_info))
+      # ANNotation_info <- rbind(ANNotation_info, cbind(index = rep(id, dim(temp_info)[1]), temp_info))
+      repeat_num <- dim(temp_info)[1]
+      if((ann_counter+repeat_num) < dim(ANNotation_info)[1]){
+        ANNotation_info[ann_counter:(ann_counter+repeat_num), ] <- cbind(index = rep(id, repeat_num), temp_info)
+      }else if(ann_counter < dim(ANNotation_info)[1]){
+        within_ids <-  dim(ANNotation_info)[1] - ann_counter
+        ANNotation_info[ann_counter:dim(ANNotation_info)[1], ] <- cbind(index = rep(id, within_ids), temp_info[1:within_ids, ])
+        ANNotation_info <- rbind(ANNotation_info, cbind(index = rep(id, (repeat_num-within_ids), temp_info[(within_ids+1):repeat_num,])))
+        ann_counter <- dim(ANNotation_info)[1]
+      }else{
+        ANNotation_info <- rbind(ANNotation_info, cbind(index = rep(id, repeat_num), temp_info))
+        ann_counter <- dim(ANNotation_info)[1]
+      }
       
       if(ann_index < length(all_info)){ # if there is LOF information
         temp_info <- cbind(id, extract_annotation("LOF", Chrom_meta_info, Chrom_variants_info[id]))

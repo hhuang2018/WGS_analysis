@@ -1,6 +1,6 @@
 source('util.R', echo = FALSE)
 
-load("../Data/GRCh38_gene_list.RData")
+# load("../Data/GRCh38_gene_list.RData")
 
 library(vcfR)
 
