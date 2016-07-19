@@ -29,8 +29,8 @@ for(chr in 1:22){
   Chrom <- paste0("chr", chr)
   
   # donor's VCF - Chromosome 
-  D_chr <- as.data.frame(vcf_D@fix[vcf_D@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
-  D_chr$POS <- as.integer(D_chr$POS)
+  D_chr_variants <- as.data.frame(vcf_D@fix[vcf_D@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
+  D_chr_variants$POS <- as.integer(D_chr_variants$POS)
   
   D_chr_gt <- as.data.frame(vcf_D@gt[vcf_D@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
   D_chr_gt <- D_chr_gt[(D_chr_variants$FILTER == "PASS"), ]
@@ -42,8 +42,8 @@ for(chr in 1:22){
   # rm(vcf_D)
   
   # recipient's VCF - Chromosome 
-  R_chr <- as.data.frame(vcf_R@fix[vcf_R@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
-  R_chr$POS <- as.integer(R_chr$POS)
+  R_chr_variants <- as.data.frame(vcf_R@fix[vcf_R@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
+  R_chr_variants$POS <- as.integer(R_chr_variants$POS)
   
   R_chr_gt <- as.data.frame(vcf_R@gt[vcf_R@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
   R_chr_gt <- R_chr_gt[(R_chr_variants$FILTER == "PASS"), ]
@@ -104,8 +104,8 @@ for(chr in 1:22){
   Chrom <- paste0("chr", chr)
   
   # donor's VCF - Chromosome 
-  D_chr <- as.data.frame(vcf_D@fix[vcf_D@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
-  D_chr$POS <- as.integer(D_chr$POS)
+  D_chr_variants <- as.data.frame(vcf_D@fix[vcf_D@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
+  D_chr_variants$POS <- as.integer(D_chr_variants$POS)
   
   D_chr_gt <- as.data.frame(vcf_D@gt[vcf_D@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
   D_chr_gt <- D_chr_gt[(D_chr_variants$FILTER == "PASS"), ]
@@ -117,8 +117,8 @@ for(chr in 1:22){
   # rm(vcf_D)
   
   # recipient's VCF - Chromosome 
-  R_chr <- as.data.frame(vcf_R@fix[vcf_R@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
-  R_chr$POS <- as.integer(R_chr$POS)
+  R_chr_variants <- as.data.frame(vcf_R@fix[vcf_R@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
+  R_chr_variants$POS <- as.integer(R_chr_variants$POS)
   
   R_chr_gt <- as.data.frame(vcf_R@gt[vcf_R@fix[,1] == Chrom, ], stringsAsFactors = FALSE)
   R_chr_gt <- R_chr_gt[(R_chr_variants$FILTER == "PASS"), ]
