@@ -19,7 +19,7 @@ D_chr_variants <- D_chr_variants[(D_chr_variants$FILTER == "PASS"), ] # only loo
 D_chr_meta <- vcf_D@meta
 
 num_meta <- length(D_chr_meta)
-format_id <- which(grepl("FORMAT=", D_chr_meta))
+# format_id <- which(grepl("FORMAT=", D_chr_meta))
 info_id <- which(grepl("INFO=", D_chr_meta))
 
 # Format
