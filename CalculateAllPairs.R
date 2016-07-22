@@ -22,6 +22,8 @@ for(id in 1:num_pairs){
   Recipient_file <- ifelse(fileName_list[[pair_ids[1]]][3] == "R", all_vcf_files[pair_ids[1]], all_vcf_files[pair_ids[2]])
   
   cat(id, "-th Group #: ", groupIDs[duplicated_IDs[id]], "\n")
+  cat("Donor File: ", Donor_file, "\n")
+  cat("Recipient File: ", Recipient_file, "\n")
   normalized_VariantStats_by_Chr(VCF_file_dir, Donor_file, Recipient_file, out.dir)
   
 }
