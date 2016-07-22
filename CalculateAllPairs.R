@@ -7,7 +7,7 @@ VCF_file_dir <- "/mnt/scratch/hhuang/hli_vcf_renamed/"
 all_vcf_files <- list.files(VCF_file_dir, pattern = "\\.vcf.gz$")
 
 # num_files <- length(all_vcf_files)
-out.dir <- "../VariantStats/"
+out.dir <- "/mnt/scratch/hhuang/VariantStats/"
 
 fileName_list <- strsplit(all_vcf_files, "_")
 groupIDs <- sapply(fileName_list, function(x) paste0(x[1], "_", x[2]))
