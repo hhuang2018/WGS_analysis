@@ -27,7 +27,7 @@ normalized_VariantStats_by_Chr <- function(VCF_file_dir, Donor_file, Recipient_f
   ChromosomeStats <- list()
   for(chr in 1:22){
     
-    pdf(paste0(out.dir, output_filename,"chr_", chr, ".pdf"), width = 15, height = 20)
+    pdf(paste0(out.dir, output_filename,"_chr_", chr, ".pdf"), width = 15, height = 20)
     
     cat("Chromosome ", chr, ": ")
     
