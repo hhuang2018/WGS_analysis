@@ -23,7 +23,7 @@ normalized_VariantStats_by_Chr <- function(VCF_file_dir, Donor_file, Recipient_f
   #pdf(paste0("../Output/",output_filename,".pdf"), width = 15, height = 20)
   #pdf(paste0(output_filename,".pdf"), width = 15, height = 20)
   
-  
+  cat("Load file finished!")
   ChromosomeStats <- list()
   for(chr in 1:22){
     
