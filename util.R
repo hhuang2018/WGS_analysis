@@ -8,7 +8,10 @@ gene_variant_stats <- function(geneInfo, geneVariants, promoterRegion = 1000){
   
   gene_length <- geneInfo$txEnd - geneInfo$txStart + 1
   exon_length <- sum(endIndex - startIndex) + geneInfo$exonCount
-  intron_length <- sum(startIndex[2:geneInfo$exonCount] - endIndex[1:(geneInfo$exonCount-1)]) - (geneInfo$exonCount - 1) # only intron region, without UTR
+  if(geneInfo$exonCount > 1){
+    intron_length <- sum(startIndex[2:geneInfo$exonCount] - endIndex[1:(geneInfo$exonCount-1)]) - (geneInfo$exonCount - 1) # only intron region, without UTR
+  } else intron_length <- 0
+  # intron_length <- sum(startIndex[2:geneInfo$exonCount] - endIndex[1:(geneInfo$exonCount-1)]) - (geneInfo$exonCount - 1) # only intron region, without UTR
   utr_length <- gene_length - exon_length - intron_length
   
   RegionIndex <- vector(mode = "numeric", length = 2*geneInfo$exonCount)
