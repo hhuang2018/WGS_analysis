@@ -274,9 +274,41 @@ parse_meta_info <- function(Chrom_meta_info, Chrom_variants_info){
               LossOfFunction_IFO = LOF_info,
               NonsenseMedDecay_INFO = NMD_info))
 }
+
 #############
 # Visualization
 #############
+
+##########
+# Sort genes by decreasing/increasing order of the designated scores
+##########
+sort_chr_genes <- function(chr_stats, feature_region, score_type, decrease = TRUE, rm.na = TRUE){
+  
+  if(grepl("_", feature_region)){
+    feature_in_interest <- feature_region
+  }else{
+    feature_in_interest <- paste0(feature_region, "_", score_type)
+  }
+  
+  feat_ind <- which(colnames(chr_stats) %in% feature_in_interest)
+  
+  # sort by decreasing order
+  eval(parse(text = paste0("ordered_chr_stats <- chr_stats[order(chr_stats$", feature_in_interest, ", decreasing = ", decrease, ", na.last = TRUE), c(1,", feat_ind,")]")))
+ 
+  if(rm.na){# remove genes with no changes
+     eval(parse(text = paste0("ordered_chr_stats <- ordered_chr_stats[!is.na(ordered_chr_stats$", feature_in_interest, "), ]")))
+     
+  }
+  
+  # reorder GeneNames
+  ordered_chr_stats$GeneName <- factor(ordered_chr_stats$GeneName, levels = factor(ordered_chr_stats$GeneName))
+  
+  if(rm.na){
+    
+  }
+  
+  return(ordered_chr_stats)
+}
 
 ###################
 # plot 
