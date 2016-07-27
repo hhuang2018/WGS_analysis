@@ -5,7 +5,7 @@ require(vcfR)
 # output_dir <- "/mnt/scratch/hhuang/hli_vcf_preprocessed/"
 
 # # local
-# VCF_file_dir <- "../HLI_VCF_files/"
+# VCF_file_dir <- "../HLI_VCF_files/
 # output_dir <- "../HLI_VCF_preprocessed/"
 
 all_files <- list.files(VCF_file_dir, pattern = "\\.vcf.gz$")
