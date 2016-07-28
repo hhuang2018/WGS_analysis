@@ -28,4 +28,7 @@ for(id in 1:num_files){
   write.vcf(new_vcf_info, file = paste0(output_dir, gsub(".vcf.gz", "_preprocess.vcf.gz", all_files[id])))
   
   cat(all_files[id], ": Removed ", length(rm_id), "(", round(length(rm_id)/total_num, digits = 4)*100, "%) (total); ", length(rm_id_noPass), " (LowQ); ", length(rm_id_noAlle), " (missing allele) \n")
+  
+  rm(vcf_info)
+  rm(new_vcf_info)
 }
