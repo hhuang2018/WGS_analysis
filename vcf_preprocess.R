@@ -1,8 +1,8 @@
 require(vcfR)
 
 # cloud
-VCF_file_dir <- "/mnt/scratch/hhuang/hli_vcf_renamed/"
-output_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/hli_vcf_preprocessed/"
+VCF_file_dir <- "/mnt/scratch/hhuang/hli_vcf_annotated/"
+output_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/hli_vcf_annotated_preprocessed/"
 
 # # local
 # VCF_file_dir <- "../HLI_VCF_files/
