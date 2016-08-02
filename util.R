@@ -1,3 +1,26 @@
+#### Get gene names within a given position range
+get.GeneNames <- function(chrom, startPos, endPos, GeneList){
+
+  chrom_list <- GeneList[which(GeneList$chrom %in% chrom), ]
+  
+  if(dim(chrom_list)[1] > 0){
+    
+    regionStart <- intersect(which(chrom_list$txStart <= startPos), which(chrom_list$txEnd >= startPos))
+    regionEnd <- intersect(which(chrom_list$txEnd >= endPos), which(chrom_list$txStart <= endPos))
+    
+    geneRange <- c(min(regionStart),max(regionEnd))
+    geneNames <- as.character(chrom_list$GeneName[geneRange[1]:geneRange[2]])
+    geneNames[which(chrom_list$strand[geneRange[1]:geneRange[2]] %in% "-")] <- paste0(geneNames[which(chrom_list$strand[geneRange[1]:geneRange[2]] %in% "-")], "(-)")
+    
+    GeneNames <- paste0(unique(geneNames), collapse = ",")
+    
+  } else GeneNames <- NULL
+  
+  return(GeneNames)
+}
+
+
+############
 gene_variant_stats <- function(geneInfo, geneVariants, promoterRegion = 1000){
   #
   # returns the variant statistics by functional regions (introns, exons)
