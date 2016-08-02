@@ -6,13 +6,21 @@ get.GeneNames <- function(chrom, startPos, endPos, GeneList){
   if(dim(chrom_list)[1] > 0){
     
     regionStart <- intersect(which(chrom_list$txStart <= startPos), which(chrom_list$txEnd >= startPos))
+    if(length(regionStart) == 0) regionStart <- which(chrom_list$txEnd >= startPos)[1]
+    
     regionEnd <- intersect(which(chrom_list$txEnd >= endPos), which(chrom_list$txStart <= endPos))
+    if(length(regionEnd) == 0) regionEnd <- which(chrom_list$txEnd >= endPos)[1]
     
     geneRange <- c(min(regionStart),max(regionEnd))
-    geneNames <- as.character(chrom_list$GeneName[geneRange[1]:geneRange[2]])
-    geneNames[which(chrom_list$strand[geneRange[1]:geneRange[2]] %in% "-")] <- paste0(geneNames[which(chrom_list$strand[geneRange[1]:geneRange[2]] %in% "-")], "(-)")
     
-    GeneNames <- paste0(unique(geneNames), collapse = ",")
+    if(geneRange[1] <= geneRange[2]){
+      
+      geneNames <- as.character(chrom_list$GeneName[geneRange[1]:geneRange[2]])
+      geneNames[which(chrom_list$strand[geneRange[1]:geneRange[2]] %in% "-")] <- paste0(geneNames[which(chrom_list$strand[geneRange[1]:geneRange[2]] %in% "-")], "(-)")
+      
+      GeneNames <- paste0(unique(geneNames), collapse = ",")
+      
+    } else GeneNames <- "NoKnownGenes"
     
   } else GeneNames <- NULL
   
