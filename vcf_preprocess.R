@@ -10,7 +10,7 @@ output_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/hli_vcf_annotated_prep
 
 all_files <- list.files(VCF_file_dir, pattern = "\\.vcf.gz$")
 existed_file <- list.files(output_dir, pattern = "\\.vcf.gz$")
-existed_file <- gsub("_preprocess.vcf.gz", "\\.vcf.gz", existed_file)
+existed_file <- gsub("_preprocess.vcf.gz", ".vcf.gz", existed_file)
 
 num_files <- length(all_files)
 for(id in 1:num_files){
