@@ -9,7 +9,7 @@ get.GeneNames <- function(chrom, startPos, endPos, GeneList){
     if(length(regionStart) == 0) regionStart <- which(chrom_list$txEnd >= startPos)[1]
     
     regionEnd <- intersect(which(chrom_list$txEnd >= endPos), which(chrom_list$txStart <= endPos))
-    if(length(regionEnd) == 0) regionEnd <- which(chrom_list$txEnd >= endPos)[1]
+    if(length(regionEnd) == 0) regionEnd <- which(chrom_list$txStart <= endPos)[1]
     
     geneRange <- c(min(regionStart),max(regionEnd))
     
@@ -20,7 +20,7 @@ get.GeneNames <- function(chrom, startPos, endPos, GeneList){
       
       GeneNames <- paste0(unique(geneNames), collapse = ",")
       
-    } else GeneNames <- "NoKnownGenes"
+    } else GeneNames <- "OutOfTxRange"
     
   } else GeneNames <- NULL
   
