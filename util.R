@@ -7,7 +7,8 @@ get.GeneNames <- function(chrom, startPos, endPos, GeneList){
     
     regionStart <- intersect(which(chrom_list$txStart <= startPos), which(chrom_list$txEnd >= startPos))
     if(length(regionStart) == 0) regionStart <- which(chrom_list$txEnd >= startPos)[1]
-    
+    if(is.na(regionStart)) regionStart <- startPos
+        
     regionEnd <- intersect(which(chrom_list$txEnd >= endPos), which(chrom_list$txStart <= endPos))
     if(length(regionEnd) == 0) regionEnd <- which(chrom_list$txStart <= endPos)[1]
     if(is.na(regionEnd)) regionEnd <- 0
