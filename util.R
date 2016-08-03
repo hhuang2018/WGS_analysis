@@ -10,6 +10,7 @@ get.GeneNames <- function(chrom, startPos, endPos, GeneList){
     
     regionEnd <- intersect(which(chrom_list$txEnd >= endPos), which(chrom_list$txStart <= endPos))
     if(length(regionEnd) == 0) regionEnd <- which(chrom_list$txStart <= endPos)[1]
+    if(is.na(regionEnd)) regionEnd <- 0
     
     geneRange <- c(min(regionStart),max(regionEnd))
     
