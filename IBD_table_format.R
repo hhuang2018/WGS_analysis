@@ -45,7 +45,7 @@ for (id in 1: num_rows){
 
 save(new_IBD_table, file = "../Output/aGVHD_10_pairs_IBD.RData")
 write.csv(new_IBD_table, file = "../Output/aGVHD_10_pairs_IBD.csv", row.names = FALSE)
-
+cat("IBD table has been converted and saved!")
 ###################
 # HBD
 ###################
@@ -91,3 +91,4 @@ for (id in 1: num_rows){
 
 save(new_IBD_table, file = "../Output/aGVHD_10_pairs_HBD.RData")
 write.csv(new_IBD_table, file = "../Output/aGVHD_10_pairs_HBD.csv", row.names = FALSE)
+cat("HBD table has been converted and saved!")
