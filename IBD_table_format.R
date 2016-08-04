@@ -41,6 +41,8 @@ for (id in 1: num_rows){
                                                endPos = new_IBD_table$EndID[id],
                                                GeneList = GRCh38_gene_list)
   
+  
+  
 }
 
 save(new_IBD_table, file = "../Output/aGVHD_10_pairs_IBD.RData")
@@ -49,6 +51,12 @@ cat("IBD table has been converted and saved!")
 ###################
 # HBD
 ###################
+rm(list = ls())
+source('util.R', echo = FALSE)
+
+load("../Data/ID_table.RData")
+load("../Data/GRCh38_gene_list.RData")
+
 IBD_table <- read.table(file = "../aGVHD_10_pairs_ref.gt.ibd.hbd")
 colnames(IBD_table) <- c("SampleID1", "HapID1", "SampleID2", "HapID2", "Chr", "StartInd", "EndInd", "LOD")
 

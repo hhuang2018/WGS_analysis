@@ -24,7 +24,7 @@ get.GeneNames <- function(chrom, startPos, endPos, GeneList){
       
     } else GeneNames <- "OutOfTxRange"
     
-  } else GeneNames <- NULL
+  } else GeneNames <- chrom
   
   return(GeneNames)
 }
