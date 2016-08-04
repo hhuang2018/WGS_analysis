@@ -55,7 +55,6 @@ load("../Data/ID_table.RData")
 # source('util.R', echo = FALSE)
 # 
 # load("../Data/ID_table.RData")
-# load("../Data/GRCh38_gene_list.RData")
 
 IBD_table <- read.table(file = "../aGVHD_10_pairs_ref.gt.ibd.hbd")
 colnames(IBD_table) <- c("SampleID1", "HapID1", "SampleID2", "HapID2", "Chr", "StartInd", "EndInd", "LOD")
