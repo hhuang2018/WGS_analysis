@@ -34,7 +34,7 @@ for(id in 1:num_files){
   cat("[")
   for(rind in 1:num_rows){
     
-    if(round(num_rows / rind) %% 10 == 0) {
+    if(round(rind / num_rows *100, digits = 2) %% 10 == 0) {
       cat("=")
     }
     
