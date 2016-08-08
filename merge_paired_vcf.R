@@ -19,7 +19,7 @@ paired_IDs <- which(duplicated(all_groupIDs))
 
 num_files <- length(paired_IDs)
 
-for(id in 1:num_files){}
+for(id in 1:num_files){
   
   index <- which(all_groupIDs %in% all_groupIDs[paired_IDs[id]])
   
