@@ -29,6 +29,54 @@ get.GeneNames <- function(chrom, startPos, endPos, GeneList){
   return(GeneNames)
 }
 
+#####################
+##
+#####################
+is.same.gt <- function(vcf_gt){
+  
+  gt_1 <- sort(as.numeric(unlist(strsplit(vcf_gt[1], "/"))))
+  gt_2 <- sort(as.numeric(unlist(strsplit(vcf_gt[2], "/"))))
+  
+  uniq_gt_1 <- unique(gt_1)
+  uniq_gt_2 <- unique(gt_2)
+  
+  if(length(uniq_gt_1) == 1){ # if the first one is homozygous
+    
+    if(length(uniq_gt_2) == 1){
+      # both are homozygous
+#       if(uniq_gt_1 == uniq_gt_2){
+#         # both alleles are the same
+#         genotype_table$GT[rind] <- 0
+#       }else genotype_table$GT[rind] <- 2 # both alleles are different
+      GT <- 2
+    }else{
+      # if the second one is heterozygous
+      if(length(unique(c(uniq_gt_1, uniq_gt_2))) == 2 ){
+        # one allele is the same
+        GT <- 1
+      }else GT <- 2 # both alleles are different
+      
+    }
+  }else{ # if the first one is heterozygous #####
+    
+    if(length(uniq_gt_2) == 1){
+      # if the second one is homozygous
+      if(length(unique(c(uniq_gt_1, uniq_gt_2))) == 2 ){
+        # one allele is the same
+        GT <- 1
+      }else GT <- 2 # both alleles are different
+      
+    }else{
+      # if both are heterozygous
+      # shared_allele_num <- length(intersect(uniq_gt_1, uniq_gt_2)) 
+      switch(as.character(length(intersect(uniq_gt_1, uniq_gt_2)) ),
+             "0" = GT <- 2, # both alleles are different
+             "1" = GT <- 1, # one allele is different
+             "2" = GT <- 0) # both alleles are the same 
+    }
+  }
+  return(GT)
+}
 
 ############
 gene_variant_stats <- function(geneInfo, geneVariants, promoterRegion = 1000){

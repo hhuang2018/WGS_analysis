@@ -29,65 +29,81 @@ for(id in 1:num_files){
                                GT = numeric(num_rows),
                                groupID = character(num_rows),
                                stringsAsFactors = FALSE)
+  genotype_table$CHROM <- vcf_info@fix[, 1]
+  genotype_table$POS <- as.numeric(vcf_info@fix[, 2])
+  genotype_table$REF <- vcf_info@fix[, 4]
+  genotype_table$ALT <- vcf_info@fix[, 5]
+  genotype_table$groupID <- rep(groupID, times = num_rows)
   
   cat("File ", id, ": ", all_vcf_files[id], "\n")
-  cat("[")
-  for(rind in 1:num_rows){
-    
-    if(round(rind / num_rows *100, digits = 2) %% 10 == 0) {
-      cat("=")
-    }
-    
-    genotype_table$CHROM[rind] <- vcf_info@fix[rind, 1]
-    genotype_table$POS[rind] <- as.numeric(vcf_info@fix[rind, 2])
-    genotype_table$REF[rind] <- vcf_info@fix[rind, 4]
-    genotype_table$ALT[rind] <- vcf_info@fix[rind, 5]
-    genotype_table$groupID[rind] <- groupID
-    
-    gt_1 <- sort(as.numeric(unlist(strsplit(vcf_gt[rind, 1], "/"))))
-    gt_2 <- sort(as.numeric(unlist(strsplit(vcf_gt[rind, 2], "/"))))
-    
-    uniq_gt_1 <- unique(gt_1)
-    uniq_gt_2 <- unique(gt_2)
-    
-    if(length(uniq_gt_1) == 1){ # if the first one is homozygous
-      
-      if(length(uniq_gt_2) == 1){
-        # both are homozygous
-        if(uniq_gt_1 == uniq_gt_2){
-          # both alleles are the same
-          genotype_table$GT[rind] <- 0
-        }else genotype_table$GT[rind] <- 2 # both alleles are different
-        
-      }else{
-        # if the second one is heterozygous
-        if(length(unique(c(uniq_gt_1, uniq_gt_2))) == 2 ){
-          # one allele is the same
-          genotype_table$GT[rind] <- 1
-        }else genotype_table$GT[rind] <- 2 # both alleles are different
+  # cat("[")
+  ptm <- proc.time() 
+  is_same_gt <- sapply(1:num_rows, function(x) vcf_gt[x, 1] == vcf_gt[x, 2])
   
-      }
-    }else{ # if the first one is heterozygous #####
-      
-      if(length(uniq_gt_2) == 1){
-        # if the second one is homozygous
-        if(length(unique(c(uniq_gt_1, uniq_gt_2))) == 2 ){
-          # one allele is the same
-          genotype_table$GT[rind] <- 1
-        }else genotype_table$GT[rind] <- 2 # both alleles are different
-        
-      }else{
-        # if both are heterozygous
-        # shared_allele_num <- length(intersect(uniq_gt_1, uniq_gt_2)) 
-        switch(as.character(length(intersect(uniq_gt_1, uniq_gt_2)) ),
-               "0" = genotype_table$GT[rind] <- 2, # both alleles are different
-               "1" = genotype_table$GT[rind] <- 1, # one allele is different
-               "2" = genotype_table$GT[rind] <- 0) # both alleles are the same 
-      }
-    }
-
-  }# inner for loop
-  cat("] \n")
+  diff_gt_index <- which(!is_same_gt)
+  genotype_table$GT[diff_gt_index] <- sapply(1:length(diff_gt_index), function(x) is.same.gt(vcf_gt[diff_gt_index[x], ]))
+  
+  proc.time() - ptm
+  #genotype_table$GT[is_same_gt] <- 0
+  
+#   for(rind in 1:num_rows){
+#     
+# #     progress <- round(rind / num_rows *100, digits = 2)
+# #     if(progress > 0 && (progress %% 10 == 0)) {
+# #       cat("=")
+# #     }
+#     
+# #     genotype_table$CHROM[rind] <- vcf_info@fix[rind, 1]
+# #     genotype_table$POS[rind] <- as.numeric(vcf_info@fix[rind, 2])
+# #     genotype_table$REF[rind] <- vcf_info@fix[rind, 4]
+# #     genotype_table$ALT[rind] <- vcf_info@fix[rind, 5]
+# #     genotype_table$groupID[rind] <- groupID
+#     
+# #     gt_1 <- sort(as.numeric(unlist(strsplit(vcf_gt[rind, 1], "/"))))
+# #     gt_2 <- sort(as.numeric(unlist(strsplit(vcf_gt[rind, 2], "/"))))
+# #     
+# #     uniq_gt_1 <- unique(gt_1)
+# #     uniq_gt_2 <- unique(gt_2)
+# #     
+# #     if(length(uniq_gt_1) == 1){ # if the first one is homozygous
+# #       
+# #       if(length(uniq_gt_2) == 1){
+# #         # both are homozygous
+# #         if(uniq_gt_1 == uniq_gt_2){
+# #           # both alleles are the same
+# #           genotype_table$GT[rind] <- 0
+# #         }else genotype_table$GT[rind] <- 2 # both alleles are different
+# #         
+# #       }else{
+# #         # if the second one is heterozygous
+# #         if(length(unique(c(uniq_gt_1, uniq_gt_2))) == 2 ){
+# #           # one allele is the same
+# #           genotype_table$GT[rind] <- 1
+# #         }else genotype_table$GT[rind] <- 2 # both alleles are different
+# #   
+# #       }
+# #     }else{ # if the first one is heterozygous #####
+# #       
+# #       if(length(uniq_gt_2) == 1){
+# #         # if the second one is homozygous
+# #         if(length(unique(c(uniq_gt_1, uniq_gt_2))) == 2 ){
+# #           # one allele is the same
+# #           genotype_table$GT[rind] <- 1
+# #         }else genotype_table$GT[rind] <- 2 # both alleles are different
+# #         
+# #       }else{
+# #         # if both are heterozygous
+# #         # shared_allele_num <- length(intersect(uniq_gt_1, uniq_gt_2)) 
+# #         switch(as.character(length(intersect(uniq_gt_1, uniq_gt_2)) ),
+# #                "0" = genotype_table$GT[rind] <- 2, # both alleles are different
+# #                "1" = genotype_table$GT[rind] <- 1, # one allele is different
+# #                "2" = genotype_table$GT[rind] <- 0) # both alleles are the same 
+# #       }
+# #     }
+#     # proc.time() - ptm
+#     
+#   }# inner for loop
+  # cat("] \n")
   
   save(genotype_table, file = paste0(output_dir, groupID, ".RData"))
 }
