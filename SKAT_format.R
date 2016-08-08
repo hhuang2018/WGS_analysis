@@ -104,7 +104,7 @@ for(id in 1:num_files){
 #     # proc.time() - ptm
 #     
 #   }# inner for loop
-  cat("\n")
-  
+  cat("ID Check Done!\n")
   save(genotype_table, file = paste0(output_dir, groupID, ".RData"))
+  cat(groupID, ".RData is saved under ", output_dir, "\n")
 }
