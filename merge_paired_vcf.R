@@ -19,13 +19,7 @@ paired_IDs <- which(duplicated(all_groupIDs))
 
 num_files <- length(paired_IDs)
 
-for(id in 1:num_files){
-  cat("Group # ", id, "\nCommand: \n")
-  cat(paste0("cd ", paired_vcf_dir,"; vcf-merge -R 0/0 ", vcf_file_dir, Recipient_file," ",
-             vcf_file_dir, Donor_file, " | bgzip > ", all_groupIDs[paired_IDs[id]], ".vcf.gz"), "\n")
-  cat(paste0("cd ", paired_vcf_dir, "; tabix -p vcf ", all_groupIDs[paired_IDs[id]], ".vcf.gz"), "\n")
-  
-  ptm <- proc.time() 
+for(id in 1:num_files){}
   
   index <- which(all_groupIDs %in% all_groupIDs[paired_IDs[id]])
   
@@ -37,11 +31,18 @@ for(id in 1:num_files){
     Donor_file <- all_vcf_files[index[1]]
   }
   
+  cat("Group # ", id, "\nCommand: \n")
+  cat(paste0("cd ", paired_vcf_dir,"; vcf-merge -R 0/0 ", vcf_file_dir, Recipient_file," ",
+             vcf_file_dir, Donor_file, " | bgzip > ", all_groupIDs[paired_IDs[id]], ".vcf.gz"), "\n")
+  cat(paste0("cd ", paired_vcf_dir, "; tabix -p vcf ", all_groupIDs[paired_IDs[id]], ".vcf.gz"), "\n")
+  
+  ptm <- proc.time() 
   system(paste0("cd ", paired_vcf_dir,"; vcf-merge -R 0/0 ", vcf_file_dir, Recipient_file," ",
                 vcf_file_dir, Donor_file, " | bgzip > ", all_groupIDs[paired_IDs[id]], ".vcf.gz"))
   system(paste0("cd ", paired_vcf_dir, "; tabix -p vcf ", all_groupIDs[paired_IDs[id]], ".vcf.gz"))
   
   print(proc.time() - ptm)
+  
   cat(all_groupIDs[paired_IDs[id]], " done! \n\n")
 
 }
