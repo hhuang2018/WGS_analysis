@@ -29,7 +29,14 @@ for(id in 1:num_files){
                                GT = numeric(num_rows),
                                groupID = character(num_rows),
                                stringsAsFactors = FALSE)
+  
+  cat("File ", id, ": ", all_vcf_files[id], "\n")
+  cat("[")
   for(rind in 1:num_rows){
+    
+    if(round(num_rows / rind) %% 10 == 0) {
+      cat("=")
+    }
     
     genotype_table$CHROM[rind] <- vcf_info@fix[rind, 1]
     genotype_table$POS[rind] <- as.numeric(vcf_info@fix[rind, 2])
@@ -78,7 +85,9 @@ for(id in 1:num_files){
                "2" = genotype_table$GT[rind] <- 0) # both alleles are the same 
       }
     }
+
   }# inner for loop
+  cat{"]"}
   
   save(genotype_table, file = paste0(output_dir, groupID, ".RData"))
 }
