@@ -20,7 +20,7 @@ paired_IDs <- which(duplicated(all_groupIDs))
 num_files <- length(paired_IDs)
 
 for(id in 1:num_files){
-  cat("Command: \n")
+  cat("Group # ", id, "\nCommand: \n")
   cat(paste0("cd ", paired_vcf_dir,"; vcf-merge -R 0/0 ", vcf_file_dir, Recipient_file," ",
              vcf_file_dir, Donor_file, " | bgzip > ", all_groupIDs[paired_IDs[id]], ".vcf.gz"), "\n")
   cat(paste0("cd ", paired_vcf_dir, "; tabix -p vcf ", all_groupIDs[paired_IDs[id]], ".vcf.gz"), "\n")
