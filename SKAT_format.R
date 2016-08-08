@@ -1,4 +1,5 @@
 library(vcfR)
+source('util.R', echo = FALSE)
 
 vcf_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
 #vcf_file_dir <- "../paired_vcf/"
@@ -103,7 +104,7 @@ for(id in 1:num_files){
 #     # proc.time() - ptm
 #     
 #   }# inner for loop
-  # cat("] \n")
+  cat("\n")
   
   save(genotype_table, file = paste0(output_dir, groupID, ".RData"))
 }
