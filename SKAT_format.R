@@ -87,7 +87,7 @@ for(id in 1:num_files){
     }
 
   }# inner for loop
-  cat{"]"}
+  cat("] \n")
   
   save(genotype_table, file = paste0(output_dir, groupID, ".RData"))
 }
