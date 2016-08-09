@@ -13,7 +13,7 @@ for(id in 1:num_files){
   cat("Paired file #", id, "\n")
   out.filename <- gsub(".vcf.gz", "_chr6.vcf.gz", all_vcf_files[id])
   system(paste0("tabix -h ", paired_vcf_dir, all_vcf_files[id], " chr6 | bgzip > ", output_dir, out.filename))
-  ststem(paste0("cd ", output_dir, "; tabix -p vcf ", out.filename))
+  system(paste0("cd ", output_dir, "; tabix -p vcf ", out.filename))
   cat(paste0("tabix -h ", paired_vcf_dir, all_vcf_files[id], " chr6 | bgzip > ", output_dir, out.filename), "\n")
   cat(paste0("cd ", output_dir, "; tabix -p vcf ", out.filename), "\n")
   print(proc.time()-ptm)
