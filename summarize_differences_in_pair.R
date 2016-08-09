@@ -12,6 +12,9 @@ pdf_file_name <- "aGVHD_v_nGVHD.pdf"
 pdf(file = paste0(output_dir, pdf_file_name))
 
 for(chr in 1:22){
+  cat("Chromosome ", chr, "\n")
+  
+  ptm <- proc.time()
   
   chrom <- paste0("chr", chr)
   
@@ -60,5 +63,6 @@ for(chr in 1:22){
     ggtitle(paste0("Number of different variants within each pair\n (Chromosome ", chr,")")) +
     labs(x="Number of different alleles at each site", y = "Counts of sites")
 
+  print(proc.time() - ptm)
 }
 dev.off()
