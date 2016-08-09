@@ -11,7 +11,7 @@ output_dir <- "../Output/difference_summary/"
 pdf_file_name <- "aGVHD_v_nGVHD.pdf"
 pdf(file = paste0(output_dir, pdf_file_name))
 
-for(chr in 1:22){
+for(chr in 1:18){
   cat("Chromosome ", chr, "\n")
   
   ptm <- proc.time()
