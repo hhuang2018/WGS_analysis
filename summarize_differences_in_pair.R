@@ -28,6 +28,8 @@ for(chr in 1:22){
   aGVHD_num <- length(aGVHD_summary_files)
   nGVHD_num <- length(nGVHD_summary_files)
   
+  if(aGVHD_num == 0 || nGVHD_num == 0) break
+
   all_summary <- matrix(data = 0, nrow = aGVHD_num+nGVHD_num, ncol = 5)
   colnames(all_summary) <- c("0", "1", "2", "All", "Group")
   all_summary <- as.data.frame(all_summary)
