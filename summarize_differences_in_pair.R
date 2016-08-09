@@ -61,9 +61,9 @@ for(chr in 1:18){
   reshaped_summary <- melt(all_summary, id.vars = "Group")
   colnames(reshaped_summary) <- c("Group", "AlleleNum", "Counts")
   p <- ggplot(reshaped_summary, aes(x = factor(AlleleNum), y = Counts))
-  p + geom_boxplot(aes(fill = Group)) + 
+  print(p + geom_boxplot(aes(fill = Group)) + 
     ggtitle(paste0("Number of different variants within each pair\n (Chromosome ", chr,")")) +
-    labs(x="Number of different alleles at each site", y = "Counts of sites")
+    labs(x="Number of different alleles at each site", y = "Counts of sites"))
 
   print(proc.time() - ptm)
 }
