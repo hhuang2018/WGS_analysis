@@ -13,8 +13,9 @@ for(id in 1:num_files){
   cat("Paired file #", id, "\n")
   out.filename <- gsub(".vcf.gz", "_chr6.vcf.gz", all_vcf_files[id])
   system(paste0("tabix -h ", paired_vcf_dir, all_vcf_files[id], " chr6 | bgzip > ", output_dir, out.filename))
+  ststem(paste0("cd ", output_dir, "; tabix -p vcf ", out.filename))
   cat(paste0("tabix -h ", paired_vcf_dir, all_vcf_files[id], " chr6 | bgzip > ", output_dir, out.filename), "\n")
-  
+  cat(paste0("cd ", output_dir, "; tabix -p vcf ", out.filename), "\n")
   print(proc.time()-ptm)
 }
 cat("Extraction done! \n")
@@ -22,6 +23,8 @@ all_vcf_files <- list.files(output_dir, pattern = "\\.vcf.gz$")
 file_list <- paste(all_vcf_files, collapse = " ")
 
 ptm <- proc.time()
-system(paste0("cd ", output_dir, "; vcf-merge -R 0/0 ", file_list, " | bgzip > all_chr6.vcf.gz"))
-cat(paste0("cd ", output_dir, "; vcf-merge -R 0/0 ", file_list, " | bgzip > all_chr6.vcf.gz"), "\n")
+system(paste0("cd ", output_dir, "; vcf-merge -R 0/0 ", file_list, " | bgzip -c > all_chr6.vcf.gz"))
+system(paste0("cd ", output_dir, "; tabix -p vcf all_chr6.vcf.gz"))
+cat(paste0("cd ", output_dir, "; vcf-merge -R 0/0 ", file_list, " | bgzip -c > all_chr6.vcf.gz"), "\n")
+cat(paste0("cd ", output_dir, "; tabix -p vcf all_chr6.vcf.gz"), "\n")
 print(proc.time() - ptm)
