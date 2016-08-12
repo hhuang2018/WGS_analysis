@@ -1,11 +1,11 @@
 
-paired_vcf_dir <- "/mnt/scratch/hhuang/paired_vcf/"
+paired_vcf_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
 
 all_vcf_files <- list.files(paired_vcf_dir, pattern = "\\.vcf.gz$")
 
-output_dir <- "/mnt/scratch/hhuang/vcf_chr6/"
+output_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/vcf_chr6/"
 
-temp_output_dir <- "/mnt/scratch/hhuang/temp_a_vcf_chr6/"
+temp_output_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/temp_a_vcf_chr6/"
 
 num_files <- length(all_vcf_files)
 
