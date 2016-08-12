@@ -4,13 +4,13 @@ source('util.R', echo = FALSE)
 vcf_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
 #vcf_file_dir <- "../paired_vcf/"
 all_vcf_files <- list.files(vcf_file_dir, pattern = "\\.vcf.gz$")
-all_vcf_files <- all_vcf_files[grepl("n_", all_vcf_files)]
+all_vcf_files <- all_vcf_files[grepl("a_", all_vcf_files)]
 
 output_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/Allele_summary_by_chrome/"
 
 existed_file <- list.files(output_dir, pattern = "\\_chr1.RData$")
 existed_file <- gsub("_chr1.RData", ".vcf.gz", existed_file)
-existed_file <- existed_file[grepl("n_", existed_file)]
+existed_file <- existed_file[grepl("a_", existed_file)]
 
 all_vcf_files <- all_vcf_files[!(all_vcf_files %in% existed_file)]
 
@@ -21,16 +21,18 @@ num_files <- length(all_vcf_files)
 #    1 - only one allele is the same
 #    2 - both alleles are different
 
+
 for(id in 1:num_files){
   
   vcf_file <- paste0(vcf_file_dir, all_vcf_files[id])
   vcf_info <- read.vcfR(vcf_file, verbose = FALSE)
   
   for(chr in 1:22){
+    
     ptm <- proc.time() 
     
     chrom <- paste0("chr", chr)
-
+    
     chr_index <- which(vcf_info@fix[, 1] == chrom)
     vcf_gt <- extract.gt(vcf_info, element = "GT")
     vcf_gt <- vcf_gt[chr_index, ]
@@ -51,9 +53,9 @@ for(id in 1:num_files){
     genotype_table$ALT <- vcf_info@fix[chr_index, 5]
     genotype_table$groupID <- rep(groupID, times = num_rows)
     
-    # rm(vcf_info)
+    #rm(vcf_info)
     
-    cat("File ", id, ": ", all_vcf_files[id], "\n")
+    cat("File ", id, ": ", all_vcf_files[id], " Chromosome ", chr, "\n")
     # cat("[")
     
     is_same_gt <- sapply(1:num_rows, function(x) vcf_gt[x, 1] == vcf_gt[x, 2])
