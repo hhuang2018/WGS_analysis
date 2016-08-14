@@ -36,7 +36,7 @@ for(id in 1:num_files){
     cat(paste0("tabix -h ", paired_vcf_dir, all_vcf_files[id], " chr6 | bgzip > ", temp_output_dir, out.filename), "\n")
     cat(paste0("cd ", temp_output_dir, "; tabix -p vcf ", out.filename), "\n")
     print(proc.time()-ptm)
-  } else break
+  } #else break
   # }
 }
 cat("Extraction done! \n")

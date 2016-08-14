@@ -41,6 +41,7 @@ for(id in 1:num_files){
 }
 cat("Extraction done! \n")
 all_vcf_files <- list.files(temp_output_dir, pattern = "\\.vcf.gz$")
+cat("All files #", length(all_vcf_files), "\n")
 file_list <- paste(all_vcf_files, collapse = " ")
 
 ptm <- proc.time()
