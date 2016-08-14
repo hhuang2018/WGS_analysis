@@ -19,11 +19,11 @@ num_files <- length(all_vcf_files)
 
 count <- 0
 
-system(paste0("mkdir ", temp_output_dir))
+#system(paste0("mkdir ", temp_output_dir))
 for(id in 1:num_files){
   
   if(grepl("n_", all_vcf_files[id])){
-    #     count <- count + 1
+        count <- count + 1
     #     
     #     if(count <= 30){
     
@@ -41,6 +41,7 @@ for(id in 1:num_files){
 }
 cat("Extraction done! \n")
 all_vcf_files <- list.files(temp_output_dir, pattern = "\\.vcf.gz$")
+cat("All files #", length(all_vcf_files), "\n")
 file_list <- paste(all_vcf_files, collapse = " ")
 
 ptm <- proc.time()
