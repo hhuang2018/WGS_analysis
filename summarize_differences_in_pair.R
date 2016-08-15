@@ -67,3 +67,5 @@ for(chr in 1:22){
   print(proc.time() - ptm)
 }
 dev.off()
+
+save(all_summary, file = paste0(output_dir, "aGVHD_nGVHD_all_pairs.RData"))
