@@ -3,12 +3,12 @@ library(ggplot2)
 library(reshape2)
 # source('util.R', echo = FALSE)
 
-#summary_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
-summary_file_dir <- "../Output/Chrom_allele_summary/"
+summary_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
+#summary_file_dir <- "../Output/Chrom_allele_summary/"
 
 output_dir <- "../Output/difference_summary/"
 
-pdf_file_name <- "aGVHD_v_nGVHD.pdf"
+pdf_file_name <- "aGVHD_v_nGVHD_all_pairs.pdf"
 pdf(file = paste0(output_dir, pdf_file_name))
 
 for(chr in 1:22){
@@ -52,12 +52,11 @@ for(chr in 1:22){
     all_summary$Group[jd] <- "nGVHD"
   } 
   
-  t.test(all_summary$`0`[1:aGVHD_num], all_summary$`0`[(1+aGVHD_num):(nGVHD_num+aGVHD_num)], alternative = "two.sided")
-  t.test(all_summary$`1`[1:aGVHD_num], all_summary$`1`[(1+aGVHD_num):(nGVHD_num+aGVHD_num)], alternative = "two.sided")
-  t.test(all_summary$`2`[1:aGVHD_num], all_summary$`2`[(1+aGVHD_num):(nGVHD_num+aGVHD_num)], alternative = "two.sided")
-  t.test(all_summary$All[1:aGVHD_num], all_summary$All[(1+aGVHD_num):(nGVHD_num+aGVHD_num)], alternative = "two.sided")
+  print(t.test(all_summary$`0`[1:aGVHD_num], all_summary$`0`[(1+aGVHD_num):(nGVHD_num+aGVHD_num)], alternative = "two.sided"))
+  print(t.test(all_summary$`1`[1:aGVHD_num], all_summary$`1`[(1+aGVHD_num):(nGVHD_num+aGVHD_num)], alternative = "two.sided"))
+  print(t.test(all_summary$`2`[1:aGVHD_num], all_summary$`2`[(1+aGVHD_num):(nGVHD_num+aGVHD_num)], alternative = "two.sided"))
+  print(t.test(all_summary$All[1:aGVHD_num], all_summary$All[(1+aGVHD_num):(nGVHD_num+aGVHD_num)], alternative = "two.sided"))
   
-
   reshaped_summary <- melt(all_summary, id.vars = "Group")
   colnames(reshaped_summary) <- c("Group", "AlleleNum", "Counts")
   p <- ggplot(reshaped_summary, aes(x = factor(AlleleNum), y = Counts))
