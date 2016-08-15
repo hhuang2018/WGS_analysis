@@ -41,7 +41,7 @@ for(chr in 1:22){
 
   all_chr_summary <- matrix(data = 0, nrow = aGVHD_num+nGVHD_num, ncol = 5)
   colnames(all_chr_summary) <- c("0", "1", "2", "All", "Group")
-  all_summary <- as.data.frame(all_chr_summary)
+  all_chr_summary <- as.data.frame(all_chr_summary)
   
   for(id in 1:aGVHD_num){
     
