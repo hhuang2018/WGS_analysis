@@ -526,3 +526,53 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
     }
   }
 }
+
+#####################
+# Reformat Beagles output
+##################### 
+reformat_beagles <- function(beagles_output_file, ){
+  
+  load("../Data/ID_table.RData")
+  load("../Data/GRCh38_gene_list.RData")
+  
+  IBD_table <- read.table(file = beagles_output_file)
+  colnames(IBD_table) <- c("SampleID1", "HapID1", "SampleID2", "HapID2", "Chr", "StartInd", "EndInd", "LOD")
+  
+  num_rows <- dim(IBD_table)[1]
+  
+  new_IBD_table <- data.frame(SampleID1 = character(num_rows),
+                              HapID1 = numeric(num_rows),
+                              SampleID2 = character(num_rows),
+                              HapID2 = numeric(num_rows),
+                              Chr = character(num_rows),
+                              StartID = numeric(num_rows),
+                              EndID = numeric(num_rows),
+                              LOD = numeric(num_rows),
+                              GeneNames = character(num_rows),
+                              stringsAsFactors = FALSE)
+  
+  for (id in 1: num_rows){
+    
+    SampleID <- paste0(ID_table[which(ID_table$SeqID == IBD_table$SampleID1[id]), 1:3], collapse = ".")
+    new_IBD_table$SampleID1[id] <- SampleID
+    new_IBD_table$HapID1[id] <- IBD_table$HapID1[id]
+    
+    SampleID <- paste0(ID_table[which(ID_table$SeqID == IBD_table$SampleID2[id]), 1:3], collapse = ".")
+    new_IBD_table$SampleID2[id] <- SampleID
+    new_IBD_table$HapID2[id] <- IBD_table$HapID2[id]
+    
+    new_IBD_table$Chr[id] <- as.character(IBD_table$Chr[id])
+    new_IBD_table$StartID[id] <- IBD_table$StartInd[id]
+    new_IBD_table$EndID[id] <- IBD_table$EndInd[id]
+    new_IBD_table$LOD[id] <- IBD_table$LOD[id]
+    
+    new_IBD_table$GeneNames[id] <- get.GeneNames(chrom = new_IBD_table$Chr[id], 
+                                                 startPos = new_IBD_table$StartID[id],
+                                                 endPos = new_IBD_table$EndID[id],
+                                                 GeneList = GRCh38_gene_list)
+    
+    
+    
+  }
+  return(new_IBD_table)
+}
