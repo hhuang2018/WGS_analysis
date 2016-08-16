@@ -530,7 +530,7 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
 #####################
 # Reformat Beagles output
 ##################### 
-reformat_beagles <- function(beagles_output_file, ){
+reformat_beagles <- function(beagles_output_file){
   
   load("../Data/ID_table.RData")
   load("../Data/GRCh38_gene_list.RData")
