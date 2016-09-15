@@ -13,7 +13,7 @@ num_files <- length(IBD_files)
 for(fid in 1:num_files){
   ptm <- proc.time() 
   
-  IBD_table <- read.table(file = IBD_files[fid])
+  IBD_table <- read.table(file = paste0(IBD_file_dir, IBD_files[fid]))
   
   colnames(IBD_table) <- c("SampleID1", "HapID1", "SampleID2", "HapID2", "Chr", "StartInd", "EndInd", "LOD")
   
@@ -74,7 +74,7 @@ num_files <- length(HBD_files)
 
 for(fid in 1:num_files){
   ptm <- proc.time() 
-  IBD_table <- read.table(file = IBD_files[fid])
+  IBD_table <- read.table(file = paste0(IBD_file_dir, IBD_files[fid]))
   colnames(IBD_table) <- c("SampleID1", "HapID1", "SampleID2", "HapID2", "Chr", "StartInd", "EndInd", "LOD")
   
   num_rows <- dim(IBD_table)[1]
