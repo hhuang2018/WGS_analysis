@@ -111,7 +111,7 @@ for(chr in chr_list){
     geom_boxplot() +
     guides(fill=FALSE) + 
     coord_flip() +
-    ggtitle(paste0("Length of IBD segments \non Chromosome ", chr))
+    ggtitle(paste0("Length (%) of IBD segments \non Chromosome ", chr))
   
   # ordered
   ordered_Rand <- Random_group_length[order(Random_group_length$Percent, decreasing = T), ] 
@@ -119,5 +119,5 @@ for(chr in chr_list){
   ordered_Matched <- Matched_group_length[order(Matched_group_length$Percent, decreasing = T), ]
   Matched_high_pert <- ordered_Matched[which(ordered_Matched$Percent > 0), ]
   # }
-  save(mc, mc_length, p1, p2, file = paste0(IBDseq_summary_output, "IBDseq_summary_chr_", chr, ".RData"))
+  save(mc, mc_length, p1, p2, Random_high_pert, Matched_high_pert, file = paste0(IBDseq_summary_output, "IBDseq_summary_chr_", chr, ".RData"))
 }
