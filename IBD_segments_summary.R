@@ -26,10 +26,11 @@ chrLengths <- c(248956422, # chr1
 #### Summarize Beagles output
 
 # beagles_output_dir <- "../Output/IBDseq/R_reformated/"
+# IBDseq_summary_output <- "../Output/IBDseq/Figures/"
 beagles_output_dir <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/"
 IBDseq_summary_output <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/summary"
 #chr <- 10 
-chr_list <- c(6, 2,3,4,5,1,12,13,14,15,16,17,18,19,20,21,22,7,8,9)
+chr_list <- c(8,9)
 
 for(chr in chr_list){
   
