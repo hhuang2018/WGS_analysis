@@ -576,3 +576,241 @@ reformat_beagles <- function(beagles_output_file){
   }
   return(new_IBD_table)
 }
+
+######################
+# plot HLA typing summary
+######################
+plot_typing_summary <- function(typing_table, Typing_name, fill_color = "#56B4E9"){
+  require(ggplot2)
+  
+  if(class(typing_table) == "character"){
+  stats <- as.data.frame(table(typing_table), stringsAsFactors = F)
+  colnames(stats) <- c("Typing", "Freq")
+  stats <- stats[order(stats$Freq, decreasing = TRUE), ]
+  stats <- within(stats, Typing <- factor(Typing, levels=factor(stats$Typing)))
+  
+  ggplot(stats, aes(x=Typing, y=Freq)) +
+    geom_bar(stat="identity", position=position_dodge(), fill = fill_color) +
+    ggtitle(paste0(Typing_name, " Summary")) +
+    # ggtitle(Typing_name) +
+    # xlab(paste0(Typing_name, " typing")) + ylab("Count of groups")  + 
+    xlab(Typing_name) + ylab("Count of pairs")  + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  
+  }else if (class(typing_table) == "data.frame"){
+    
+    stats <- as.data.frame(table(typing_table$Typing[typing_table$GroupType == "aGVHD"]), stringsAsFactors = F)
+    stats <- cbind(stats, rep("aGVHD", dim(stats)[1]))
+    colnames(stats) <- c("Typing", "Freq", "Group")
+    
+    stats2 <- as.data.frame(table(typing_table$Typing[typing_table$GroupType == "non-GVHD"]), stringsAsFactors = F)
+    stats2 <- cbind(stats2, rep("non-GVHD", dim(stats2)[1]))
+    colnames(stats2) <- c("Typing", "Freq", "Group")
+    
+    stats <- rbind(stats, stats2)
+    
+    all_stats <- as.data.frame(table(typing_table$Typing), stringsAsFactors = F) 
+    colnames(all_stats) <- c("Typing", "Freq")
+    all_stats <- all_stats[order(all_stats$Freq, decreasing = TRUE), ]
+    stats  <- within(stats, Typing <- factor(Typing, levels=factor(all_stats$Typing)))
+    
+    # stats$Typing <- factor(all_stats$Typing)
+    ggplot(stats, aes(x = Typing, y= Freq, fill = Group)) +
+      geom_bar(stat="identity") +
+      ggtitle(paste0(Typing_name, " Summary")) +
+      # ggtitle(Typing_name) +
+      #xlab(paste0(Typing_name, " typing")) + ylab("Count of groups")  + 
+      xlab(Typing_name) + ylab("Count of pairs")  + 
+      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  }
+}
+
+################
+# Plot boxplot for groups
+################
+plot_LOD_boxplot <- function(aGVHD_table, aMatched_pair_ID, aRandom_pair_ID, 
+                             nGVHD_table, nMatched_pair_ID, nRandom_pair_ID, 
+                             Region = "all"){
+  require(ggplot2)
+  if(Region == "all"){
+    # aGVHD vs. nGVHD
+    GVHD_LOD_mat <- data.frame(LOD = c(aGVHD_table$LOD[aMatched_pair_ID],nGVHD_table$LOD[nMatched_pair_ID]), 
+                               Group = c(rep("aGVHD", length(aMatched_pair_ID)), 
+                                         rep("non-GVHD", length(nMatched_pair_ID))),
+                               stringsAsFactors = F)
+    
+    pp <- ggplot(GVHD_LOD_mat, aes(x = factor(Group), y = LOD))
+    print(pp + geom_boxplot(aes(fill = Group)) +
+      ggtitle("IBD score (LOD) distribution on Chr6") +
+      labs(x="Group", y = "LOD"))
+    
+    # Matching R-D pairs vs. random R-D pairs
+    LOD_score_mat <- data.frame(LOD = c(aGVHD_table$LOD[aMatched_pair_ID],nGVHD_table$LOD[nMatched_pair_ID], 
+                                        aGVHD_table$LOD[aRandom_pair_ID], nGVHD_table$LOD[nRandom_pair_ID]), 
+                                Group = c(rep("Matching Recipient-Donor Pair", length(aMatched_pair_ID)+length(nMatched_pair_ID)), 
+                                          rep("Random Recipient-Donor Pair", length(aRandom_pair_ID)+length(nRandom_pair_ID))),
+                                stringsAsFactors = F)
+    # colnames(LOD_score_mat)
+    
+    p <- ggplot(LOD_score_mat, aes(x = factor(Group), y = LOD))
+    print(p + geom_boxplot(aes(fill = Group)) + 
+      ggtitle("IBD score (LOD) distribution on Chr6") +
+      # geom_density(stat = "density") +
+      labs(x="Group", y = "LOD"))
+    
+  }else{
+    aGVHD_IDs <- which(grepl(Region, aGVHD_table$GeneNames[aMatched_pair_ID]))
+    nGVHD_IDs <- which(grepl(Region, nGVHD_table$GeneNames[nMatched_pair_ID]))
+    
+    aGVHD_random_IDs <- which(grepl(Region, aGVHD_table$GeneNames[aRandom_pair_ID]))
+    nGVHD_random_IDs <- which(grepl(Region, nGVHD_table$GeneNames[nRandom_pair_ID]))
+    
+    gene_LOD_score_mat <- data.frame(LOD = c(aGVHD_table$LOD[aMatched_pair_ID[aGVHD_IDs]],
+                                             nGVHD_table$LOD[nMatched_pair_ID[nGVHD_IDs]], 
+                                             aGVHD_table$LOD[aRandom_pair_ID[aGVHD_random_IDs[1:length(aGVHD_IDs)]]], 
+                                             nGVHD_table$LOD[nRandom_pair_ID[nGVHD_random_IDs[1:length(nGVHD_IDs)]]]), 
+                                    Group = c(rep("Matching R-D Pair", length(aGVHD_IDs)+length(nGVHD_IDs)), 
+                                              rep("Random R-D Pair", length(aGVHD_IDs)+length(nGVHD_IDs))),
+                                    stringsAsFactors = F)
+    
+    p1 <- ggplot(gene_LOD_score_mat, aes(x = factor(Group), y = LOD))
+    p1 + geom_boxplot(aes(fill = Group)) + 
+      ggtitle(paste0("IBD score (LOD) distribution on ", Region)) +
+      # geom_density(stat = "density") +
+      labs(x="Group", y = "LOD")
+  }
+  
+}
+
+################
+# Plot histogram for groups
+################
+plot_LOD_histogram <- function(aGVHD_table, aMatched_pair_ID, aRandom_pair_ID, 
+                               nGVHD_table, nMatched_pair_ID, nRandom_pair_ID, 
+                               Region = "all"){
+  require(ggplot2)
+  if(Region == "all"){
+    # aGVHD vs. nGVHD
+    GVHD_LOD_mat <- data.frame(LOD = c(aGVHD_table$LOD[aMatched_pair_ID],nGVHD_table$LOD[nMatched_pair_ID]), 
+                               Group = c(rep("aGVHD", length(aMatched_pair_ID)), 
+                                         rep("non-GVHD", length(nMatched_pair_ID))),
+                               stringsAsFactors = F)
+    
+    pp <- ggplot(GVHD_LOD_mat, aes(x = LOD, fill = Group))
+    print(pp + geom_histogram(binwidth = 2, alpha=.7, position="identity") +
+             # geom_density(alpha = 1, fill="#FF6666") +
+            ggtitle("IBD score (LOD) distribution on Chr6") +
+            labs(x="LOD", y = "Count"))
+    
+    # Matching R-D pairs vs. random R-D pairs
+    LOD_score_mat <- data.frame(LOD = c(aGVHD_table$LOD[aMatched_pair_ID],nGVHD_table$LOD[nMatched_pair_ID], 
+                                        aGVHD_table$LOD[aRandom_pair_ID[1:length(aMatched_pair_ID)]], nGVHD_table$LOD[nRandom_pair_ID[1:length(nMatched_pair_ID)]]), 
+                                Group = c(rep("Matching Recipient-Donor Pair", length(aMatched_pair_ID)+length(nMatched_pair_ID)), 
+                                          rep("Random Recipient-Donor Pair", length(aMatched_pair_ID)+length(nMatched_pair_ID))),
+                                stringsAsFactors = F)
+    # colnames(LOD_score_mat)
+    
+    p <- ggplot(LOD_score_mat, aes(x = LOD, fill = Group))
+    p + geom_histogram(binwidth = 3, alpha=.5, position="identity") + 
+      # geom_density() +
+      ggtitle("IBD score (LOD) distribution on Chr6") +
+      # geom_density(stat = "density") +
+      labs(x="LOD", y = "Count")
+    
+  }else{
+    aGVHD_IDs <- which(grepl(Region, aGVHD_table$GeneNames[aMatched_pair_ID]))
+    nGVHD_IDs <- which(grepl(Region, nGVHD_table$GeneNames[nMatched_pair_ID]))
+    
+    aGVHD_random_IDs <- which(grepl(Region, aGVHD_table$GeneNames[aRandom_pair_ID]))
+    nGVHD_random_IDs <- which(grepl(Region, nGVHD_table$GeneNames[nRandom_pair_ID]))
+    
+    gene_LOD_score_mat <- data.frame(LOD = c(aGVHD_table$LOD[aMatched_pair_ID[aGVHD_IDs]],
+                                             nGVHD_table$LOD[nMatched_pair_ID[nGVHD_IDs]], 
+                                             aGVHD_table$LOD[aRandom_pair_ID[aGVHD_random_IDs[1:length(aGVHD_IDs)]]], 
+                                             nGVHD_table$LOD[nRandom_pair_ID[nGVHD_random_IDs[1:length(nGVHD_IDs)]]]), 
+                                     Group = c(rep("Matching R-D Pair", length(aGVHD_IDs)+length(nGVHD_IDs)), 
+                                               rep("Random R-D Pair", length(aGVHD_IDs)+length(nGVHD_IDs))),
+                                     stringsAsFactors = F)
+    
+    p <- ggplot(gene_LOD_score_mat, aes(x = LOD, fill = Group))
+    p + geom_histogram(binwidth = 1, alpha=.6, position="identity") + 
+      ggtitle(paste0("IBD score (LOD) distribution on ", Region)) +
+      # geom_density(stat = "density") +
+      labs(x="LOD", y = "Count")
+  }
+  
+}
+
+
+######################
+# Calculate IBD segment length matrix
+######################
+IBD_segment_matrix <- function(IBD_table, genomeLength = 3236336281){
+  # IBD1 segment length
+  IBD_sample1 <- unique(IBD_table$SampleID1)
+  IBD_sample2 <- unique(IBD_table$SampleID2)
+  IBD_num_sample1 <- length(IBD_sample1)
+  IBD_num_sample2 <- length(IBD_sample2)
+  
+  IBD_samples <- unique(c(IBD_sample1, IBD_sample2))
+  
+  IBD_matrix <- matrix(data = 0, nrow = length(IBD_samples), ncol = length(IBD_samples))
+  rownames(IBD_matrix) <- IBD_samples
+  colnames(IBD_matrix) <- IBD_samples
+  
+  for(id in 1:IBD_num_sample1){
+    
+    samp1 <- IBD_sample1[id]
+    index1 <- which(IBD_table$SampleID1 == samp1)
+    
+    for(jd in 1:IBD_num_sample2){
+      
+      samp2 <- IBD_sample2[jd]
+      index2 <- which(IBD_table$SampleID2[index1] == samp2)
+      
+      IBD_matrix[samp1, samp2] <- sum(IBD_table$EndID[index1[index2]] - IBD_table$StartID[index1[index2]] + 1) 
+    }
+    
+  }
+
+  return(IBD_matrix/genomeLength)
+  
+}
+
+######################
+# Calculate IBD segment length and proportion as a data.frame
+######################
+IBD_segment_data_frame <- function(IBD_table, genomeLength = 3236336281){
+  # IBD1 segment length
+#   IBD_sample1 <- unique(IBD_table$SampleID1)
+#   IBD_sample2 <- unique(IBD_table$SampleID2)
+#   IBD_num_sample1 <- length(IBD_sample1)
+#   IBD_num_sample2 <- length(IBD_sample2)
+  
+  IBD_samples <- unique(IBD_table[, c(1, 3)])
+  IBD_num <- dim(IBD_samples)[1]
+  
+  IBD_length_portion <- data.frame(IBD_samples, 
+                                   Length = vector(mode = "numeric", length = dim(IBD_samples)[1]),
+                                   Percent = vector(mode = "numeric", length = dim(IBD_samples)[1]))
+  #   rownames(IBD_matrix) <- IBD_samples
+  #   colnames(IBD_matrix) <- IBD_samples
+  
+  for(id in 1:IBD_num){
+    
+    samp1 <- IBD_samples$SampleID1[id]
+    index1 <- which(IBD_table$SampleID1 == samp1)
+    
+    # for(jd in 1:IBD_num){
+    samp2 <- IBD_samples$SampleID2[id]
+    index2 <- which(IBD_table$SampleID2[index1] == samp2)
+      
+    #iindex <- which((IBD_length_portion$SampleID1 %in% samp1) && (IBD_length_portion$SampleID2 %in% samp2))
+    IBD_length_portion$Length[id] <- IBD_length_portion$Length[id] + sum(IBD_table$EndID[index1[index2]] - IBD_table$StartID[index1[index2]] + 1) 
+  }
+    
+  IBD_length_portion$Percent <- IBD_length_portion$Length / genomeLength
+  
+  return(IBD_length_portion)
+  
+}
