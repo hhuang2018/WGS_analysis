@@ -580,7 +580,7 @@ reformat_beagles <- function(beagles_output_file){
 ######################
 # plot HLA typing summary
 ######################
-plot_typing_summary <- function(typing_table, Typing_name, fill_color = "#56B4E9"){
+plot_typing_summary <- function(typing_table, Typing_name, fill_color = "#56B4E9", Angle = 45, H = 1){
   require(ggplot2)
   
   if(class(typing_table) == "character"){
@@ -595,7 +595,7 @@ plot_typing_summary <- function(typing_table, Typing_name, fill_color = "#56B4E9
     # ggtitle(Typing_name) +
     # xlab(paste0(Typing_name, " typing")) + ylab("Count of groups")  + 
     xlab(Typing_name) + ylab("Count of pairs")  + 
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+    theme(axis.text.x = element_text(angle = Angle, hjust = H))
   
   }else if (class(typing_table) == "data.frame"){
     
@@ -621,7 +621,7 @@ plot_typing_summary <- function(typing_table, Typing_name, fill_color = "#56B4E9
       # ggtitle(Typing_name) +
       #xlab(paste0(Typing_name, " typing")) + ylab("Count of groups")  + 
       xlab(Typing_name) + ylab("Count of pairs")  + 
-      theme(axis.text.x = element_text(angle = 45, hjust = 1))
+      theme(axis.text.x = element_text(angle = Angle, hjust = H))
   }
 }
 

@@ -9,7 +9,7 @@ if (!require("vcfR", quietly=TRUE, warn.conflicts = FALSE)){
 
 paired_DtoR_fp <- "/mnt/cloudbiodata_nfs_1/hli_scratch/wwang/MiHAIP/DtoR/"
 paired_files <- list.files(path = paired_DtoR_fp, pattern = "\\.txt$")
-output_fp <- "/mnt/cloudbiodata_nfs_1/hli_scratch/wwang/MiHAIP/DtoR/Summary"
+output_fp <- "/mnt/cloudbiodata_nfs_2/users/hhuang/MiHA_missense_Summary/"
 
 num_files <- length(paired_files)
 
