@@ -75,8 +75,8 @@ for(id in 1:num_files){
         
         original_list <- aGVHD_SNP_list[[chrom]]
         
-        samePOS_index_original <- which(original_list$POS %in% intersect(original_list$POS, SNP_summary$POS[1:100]))
-        samePOS_index_new <- which(SNP_summary$POS %in% intersect(original_list$POS, SNP_summary$POS[1:100]))
+        samePOS_index_original <- which(original_list$POS %in% intersect(original_list$POS, SNP_summary$POS))
+        samePOS_index_new <- which(SNP_summary$POS %in% intersect(original_list$POS, SNP_summary$POS))
         
         original_list$NumDiff[samePOS_index_original] <- original_list$NumDiff[samePOS_index_original] + 1
         
