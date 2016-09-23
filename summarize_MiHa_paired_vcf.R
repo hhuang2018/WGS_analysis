@@ -13,7 +13,7 @@ output_fp <- "/mnt/cloudbiodata_nfs_2/users/hhuang/MiHA_missense_Summary/"
 
 num_files <- length(paired_files)
 
-aGHVD_SNP_list <- list()
+aGVHD_SNP_list <- list()
 nGVHD_SNP_list <- list()
 
 for(id in 1:num_files){
@@ -65,22 +65,22 @@ for(id in 1:num_files){
       
       # SNP_summary$POS 
       # if it's the first chromosome in the list; or the chromosome table appears for the first time
-      if(length(aGHVD_SNP_list) == 0 | is.element(chrom, names(aGHVD_SNP_list))){
+      if(length(aGVHD_SNP_list) == 0 | !is.element(chrom, names(aGVHD_SNP_list))){
         
-        eval(parse(text=paste0("aGHVD_SNP_list <- append(aGHVD_SNP_list, list(", chrom, " = SNP_summary))")))
+        eval(parse(text=paste0("aGVHD_SNP_list <- append(aGVHD_SNP_list, list(", chrom, " = SNP_summary))")))
         
       }else {
         
         # else make union SNP list, and the intersected SNPs +1 for aGVHD, -1 for non-GVHD
         
-        original_list <- aGHVD_SNP_list[[chrom]]
+        original_list <- aGVHD_SNP_list[[chrom]]
         
         samePOS_index_original <- which(original_list$POS %in% intersect(original_list$POS, SNP_summary$POS[1:100]))
         samePOS_index_new <- which(SNP_summary$POS %in% intersect(original_list$POS, SNP_summary$POS[1:100]))
         
         original_list$NumDiff[samePOS_index_original] <- original_list$NumDiff[samePOS_index_original] + 1
         
-        aGHVD_SNP_list[[chrom]] <- rbind(original_list, SNP_summary[-samePOS_index_new, ])
+        aGVHD_SNP_list[[chrom]] <- rbind(original_list, SNP_summary[-samePOS_index_new, ])
 
       }
         
@@ -89,7 +89,7 @@ for(id in 1:num_files){
       # SNP_summary$NumDiff <- -SNP_summary$NumDiff
       # SNP_summary$POS 
       # if it's the first chromosome in the list; or the chromosome table appears for the first time
-      if(length(nGVHD_SNP_list) == 0 | is.element(chrom, names(nGVHD_SNP_list))){ # aGVHD +1
+      if(length(nGVHD_SNP_list) == 0 | !is.element(chrom, names(nGVHD_SNP_list))){ # aGVHD +1
         
         eval(parse(text=paste0("nGVHD_SNP_list <- append(nGVHD_SNP_list, list(", chrom, " = SNP_summary))")))
         
@@ -111,5 +111,5 @@ for(id in 1:num_files){
   save(summary_table, file = paste0(output_fp, "Summary_", groupID, ".RData"))
 }
 
-save(aGHVD_SNP_list, nGVHD_SNP_list, file = paste0(output_fp,"missense_summary_DtoR.RData"))
+save(aGVHD_SNP_list, nGVHD_SNP_list, file = paste0(output_fp,"missense_summary_DtoR.RData"))
 # load("../Output/paired_VCF_summary/test_stats_DtoR.RData")
