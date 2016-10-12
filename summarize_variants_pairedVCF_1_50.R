@@ -140,9 +140,9 @@ for(fid in 1:50){
     }
     rm(temp_var, chr_NMD_variants, NMD_indices)
     
-    # save(chr_info_reformat, chr_LOF_reformat, chr_NMD_reformat, file = paste0(vcf_summary_output, gsub(".vcf.gz", "",vcf_file[fid]), "_", CHROM, ".RData"))
-    # 
-    # cat(paste0(gsub(".vcf.gz", "",vcf_file[fid]), " - ", CHROM, " finished!\n"))
+    save(chr_info_reformat, chr_LOF_reformat, chr_NMD_reformat, file = paste0(vcf_summary_output, gsub(".vcf.gz", "",vcf_file[fid]), "_", CHROM, ".RData"))
+
+    cat(paste0(gsub(".vcf.gz", "",vcf_file[fid]), " - ", CHROM, " finished!\n"))
   
   } ### autosomal 1~22
   
@@ -259,8 +259,7 @@ for(fid in 1:50){
     }
     rm(temp_var, chr_NMD_variants, NMD_indices)
     
-    save(chr_info_reformat, chr_LOF_reformat, chr_NMD_reformat, 
-         chrXYM_info_reformat, chrXYM_LOF_reformat, chrXYM_NMD_reformat,
+    save(chrXYM_info_reformat, chrXYM_LOF_reformat, chrXYM_NMD_reformat,
          file = paste0(vcf_summary_output, gsub(".vcf.gz", "",vcf_file[fid]), "_", CHROM, ".RData"))
     
     cat(paste0(gsub(".vcf.gz", "",vcf_file[fid]), " - ", CHROM, " finished!\n"))
