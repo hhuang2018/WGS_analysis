@@ -17,7 +17,7 @@ for(fid in 51:100){
   
   vcf_info <- read.vcfR(paste0(vcf_fp, vcf_file[fid]), verbose = FALSE)
   
-  if(fid == 1){
+  if(fid == 51){
     meta_data <- vcf_info@meta
     annotation_columns <- unlist(strsplit(unlist(strsplit(meta_data[which(grepl("ID=ANN", meta_data))], "\'"))[2],"\\|"))
     annotation_columns <- gsub(" ", "", annotation_columns)
