@@ -92,7 +92,7 @@ for(fid in 1:50){
     
     chr_LOF <- sapply(1:length(chr_LOF_possible), function(x) strsplit(chr_LOF_possible[[x]], "\\|"))
     
-    chr_LOF_reformat <- as.data.frame(matrix(data = NA, nrow =0, ncol = 22), stringsAsFactors = F)
+    chr_LOF_reformat <- as.data.frame(matrix(data = NA, nrow =0, ncol = 10), stringsAsFactors = F)
     colnames(chr_LOF_reformat) <- c("CHROM", "POS", "REF", "ALT", colnames(chr_gt), LOF_columns)
     for(LOF_id in 1:length(chr_LOF)){
       
@@ -122,7 +122,7 @@ for(fid in 1:50){
     
     chr_NMD <- sapply(1:length(chr_NMD_possible), function(x) strsplit(chr_NMD_possible[[x]], "\\|"))
     
-    chr_NMD_reformat <- as.data.frame(matrix(data = NA, nrow =0, ncol = 22), stringsAsFactors = F)
+    chr_NMD_reformat <- as.data.frame(matrix(data = NA, nrow =0, ncol = 10), stringsAsFactors = F)
     colnames(chr_NMD_reformat) <- c("CHROM", "POS", "REF", "ALT", colnames(chr_gt), NMD_columns)
     for(NMD_id in 1:length(chr_NMD)){
       
