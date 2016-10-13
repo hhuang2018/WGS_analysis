@@ -27,13 +27,13 @@ num_files <- length(Not_annotated_index)
 
 ##### need csv format of summary
 for(id in 1:num_files){
-  t1 <- system(paste0("java -Xmx16g -jar ", snpEff_dir, "snpEff.jar ann -csvStats ",
-                      destination_dir, filenames[Not_annotated_index[id]], "_snpEff_summary.csv ",
+  system(paste0("java -Xmx16g -jar ", snpEff_dir, "snpEff.jar ann -csvStats ",
+                      destination_dir, filenames[Not_annotated_index[id]], "_snpEff_summary.csv -v ",
                       "GRCh38.82 ", original_file_dir, filenames[Not_annotated_index[id]], ".vcf.gz > ", 
                       destination_dir, filenames[Not_annotated_index[id]],"_annotated.vcf"), 
                intern = TRUE)
   system(paste0("rm ", destination_dir, filenames[Not_annotated_index[id]],"_annotated.vcf"))
-  system("rm snpEff_genes.txt")
-  system(paste0("mv snpEff_summary.csv ",  destination_dir, filenames[Not_annotated_index[id]], "_snpEff_summary.csv"))
+  system(paste0("rm ", destination_dir, filenames[Not_annotated_index[id]], "_snpEff_summary.genes.txt"))
+  # system(paste0("mv snpEff_summary.csv ",  destination_dir, filenames[Not_annotated_index[id]], "_snpEff_summary.csv"))
   #save(t1, file = paste0(destination_dir, filenames[Not_annotated_index[id]],"_annotated.out.RData"))
 }
