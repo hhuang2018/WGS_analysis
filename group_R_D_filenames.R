@@ -1,6 +1,6 @@
 
 data_source_dir = "/mnt/cloudbiodata_nfs_1/hli_data/"
-data_dest_dir = "/mnt/scratch/hhuang/hli_vcf_renamed/"
+data_dest_dir = "//mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_renamed/"
   
 # HLI_R_D_list <- read.csv("../Data/HLI_ID_pairs.csv")
 # colnames(HLI_R_D_list) <- c("Index", "RID", "DID", "BMT")
