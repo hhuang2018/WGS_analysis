@@ -5,7 +5,7 @@ source('util.R', echo = FALSE)
 vcf_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
 #vcf_file_dir <- "../paired_vcf/"
 all_vcf_files <- list.files(vcf_file_dir, pattern = "\\.vcf.gz$")
-output_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf_Stats_Summary/"
+output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/paired_vcf_Stats_Summary/"
 
 num_files <- length(all_vcf_files)
 
