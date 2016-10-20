@@ -118,15 +118,17 @@ aGVHD_mc <- do.call("rbind", aGVHD_SNP_list)
 aGVHD_mc$POS2 <- aGVHD_mc$POS+1
 aGVHD_mc$POS3 <- aGVHD_mc$POS
 aGVHD_mc$group <- "aGVHD"
+aGVHD_mc$groupColor <- "#D55E00"
 nGVHD_mc <- do.call("rbind", nGVHD_SNP_list)
 nGVHD_mc$POS2 <- nGVHD_mc$POS+1
 nGVHD_mc$POS3 <- nGVHD_mc$POS
 nGVHD_mc$NumDiff <- -nGVHD_mc$NumDiff 
 nGVHD_mc$group <- "non-aGVHD"
+nGVHD_mc$groupColor <- "#0072B2"
 all_mc <- rbind(aGVHD_mc, nGVHD_mc)
-
-all_mc <- all_mc[-which(all_mc$CHROM == "chrX"), ]
-all_mc <- all_mc[-which(all_mc$CHROM == "chrY"), ]
+# groupColor <- c(rep("#D55E00", length(aGVHD_mc$POS2)), rep("#0072B2", length(nGVHD_mc$POS2)))
+# all_mc <- all_mc[-which(all_mc$CHROM == "chrX"), ] # sex chromosomes
+# all_mc <- all_mc[-which(all_mc$CHROM == "chrY"), ]
 
 GR_all_mc <- makeGRangesFromDataFrame(all_mc, keep.extra.columns = T, 
                                       ignore.strand = T, seqnames.field = "CHROM",
@@ -157,15 +159,23 @@ known_MiHA_SNPs <- makeGRangesFromDataFrame(known_MiHA_table, keep.extra.columns
                                             start.field = "Pos", end.field = "Pos")
 seqlengths(known_MiHA_SNPs) <- chr.len[names(seqlengths(known_MiHA_SNPs))]
 # pp <- autoplot(known_MiHA_SNPs, layout = "karyogram", geom = "rect") + scale_color_discrete("brown")## SNPs in the chromosome space
-pp <- autoplot(seqinfo(GR_all_mc))
-pp + layout_karyogram(known_MiHA_SNPs, layout = "karyogram") + scale_color_discrete("brown") +
-  layout_karyogram(GR_MHC_regions, layout = "karyogram", size = 1, color = "009E73") +
-  layout_karyogram(GR_all_mc, aes(x = POS3, y = NumDiff, color=factor(group)),
-                   ylim = c(10,40), rect.height = 5, geom="point", size = 0.5) + 
-  scale_colour_manual(values = alpha(c("#D55E00", "#0072B2"), .1)) +
-  scale_fill_manual(values = alpha(c("#D55E00", "#0072B2"), .1)) +
-  theme(axis.title.x=element_blank(),
-        legend.position = "none")
+hg38<- keepSeqlevels(hg38_cytoband, paste0("chr", c(1:22, "X", "Y")))  ## extract only chr1~22
+pp <- autoplot(hg38, layout = "karyogram", cytoband = T)#+ scale_fill_giemsa()
+
+# pp <- autoplot(seqinfo(GR_all_mc))
+# colorValues <- c(alpha(c("#D55E00", "#0072B2"), .1), 
+#                  getOption("biovizBase")$cytobandColor[c("acen", "gneg", "gpos100", "gpos25", "gpos50", "gpos75", "gvar","stalk")] 
+#                  )
+# names(colorValues) <- NULL
+pp + layout_karyogram(known_MiHA_SNPs, layout = "karyogram", size = 1, color = "red") + #scale_color_discrete("red") +
+  layout_karyogram(GR_MHC_regions, layout = "karyogram", size = 1, color = "#009E73") +
+  layout_karyogram(GR_all_mc, aes(x = POS3, y = NumDiff, color = factor(group)),
+                   ylim = c(10,40), rect.height = 5, geom="point", size = 0.5, alpha = 0.1) + 
+  # scale_colour_manual(values = alpha(c("#D55E00", "#0072B2"), .1)) +
+  # scale_fill_manual(values = alpha(c("#D55E00", "#0072B2"), .1)) +
+  theme(#axis.title.x=element_blank(),
+    legend.position = "none")
+
   # scale_fill_continuous(guide = guide_legend(title = "Groups"))
 
 ##################################
@@ -247,23 +257,28 @@ known_MiHA_SNPs <- makeGRangesFromDataFrame(known_MiHA_table, keep.extra.columns
                                             start.field = "Pos", end.field = "Pos")
 seqlengths(known_MiHA_SNPs) <- chr.len[names(seqlengths(known_MiHA_SNPs))]
 # pp <- autoplot(known_MiHA_SNPs, layout = "karyogram", geom = "rect") + scale_color_discrete("brown")## SNPs in the chromosome space
-pp <- autoplot(seqinfo(GR_log_ratio_groupOnly))
-pp + layout_karyogram(known_MiHA_SNPs, layout = "karyogram") + scale_color_discrete("brown") +
+# pp <- autoplot(seqinfo(GR_log_ratio_groupOnly))
+hg38_auto<- keepSeqlevels(hg38_cytoband, paste0("chr", c(1:22)))  ## extract only chr1~22
+pp <- autoplot(hg38_auto, layout = "karyogram", cytoband = T)
+
+pp + layout_karyogram(known_MiHA_SNPs, layout = "karyogram", size = 1, color = "brown") +
+  layout_karyogram(GR_MHC_regions, layout = "karyogram", size = 1, color = "#009E73") +
   layout_karyogram(GR_log_ratio_groupOnly, aes(x = POS2, y = log_ratio, color=factor(group)),
-                   ylim = c(10,40), rect.height = 5, geom="point", size = 1) + 
-  scale_colour_manual(values = alpha(c("#D55E00", "#0072B2"), .2)) +
-  scale_fill_manual(values = alpha(c("#D55E00", "#0072B2"), .2)) +
-  theme(axis.title.x=element_blank(),
+                   ylim = c(10,40), rect.height = 5, geom="point", size = 1, alpha = 0.1) + 
+  # scale_colour_manual(value = alpha(c("#D55E00", "#0072B2"), .2)) +
+  # scale_fill_manual(value = alpha(c("#D55E00", "#0072B2"), .2)) +
+  theme(#axis.title.x=element_blank(),
         legend.position = "none")
 
 
 ### Log-ratio
-pp <- autoplot(seqinfo(GR_log_ratio_group))
-pp + layout_karyogram(known_MiHA_SNPs, layout = "karyogram") + scale_color_discrete("brown") +
+# pp <- autoplot(seqinfo(GR_log_ratio_group))
+pp + layout_karyogram(known_MiHA_SNPs, layout = "karyogram", size = 1, color = "brown") +
+  layout_karyogram(GR_MHC_regions, layout = "karyogram", size = 1, color = "#009E73") +
   layout_karyogram(GR_log_ratio_group, aes(x = POS2, y = log_ratio, color=group),
-                   ylim = c(10,40), rect.height = 5, geom="point", size = 1) + 
-  scale_colour_manual(values = alpha(c("#D55E00"), .2)) +
-  scale_fill_manual(values = alpha(c("#D55E00"), .2)) +
+                   ylim = c(10,40), rect.height = 5, geom="point", color = "#D55E00", size = 1, alpha = 0.1) + 
+  # scale_colour_manual(values = alpha(c("#D55E00"), .2)) +
+  # scale_fill_manual(values = alpha(c("#D55E00"), .2)) +
   theme(axis.title.x=element_blank(),
         legend.position = "none")
 

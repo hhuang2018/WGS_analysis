@@ -1,7 +1,7 @@
 library(vcfR)
 source('util.R', echo = FALSE)
 
- vcf_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
+vcf_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
 #vcf_file_dir <- "../paired_vcf/"
 all_vcf_files <- list.files(vcf_file_dir, pattern = "\\.vcf.gz$")
 output_dir <- "../Output/SKAT_format/"
@@ -12,14 +12,17 @@ num_files <- length(all_vcf_files)
 #    0 - both alelles are the same 
 #    1 - only one allele is the same
 #    2 - both alleles are different
-for(chr in 1:22){
-  
-  chrom <- paste0("chr", chr)
 
-  for(id in 1:num_files){
+
+for(id in 1:num_files){
+  
+  vcf_file <- paste0(vcf_file_dir, all_vcf_files[id])
+  vcf_info <- read.vcfR(vcf_file, verbose = FALSE)
+  for(chr in 1:22){
     
-    vcf_file <- paste0(vcf_file_dir, all_vcf_files[id])
-    vcf_info <- read.vcfR(vcf_file, verbose = FALSE)
+    ptm <- proc.time() 
+    
+    chrom <- paste0("chr", chr)
     
     chr_index <- which(vcf_info@fix[, 1] == chrom)
     vcf_gt <- extract.gt(vcf_info, element = "GT")
@@ -41,20 +44,22 @@ for(chr in 1:22){
     genotype_table$ALT <- vcf_info@fix[chr_index, 5]
     genotype_table$groupID <- rep(groupID, times = num_rows)
     
-    rm(vcf_info)
+    #rm(vcf_info)
     
-    cat("File ", id, ": ", all_vcf_files[id], "\n")
+    cat("File ", id, ": ", all_vcf_files[id], " Chromosome ", chr, "\n")
     # cat("[")
-    ptm <- proc.time() 
+    
     is_same_gt <- sapply(1:num_rows, function(x) vcf_gt[x, 1] == vcf_gt[x, 2])
     
     diff_gt_index <- which(!is_same_gt)
     genotype_table$GT[diff_gt_index] <- sapply(1:length(diff_gt_index), function(x) is.same.gt(vcf_gt[diff_gt_index[x], ]))
     
-    proc.time() - ptm
+    # aa <- proc.time() - ptm
+    print(proc.time() - ptm)
     
     cat("ID Check Done!\n")
     save(genotype_table, file = paste0(output_dir, groupID, "_", chrom,".RData"))
-    cat(groupID, "_", chrom, ".RData is saved under ", output_dir, "\n")
+    cat(groupID, "_", chrom, ".RData is saved under ", output_dir, "\n", sep = "")
+    rm(vcf_gt)
   }
 }

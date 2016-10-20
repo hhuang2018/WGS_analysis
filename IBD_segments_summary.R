@@ -25,12 +25,12 @@ chrLengths <- c(248956422, # chr1
 
 #### Summarize Beagles output
 
-# beagles_output_dir <- "../Output/IBDseq/R_reformated/"
-# IBDseq_summary_output <- "../Output/IBDseq/Figures/"
-beagles_output_dir <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/"
-IBDseq_summary_output <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/summary"
+beagles_output_dir <- "../Output/IBDseq/R_reformated/"
+IBDseq_summary_output <- "../Output/IBDseq/Figures/"
+# beagles_output_dir <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/"
+# IBDseq_summary_output <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/summary"
 #chr <- 10 
-chr_list <- c(8,9)
+chr_list <- 1
 
 for(chr in chr_list){
   
@@ -101,7 +101,7 @@ for(chr in chr_list){
   
   Random_group_length <- IBD_segment_data_frame(new_IBD_table[Random_pair_ID, ], chrLengths[chr])
   
-  mc_length <- data.frame(Percent = c(aGVHD_group_length$Percent, nGVHD_group_length$Percent, 
+  mc_length <- data.frame(Proportion = c(aGVHD_group_length$Percent, nGVHD_group_length$Percent, 
                                       Matched_group_length$Percent, Random_group_length$Percent),
                           Group = c(rep("aGVHD", length(aGVHD_group_length$Percent)), rep("non-GVHD", length(nGVHD_group_length$Percent)),
                                     rep("Matched", length(Matched_group_length$Percent)), rep("Random Pairs", length( Random_group_length$Percent))),
@@ -122,3 +122,36 @@ for(chr in chr_list){
   # }
   save(mc, mc_length, p1, p2, Random_high_pert, Matched_high_pert, file = paste0(IBDseq_summary_output, "IBDseq_summary_chr_", chr, ".RData"))
 }
+
+##############################
+chr <- 6
+
+IBD_reformated_dir <- "../Output/IBDseq/cloud_Rformat/"
+
+load(paste0(IBD_reformated_dir, "summaryIBDseq_summary_chr_", chr, ".RData"))
+Random_high_pert[1:10,]
+Matched_high_pert[1:10,]
+p1
+p2
+
+#################
+# Outlier analysis -- most likely related pairs
+# 
+library(ggplot2)
+NumSeg_percentiles <- quantile(mc$NumSegments)
+NumSeg_Q1 <- as.numeric(NumSeg_percentiles["25%"])
+NumSeg_Q3 <- as.numeric(NumSeg_percentiles["75%"])
+NumSeg_IQ <- NumSeg_Q3 - NumSeg_Q1
+NumSeg_outlier_th <- NumSeg_Q3 + 3 * NumSeg_IQ
+
+NumSeg_outliers_index <- which(mc$NumSegments >= NumSeg_outlier_th)
+
+mc_new <- mc[-which(mc$NumSegments >= 200),]
+
+p1 <- ggplot(mc_new, aes(x = Group , y = NumSegments, fill = Group)) + 
+  geom_boxplot() +
+  guides(fill=FALSE) + 
+  coord_flip() +
+  ggtitle(paste0("Number of IBD segments \non Chromosome ", chr))
+
+t.test(mc$NumSegments[mc$Group == "Matched"], mc$NumSegments[mc$Group == "Random Pairs"])

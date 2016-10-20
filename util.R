@@ -492,6 +492,8 @@ plot.chrVariants <- function(diff_num, feature_region, all_diff="diff"){
 # 3 will go all the way across the bottom.
 #
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  ### http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/
+  
   library(grid)
   
   # Make a list from the ... arguments and plotlist
