@@ -7,6 +7,7 @@ filenames <- list.files(original_file_dir, pattern = "\\.vcf.gz$")
 filenames <- gsub(".vcf.gz", "", filenames)
 
 annotated_filenames <- list.files(destination_dir, pattern = "\\.vcf.gz$")
+annotated_filenames <- annotated_filenames[grepl("a_", annotated_filenames)]
 annotated_filenames <- gsub("_annotated.vcf.gz", "", annotated_filenames)
 
 Not_annotated_index <- which(!(filenames %in% annotated_filenames))
