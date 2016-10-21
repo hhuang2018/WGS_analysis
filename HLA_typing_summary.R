@@ -1,8 +1,9 @@
 source("util.R")
 
 library(ggplot2)
-library(xlsx)
-HLA_typings <- read.xlsx2(file = "../HLI_hla_mg_v3.xlsx", sheetIndex = 1)
+# library(xlsx)
+# HLA_typings <- read.xlsx2(file = "../HLI_hla_mg_v3.xlsx", sheetIndex = 1)
+HLA_typings <- read.csv(file = "../HLI_hla_mg_v3.csv")
 
 load("../Data/ID_table.RData")
 
@@ -73,7 +74,7 @@ avaialble_IDs_HLA_typing$donor_sex <- as.character(avaialble_IDs_HLA_typing$dono
 #                   GroupType = rep(group_type, each = 2),
 #                   stringsAsFactors = F)
 
-Sex_pair <- sapply(1:num_groups, function(x) paste0(avaialble_IDs_HLA_typing[x, c("rid_sex","donor_sex")], collapse = "-"))
+Sex_pair <- sapply(1:num_groups, function(x) paste0(avaialble_IDs_HLA_typing[x, c("donor_sex", "rid_sex")], collapse = " -> "))
 Group_Gender_pair <- data.frame(Typing = Sex_pair,
                                GroupType = group_type,
                                stringsAsFactors = F)
@@ -81,5 +82,57 @@ plot_typing_summary (Group_Gender_pair, "Sex (Recipient - Donor)", fill_color = 
 
 ggplot(Group_Gender_pair, aes(Typing, fill = GroupType)) + 
   geom_bar(position="dodge") +
-  scale_fill_manual(values = c("#D55E00", "#0072B2")) + 
-  scale_x_discrete(labels = c("F -> F", "M -> F", "F -> M", "M -> M"))
+  scale_fill_manual(values = c("#D55E00", "#0072B2")) 
+
+tab_sex_pair <- as.data.frame(table(Group_Gender_pair))
+mat_sex_pair <- cbind(tab_sex_pair$Freq[1:4], tab_sex_pair$Freq[5:8])
+colnames(mat_sex_pair) <- c("aGVHD", "non-aGVHD")
+rownames(mat_sex_pair) <- as.character(tab_sex_pair$Typing)[1:4]
+
+## overall 
+chisq.test(mat_sex_pair, correct = T)
+
+## sex-match vs outcome
+chisq.test(mat_sex_pair[c(1,4),], correct = T)  # p-value = 0.2576
+fisher.test(mat_sex_pair[c(1,4),]) # p-value = 0.3021
+
+## sex-mismatch vs outcome
+chisq.test(mat_sex_pair[c(2,3),], correct = T)  # p = 0.001587
+fisher.test(mat_sex_pair[c(2,3),]) # p = 0.001059
+
+## sex mismatch/match vs outcome
+matched <- colSums(mat_sex_pair[c(1,4),]) 
+mismatched <- colSums(mat_sex_pair[c(2,3),])
+
+new_mat <- rbind(matched, mismatched)
+rownames(new_mat) <- c("matched", "mismatched")
+
+chisq.test(new_mat, correct = T) # p = 0.8398
+fisher.test(new_mat) # p = 0.8883
+
+## given recipient male, donor vs. outcome
+chisq.test(mat_sex_pair[c(2,4),], correct = T)  # p = 0.03522
+fisher.test(mat_sex_pair[c(2,4),]) # p = 0.02473
+
+## given recipient female, donor vs. outcome
+chisq.test(mat_sex_pair[c(1, 3),], correct = T)  # p = 1
+fisher.test(mat_sex_pair[c(1,3),]) # p = 1
+
+## recipient sex vs outcome
+rec_male <- colSums(mat_sex_pair[c(2,4),]) 
+rec_female <- colSums(mat_sex_pair[c(1,3),])
+
+rec_sex <- rbind(rec_male, rec_female)
+rownames(rec_sex) <- c("recMale", "recFemale")
+chisq.test(rec_sex, correct = T)  # p = 0.00935
+fisher.test(rec_sex) # p = 0.00771
+
+### donor sex vs outcome
+donor_male <- colSums(mat_sex_pair[c(3,4),]) 
+donor_female <- colSums(mat_sex_pair[c(1,2),])
+
+donor_sex <- rbind(donor_male, donor_female)
+rownames(donor_sex) <- c("donorMale", "donorFemale")
+chisq.test(donor_sex, correct = T)  # p = 0.2011
+fisher.test(donor_sex) # p = 0.1673
+
