@@ -816,3 +816,37 @@ IBD_segment_data_frame <- function(IBD_table, genomeLength = 3236336281){
   return(IBD_length_portion)
   
 }
+
+
+
+######################
+# count the missense mutation types for both homozygous and heterozygous variants
+######################
+count_missense_mutation_type <- function(vcf_missense){
+  
+  num_variants <- dim(vcf_missense)[1]
+  
+  het_index <- as.numeric(which(sapply(1:num_variants, function(x) nchar(vcf_missense[x, "REF"]) != nchar(vcf_missense[x, "ALT"]))))
+  het_num <- length(het_index)
+  hom_index <- (1:num_variants)[-het_index]
+  hom_num <- length(hom_index)
+  missense_mutatations <- data.frame(REF = character(num_variants), ALT.A = numeric(num_variants), 
+                                     ALT.T=numeric(num_variants), ALT.G=numeric(num_variants), 
+                                     ALT.C=numeric(num_variants), stringsAsFactors = F)
+  # A - 1; T - 2; G - 3; C - 4;
+  
+  # homozygous variants
+  missense_mutatations$REF[hom_index] <- vcf_missense[hom_index, "REF"]
+  for(hom_id in hom_index){
+    missense_mutatations[hom_id, which(c("A", "T", "G", "C") %in% vcf_missense[hom_id, "ALT"])+1] <- 
+      missense_mutatations[hom_id, which(c("A", "T", "G", "C") %in% vcf_missense[hom_id, "ALT"])+1] + 1
+  }
+  
+  # heterozygous variants
+  missense_mutatations$REF[het_index] <- vcf_missense[het_index, "REF"]
+  for(het_id in het_index){
+    missense_mutatations[het_id, which(c("A", "T", "G", "C") %in% unlist(strsplit(vcf_missense[het_id, "ALT"], ",")))+1] <- 
+      missense_mutatations[het_id, which(c("A", "T", "G", "C") %in% unlist(strsplit(vcf_missense[het_id, "ALT"], ",")))+1] + 1
+  }
+  return(missense_mutatations)
+}
