@@ -8,18 +8,17 @@ chr.len = seqlengths(BSgenome.Hsapiens.UCSC.hg38)  # get chromosome lengths
 # remove X,Y,M and random chromosomes
 chr.len = chr.len[grep("_|M", names(chr.len), invert = T)]
 
-load("../Output/Missense_variant_stats/donor_missesense_stats.RData")
-load("../Output/Missense_variant_stats/recipient_missesense_stats.RData")
+load("../Output/Missense_variant_stats/donor_missesense_stats_updated.RData")
+load("../Output/Missense_variant_stats/recipient_missesense_stats_updated.RData")
 
-write.csv(recipient_missense_stats, file = "../Output/Missense_variant_stats/all_recipient_missesense_stats.csv", row.names = F)
-write.csv(donor_missense_stats, file = "../Output/Missense_variant_stats/all_donor_missesense_stats.csv", row.names = F)
+# write.csv(recipient_missense_stats, file = "../Output/Missense_variant_stats/all_recipient_missesense_stats_updated.csv", row.names = F)
+# write.csv(donor_missense_stats, file = "../Output/Missense_variant_stats/all_donor_missesense_stats.csv_updated", row.names = F)
 
-load("../Output/Missense_variant_stats/Matched_donor_missesense_stats.RData")
-load("../Output/Missense_variant_stats/Matched_recipient_missesense_stats.RData")
-
-write.csv(recipient_missense_stats, file = "../Output/Missense_variant_stats/Matched_recipient_missesense_stats.csv", row.names = F)
-write.csv(donor_missense_stats, file = "../Output/Missense_variant_stats/Matched_donor_missesense_stats.csv", row.names = F)
-
+# load("../Output/Missense_variant_stats/Matched_donor_missesense_stats_updated.RData")
+# load("../Output/Missense_variant_stats/Matched_recipient_missesense_stats_updated.RData")
+# 
+# write.csv(recipient_missense_stats, file = "../Output/Missense_variant_stats/Matched_recipient_missesense_stats_updated.csv", row.names = F)
+# write.csv(donor_missense_stats, file = "../Output/Missense_variant_stats/Matched_donor_missesense_stats_updated.csv", row.names = F)
 
 recipient_missense_stats$NumDiff <- -recipient_missense_stats$NumDiff
 recipient_missense_stats$PertDiff <- recipient_missense_stats$NumDiff/240
@@ -65,7 +64,7 @@ load("../Data/ClinVar_AML_genes.RData")
 
 #######
 hg38<- keepSeqlevels(hg38_cytoband, paste0("chr", c(1:22, "X", "Y")))  ## extract only chr1~22
-pp <- autoplot(hg38, layout = "karyogram", cytoband = T)#+ scale_fill_giemsa()
+pp <- autoplot(hg38, layout = "karyogram", cytoband = T) ## + scale_fill_giemsa()
 
 pp + layout_karyogram(GR_AML_genes, layout = "karyogram", size = 1, color = "red") + #scale_color_discrete("red") +
   layout_karyogram(GR_MHC_regions, layout = "karyogram", size = .5, color = "#0072B2") +

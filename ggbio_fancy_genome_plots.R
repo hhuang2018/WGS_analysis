@@ -12,11 +12,11 @@ library(biovizBase)
 
 
 ## Plotting a single series in bar format
-if (!require("IdeoViz", quietly=TRUE, warn.conflicts = FALSE)) {
-  source("https://bioconductor.org/biocLite.R")
-  biocLite("IdeoViz")
-  library("IdeoViz", verbose=F, warn.conflicts =F)
-}
+# if (!require("IdeoViz", quietly=TRUE, warn.conflicts = FALSE)) {
+#   source("https://bioconductor.org/biocLite.R")
+#   biocLite("IdeoViz")
+#   library("IdeoViz", verbose=F, warn.conflicts =F)
+# }
 
 # data(binned_singleSeries) # GRanges class
 # data(hg18_ideo)

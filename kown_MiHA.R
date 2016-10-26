@@ -48,11 +48,15 @@ sort(colSums(SNP_mat[which(SNP_mat$GroupType == "n"), -c(1,2)]), decreasing = T)
 sort(colSums(SNP_mat[which(SNP_mat$GroupType == "a"), -c(1,2)]), decreasing = T)
 
 # presence-absence 
-presence_SNP_mat <- SNP_mat
-presence_SNP_mat[presence_SNP_mat[, -c(1,2)]>0] <- 1
+presence_SNP_mat <- SNP_mat[, -c(1,2)]
+presence_SNP_mat[presence_SNP_mat>0] <- 1
+presence_SNP_mat <- cbind(SNP_mat[, c(1,2)], presence_SNP_mat)
 
-
-
+nonZeros_rows <- which(rowSums(presence_SNP_mat[, -c(1,2)]) !=0)
+corrgram(presence_SNP_mat[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade, 
+         upper.panel=panel.pie, diag.panel = NULL, text.panel=panel.txt, 
+         main="Correlogram of all MiHAs", 
+         cor.method = "spearman")
 
 # A*02:01
 A_SNP <- SNP_mat[, c(1:2, 4:13)]
@@ -71,19 +75,46 @@ col.corrgram <- function(ncol){
   colorRampPalette(c("darkgoldenrod4", "burlywood1",
                      "darkkhaki", "darkgreen"))(ncol)}
 nonZeros_rows <- which(rowSums(A_a_SNP[, -c(1,2)]) !=0)
-corrgram(A_a_SNP[, -c(1,2)], order=F, lower.panel=panel.pts, 
-         upper.panel=panel.cor, diag.panel = panel.density, text.panel=panel.txt, 
+new_A_a_SNP <- A_a_SNP[,-c(1,2)]
+new_A_a_SNP[new_A_a_SNP>1] <- 1
+
+new_A_a_SNP <- cbind(A_a_SNP[, c(1,2)], new_A_a_SNP)
+corrgram(new_A_a_SNP[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade, 
+         upper.panel=panel.pie, diag.panel = NULL, text.panel=panel.txt, 
+         main="Correlogram of HLA-A*02:01 restricted MiHAs \n in aGVHD groups", 
+         cor.method = "spearman")
+
+corrgram(A_a_SNP[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade, 
+         upper.panel=panel.pie, diag.panel = NULL, text.panel=panel.txt, 
          main="Correlogram of HLA-A*02:01 restricted MiHAs \n in aGVHD groups", 
          cor.method = "spearman") #,
          # col.regions = colorRampPalette(c("darkgoldenrod4", "burlywood1",
          #                                  "darkkhaki", "darkgreen")))
 
-
-corrgram(A_n_SNP[, -c(1,2)], order = F, lower.panel = panel.shade,
+nonZeros_rows <- which(rowSums(A_n_SNP[, -c(1,2)]) !=0)
+p_nGVHD <- corrgram(A_n_SNP[nonZeros_rows, -c(1,2)], order = F, lower.panel = panel.shade,
          upper.panel = panel.pie, text.panel=panel.txt, 
-         main="Correlogram of HLA-A*02:01 restricted MiHAs \n in non-aGVHD groups") 
+         main="Correlogram of HLA-A*02:01 restricted MiHAs \n in non-aGVHD groups",
+         cor.method = "spearman") 
+
+new_A_n_SNP <- A_n_SNP[,-c(1,2)]
+new_A_n_SNP[new_A_n_SNP>1] <- 1
+
+new_A_n_SNP <- cbind(A_n_SNP[, c(1,2)], new_A_n_SNP)
+corrgram(new_A_n_SNP[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade, 
+         upper.panel=panel.pie, diag.panel = NULL, text.panel=panel.txt, 
+         main="Correlogram of HLA-A*02:01 restricted MiHAs \n in non-aGVHD groups", 
+         cor.method = "spearman")
+
+## Log Ratio
 
 
+
+
+
+
+
+# multiplot(p_aGVHD, p_nGVHD, cols = 2)
 ###
 # B*07:02
 B_SNP <- SNP_mat[, c(1:2, 17:26)]
@@ -91,13 +122,68 @@ B_SNP <- B_SNP[-which(rowSums(B_SNP[, -c(1,2)])==0), ]
 B_a_SNP <- B_SNP[B_SNP$GroupType == "a", ]
 B_n_SNP <- B_SNP[B_SNP$GroupType == "n", ]
 
-corrgram(B_a_SNP[, -c(1,2)], order= F, lower.panel=panel.shade, 
+nonZeros_rows <- which(rowSums(B_a_SNP[, -c(1,2)]) !=0)
+new_B_a_SNP <- B_a_SNP[,-c(1,2)]
+new_B_a_SNP[new_B_a_SNP>1] <- 1
+new_B_a_SNP <- cbind(B_a_SNP[, c(1,2)], new_B_a_SNP)
+
+corrgram(B_a_SNP[nonZeros_rows, -c(1,2)], order= F, lower.panel=panel.shade, 
          upper.panel=panel.pie, text.panel=panel.txt, 
-         main="Correlogram of HLA-B*07:02 restricted MiHAs \n in aGVHD groups") #,
+         main="Correlogram of HLA-B*07:02 restricted MiHAs \n in aGVHD groups",
+         cor.method = "spearman") #,
 # col.regions = colorRampPalette(c("darkgoldenrod4", "burlywood1",
 #                                  "darkkhaki", "darkgreen")))
+corrgram(new_B_a_SNP[nonZeros_rows, -c(1,2)], order= F, lower.panel=panel.shade, 
+         upper.panel=panel.pie, text.panel=panel.txt, 
+         main="Correlogram of HLA-B*07:02 restricted MiHAs \n in aGVHD groups",
+         cor.method = "spearman")
 
+new_B_n_SNP <- B_n_SNP[,-c(1,2)]
+new_B_n_SNP[new_B_n_SNP>1] <- 1
+new_B_n_SNP <- cbind(B_n_SNP[, c(1,2)], new_B_n_SNP)
+corrgram(new_B_n_SNP[, -c(1,2)], order = F, lower.panel = panel.shade,
+         upper.panel = panel.pie, text.panel=panel.txt, 
+         main="Correlogram of HLA-B*07:02 restricted MiHAs \n in non-GVHD groups",
+         cor.method = "spearman") 
 
 corrgram(B_n_SNP[, -c(1,2)], order = F, lower.panel = panel.shade,
          upper.panel = panel.pie, text.panel=panel.txt, 
-         main="Correlogram of HLA-B*07:02 restricted MiHAs \n in non-GVHD groups") 
+         main="Correlogram of HLA-B*07:02 restricted MiHAs \n in non-GVHD groups",
+         cor.method = "spearman") 
+
+
+##########################
+# co-occurence matrix
+##########################
+SNP_mat <- read.csv(file = "../WW_MiHA/SNP_mat.csv")
+
+# presence-absence 
+presence_SNP_mat <- SNP_mat[, -c(1,2)]
+presence_SNP_mat[presence_SNP_mat>0] <- 1
+# presence_SNP_mat <- cbind(SNP_mat[, c(1,2)], presence_SNP_mat)
+presence_SNP_mat <- as.matrix(presence_SNP_mat)
+rownames(presence_SNP_mat) <- SNP_mat[, 1]
+
+SNP_adjacent_mat <- presence_SNP_mat %*% t(presence_SNP_mat)  ## adjacency matrix
+
+library(igraph)
+SNP_graph <- graph.adjacency(SNP_adjacent_mat, weighted=T, mode = "undirected") # build a graph
+SNP_graph <- simplify(SNP_graph) # remove loops
+V(SNP_graph)$label <- V(SNP_graph)$name  # set labels of vertices
+V(SNP_graph)$degree <- degree(SNP_graph) # set degress of vertices
+# set seed to make the layout reproducible
+set.seed(3952)
+layout1 <- layout.fruchterman.reingold(SNP_graph)
+plot(SNP_graph, layout=layout1)
+plot(SNP_graph, layout=layout.kamada.kawai)
+tkplot(SNP_graph, layout=layout.kamada.kawai)
+
+# 
+V(SNP_graph)$label.cex <- 2.2 * V(SNP_graph)$degree / max(V(SNP_graph)$degree)+ .2
+V(SNP_graph)$label.color <- rgb(0, 0, .2, .8)
+V(SNP_graph)$frame.color <- NA
+egam <- (log(E(SNP_graph)$weight)+.4) / max(log(E(SNP_graph)$weight)+.4)
+E(SNP_graph)$color <- rgb(.5, .5, 0, egam)
+E(SNP_graph)$width <- egam
+# plot the graph in layout1
+plot(SNP_graph, layout=layout1)

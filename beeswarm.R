@@ -107,7 +107,7 @@ ggplot(beeswarm_ResMiHA_all, aes(x, y)) +
   geom_jitter(width = 0.2, aes(color = GVHD), size = 3, alpha = 0.8) +
   scale_colour_manual(values = c("#D55E00", "#0072B2")) + 
   scale_x_continuous(breaks = c(1:2), 
-                     labels = c("acute GVHD", "non GVHD"), expand = c(0, 0.05)) +
+                     labels = c("acute GVHD", "non-aGVHD"), expand = c(0, 0.05)) +
   geom_boxplot(aes(x, y, group = round_any(beeswarm_ResMiHA_all$x, 1, round)), outlier.shape = NA, alpha = 0)
 
 
@@ -196,7 +196,7 @@ chrLengths <- c(248956422, # chr1
 library(ggplot2)
 known_MiHA_table <- read.table("../WW_MiHA/Known_MiHA_coordinates.txt", header = T)
 
-load("../WW_MiHA/summary/missense_summary_DtoR.RData")
+load("../WW_MiHA/summary/Data/missense_summary_DtoR.RData")
 
 all_MiHA_SNP <- data.frame()
 Snp_pplots <- list()
@@ -236,41 +236,41 @@ for(id in 1:22){
   # mc$group[which(mc$position %in% known_MiHA_chr$POS)] <- "MiHA"
   
   # print(
-  p1 <- ggplot(mc, aes(x = position, ymax = frequency, ymin = 0, color=factor(group))) +
-    geom_linerange() +
-    geom_hline(yintercept = 0) +
-    # ggtitle(chr) +
-    theme_bw() +
-    scale_x_continuous(breaks = round(seq(1, chrLengths[id], by = 2e7), 2),
-                       labels= paste0(round(seq(1, chrLengths[id], by = 2e7)/1e6, 2), " Mb")) +
-    scale_color_manual(values = c("#D55E00", "#0072B2")) +
-    theme(axis.title.x=element_blank(),
-          axis.text.x=element_blank(),
-          axis.ticks.x=element_blank(),
-          legend.position = "none")
-  #   ) 
-  Snp_pplots <- append(Snp_pplots, list(p1))
-  ### MiHA SNPs by chromosome
-  # if(length(known_MiHA_chr$POS) >= 1){
-  #   index <- which(mc$position %in% known_MiHA_chr$POS)
-  #   if(length(index) > 0){
-  #     MiHA_SNP <- lapply(1:length(index), function(x) cbind(mc[index[x], ], known_MiHA_chr[which(known_MiHA_chr$POS == mc$position[index[x]]), ]))
-  #     MiHA_SNP <- do.call(rbind.data.frame, MiHA_SNP)
-  # 
-  #     names(MiHA_SNP)[3] <- "Group"
-  # 
-  #     all_MiHA_SNP <- rbind(all_MiHA_SNP, MiHA_SNP)
-  #     print(
-  #       ggplot(MiHA_SNP, aes(x = MiHAs, ymax = frequency, ymin = 0, color = Group)) +
-  #         geom_linerange(size = 3) +
-  #         geom_hline(yintercept = 0) +
-  #         ggtitle(paste0(chr, " - MiHAs")) +
-  #         theme_bw() +
-  #         xlab("") +
-  #     scale_fill_discrete(name = "Group")
-  #     )
-  #   }
-  # }
+  # p1 <- ggplot(mc, aes(x = position, ymax = frequency, ymin = 0, color=factor(group))) +
+  #   geom_linerange() +
+  #   geom_hline(yintercept = 0) +
+  #   # ggtitle(chr) +
+  #   theme_bw() +
+  #   scale_x_continuous(breaks = round(seq(1, chrLengths[id], by = 2e7), 2),
+  #                      labels= paste0(round(seq(1, chrLengths[id], by = 2e7)/1e6, 2), " Mb")) +
+  #   scale_color_manual(values = c("#D55E00", "#0072B2")) +
+  #   theme(axis.title.x=element_blank(),
+  #         axis.text.x=element_blank(),
+  #         axis.ticks.x=element_blank(),
+  #         legend.position = "none")
+  # #   ) 
+  # Snp_pplots <- append(Snp_pplots, list(p1))
+  ## MiHA SNPs by chromosome
+  if(length(known_MiHA_chr$POS) >= 1){
+    index <- which(mc$position %in% known_MiHA_chr$POS)
+    if(length(index) > 0){
+      MiHA_SNP <- lapply(1:length(index), function(x) cbind(mc[index[x], ], known_MiHA_chr[which(known_MiHA_chr$POS == mc$position[index[x]]), ]))
+      MiHA_SNP <- do.call(rbind.data.frame, MiHA_SNP)
+
+      names(MiHA_SNP)[3] <- "Group"
+
+      all_MiHA_SNP <- rbind(all_MiHA_SNP, MiHA_SNP)
+      # print(
+      #   ggplot(MiHA_SNP, aes(x = MiHAs, ymax = frequency, ymin = 0, color = Group)) +
+      #     geom_linerange(size = 3) +
+      #     geom_hline(yintercept = 0) +
+      #     ggtitle(paste0(chr, " - MiHAs")) +
+      #     theme_bw() +
+      #     xlab("") +
+      # scale_fill_discrete(name = "Group")
+      # )
+    }
+  }
   
 }
 
@@ -283,9 +283,56 @@ print(
     ggtitle("Known MiHAs") +
     theme_bw() +
     xlab("") +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1+ 
-                                       theme(axis.text.x = element_text(angle = Angle, hjust = H))))
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
 )
+
+unique_MiHAs <- as.character(unique(all_MiHA_SNP$MiHAs))
+num_MiHAs <- length(unique_MiHAs)
+LLR_MiHAs <- data.frame(name = character(num_MiHAs),
+                        hla = character(num_MiHAs),
+                        LLR = numeric(num_MiHAs),
+                        stringsAsFactors = F)
+all_MiHA_SNP$MiHAs <- as.character(all_MiHA_SNP$MiHAs)
+all_MiHA_SNP$Gene <- as.character(all_MiHA_SNP$Gene)
+all_MiHA_SNP$SNPs <- as.character(all_MiHA_SNP$SNPs)
+for(miha_id in 1:num_MiHAs){
+  
+  index <- which(all_MiHA_SNP$MiHAs %in% unique_MiHAs[miha_id])
+  
+  aGVHD_count <- all_MiHA_SNP[index[which(all_MiHA_SNP[index, "Group"] == "aGVHD")], "frequency"]
+  nGVHD_count <- abs(all_MiHA_SNP[index[which(all_MiHA_SNP[index, "Group"] == "nGVHD")], "frequency"])
+  Gene_MiHA_name <- paste0(as.character(all_MiHA_SNP[index[which(all_MiHA_SNP[index, "Group"] == "aGVHD")], c("Gene", "MiHAs", "SNPs")]), collapse = "*")
+  
+  if(aGVHD_count > 0 |nGVHD_count >0){
+    
+    LLR_MiHAs$LLR[miha_id] <- log10(aGVHD_count/nGVHD_count)
+    LLR_MiHAs$name[miha_id] <- Gene_MiHA_name
+  }
+  
+}
+
+mc_LLR <- LLR_MiHAs[order(LLR_MiHAs$LLR, decreasing = TRUE), ]
+mc_LLR <- within(mc_LLR, name <- factor(name, levels=factor(mc_LLR$name)))
+
+pp1 <- ggplot(all_MiHA_SNP, aes(x = MiHAs, ymax = frequency, ymin = 0, color = Group)) +
+  geom_linerange(size = 3) +
+  geom_hline(yintercept = 0) +
+  ggtitle("Known MiHAs") +
+  theme_bw() +
+  xlab("") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+pp2 <- ggplot(mc_LLR, aes(x = name, ymax = LLR, ymin = 0, color = "#D55E00")) +
+  geom_linerange(size = 3) +
+  geom_hline(yintercept = 0) +
+  # ggtitle("Known MiHAs") +
+  theme_bw() +
+  xlab("") +
+  # scale_colour(values = "#D55E00") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1),
+        legend.position = "none") 
+
+multiplot(pp1, pp2, cols = 1)
 
 # x <- sample.int(length(aGVHD_Mutation$POS), length(aGVHD_Mutation$POS))
 # sample.gr <- GRanges("chr1", IRanges(aGVHD_Mutation$POS, width=1, names=paste0("POS", aGVHD_Mutation$POS)))
@@ -301,7 +348,17 @@ library(ggplot2)
 source("util.R")
 known_MiHA_table <- read.table("../WW_MiHA/Known_MiHA_coordinates.txt", header = T)
 
-load("../WW_MiHA/summary/missense_summary_DtoR.RData")
+load("../WW_MiHA/summary/Data/missense_summary_DtoR.RData")
+
+head(aGVHD_SNP_list[[1]])
+
+aGVHD_missense_snps <- do.call("rbind", aGVHD_SNP_list)
+nGVHD_missense_snps <- do.call("rbind", nGVHD_SNP_list)
+
+write.csv(aGVHD_missense_snps, file = "../Output/Missense_variant_stats/aGVHD_group_missense_mismatches.csv", row.names = F)
+write.csv(nGVHD_missense_snps, file = "../Output/Missense_variant_stats/non_aGVHD_group_missense_mismatches.csv", row.names = F)
+
+
 
 all_MiHA_SNP <- data.frame()
 pplots <- list()
@@ -430,7 +487,6 @@ print(
     ggtitle("Known MiHAs") +
     theme_bw() +
     xlab("") +
-    theme(axis.text.x = element_text(angle = 90, hjust = 1+ 
-                                       theme(axis.text.x = element_text(angle = Angle, hjust = H))))
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
 )
 
