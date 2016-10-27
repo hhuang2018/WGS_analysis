@@ -16,7 +16,7 @@ missense_stats <- data.frame(CHROM=character(0), POS=numeric(0), REF = character
                              ALT.A=numeric(0), ALT.T=numeric(0), ALT.G = numeric(0), ALT.C = numeric(0),
                              ALT.insertion = numeric(0), ALT.deletion = numeric(0), 
                              NumDiff = numeric(0), stringsAsFactors = F)
-for(id in 1:num_files){
+for(id in 1:10 ){
   
   vcf_file <- paste0(VCF_file_dir, file_names[id])
   vcf_info <- read.vcfR(vcf_file, verbose = FALSE)

@@ -286,6 +286,8 @@ print(
     theme(axis.text.x = element_text(angle = 90, hjust = 1))
 )
 
+write.csv(all_MiHA_SNP, file = "../Data/All_known_MiHAs_counts.csv", row.names = F)
+
 unique_MiHAs <- as.character(unique(all_MiHA_SNP$MiHAs))
 num_MiHAs <- length(unique_MiHAs)
 LLR_MiHAs <- data.frame(name = character(num_MiHAs),
