@@ -126,7 +126,7 @@ for (chr_id in chr) {
 }
 
 all_random_Percent$IBDPercent <- all_random_Percent$IBDLength/chrLength
-all_random_Percent$chrLength <- chrLength
+all_matched_Percent$IBDPercent <- all_matched_Percent$IBDLength/chrLength
 
 total_IBD <- data.frame(CHROM = character(2),
                         MeanIBD = numeric(2),
