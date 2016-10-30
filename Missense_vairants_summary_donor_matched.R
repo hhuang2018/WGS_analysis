@@ -29,59 +29,32 @@ for(id in 1:num_files){
   
   num_variants <- dim(vcf_missense)[1]
   
+  # print(head(vcf_missense))
   if(dim(missense_stats)[1] > 0){ # if not the first sample
     vcf_chrom_pos <- sapply(1:dim(vcf_missense)[1], function(x) paste0(vcf_missense[x, c("CHROM","POS")], collapse = ""))
     all_chrom_pos <- sapply(1:dim(missense_stats)[1], function(x) paste0(missense_stats[x, c("CHROM","POS")], collapse = ""))
     
-    inter_chrom_pos <- intersect(vcf_chrom_pos, all_chrom_pos) # intersection of vcf and all_stats
+    IDs_in_vcf <- which(vcf_chrom_pos %in% all_chrom_pos)
+    IDs_in_all <- which(all_chrom_pos %in% vcf_chrom_pos) 
     
-    stats_exist_chrom_pos_id <- which(all_chrom_pos %in% inter_chrom_pos)
-    new_chrom_pos_id <- which(!vcf_chrom_pos %in% inter_chrom_pos)
-    vcf_exist_chrom_pos_id <- which(vcf_chrom_pos %in% inter_chrom_pos)
+    missense_mutations <- count_missense_mutation_type(vcf_missense[IDs_in_vcf,])
     
-    if(length(stats_exist_chrom_pos_id) >0){ # existing POS
-      missense_stats$NumDiff[stats_exist_chrom_pos_id] <- missense_stats$NumDiff[stats_exist_chrom_pos_id] + 1
-      
-      missense_mutation <- count_missense_mutation_type(vcf_missense[vcf_exist_chrom_pos_id,])
-      
-      same_order_id <- which(vcf_chrom_pos[vcf_exist_chrom_pos_id] == all_chrom_pos[stats_exist_chrom_pos_id])
-      if(length(same_order_id) >0){ # same ordered ID
-        
-        missense_stats[stats_exist_chrom_pos_id[same_order_id], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] <- 
-          missense_stats[stats_exist_chrom_pos_id[same_order_id], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] + 
-          missense_mutation[same_order_id, c("ALT.A", "ALT.T", "ALT.G", "ALT.C")]
-        
-      }
-      if(length(same_order_id) < length(vcf_exist_chrom_pos_id)){ # if there's different ordered ID
-        
-        if(length(same_order_id) >0){ # if there's at least one same order ID
-          
-          vcf_diff_order <- vcf_exist_chrom_pos_id[-same_order_id]
-          all_diff_order <- sapply(vcf_diff_order, function(x) which(all_chrom_pos[stats_exist_chrom_pos_id] == vcf_chrom_pos[x]))
-          
-          missense_stats[stats_exist_chrom_pos_id[all_diff_order], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] <- 
-            missense_stats[stats_exist_chrom_pos_id[all_diff_order], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] + 
-            missense_mutation[vcf_diff_order, c("ALT.A", "ALT.T", "ALT.G", "ALT.C")]
-        }else { # If all orders are not the same
-          
-          vcf_diff_order <- vcf_exist_chrom_pos_id
-          all_diff_order <- sapply(vcf_diff_order, function(x) which(all_chrom_pos[stats_exist_chrom_pos_id] == vcf_chrom_pos[x]))
-          
-          missense_stats[stats_exist_chrom_pos_id[all_diff_order], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] <- 
-            missense_stats[stats_exist_chrom_pos_id[all_diff_order], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] + 
-            missense_mutation[, c("ALT.A", "ALT.T", "ALT.G", "ALT.C")]
-          
-        }
-        
-      } # if there's different ordered ID
-      
-    } 
+    ### existing records increase the numbers
+    ordered_IDs_in_all <- sapply(1:length(IDs_in_vcf), function(x) which(all_chrom_pos[IDs_in_all] == vcf_chrom_pos[IDs_in_vcf[x]]))
     
-    if(length(new_chrom_pos_id) > 0){ # new POS
+    missense_stats$NumDiff[ordered_IDs_in_all] <- missense_stats$NumDiff[ordered_IDs_in_all] + 1
+    
+    missense_stats[IDs_in_all[ordered_IDs_in_all], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] <- 
+      missense_stats[IDs_in_all[ordered_IDs_in_all], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] +
+      missense_mutations[, c("ALT.A", "ALT.T", "ALT.G", "ALT.C")]
+    
+    ### new records added to the bottom
+    if(length(IDs_in_vcf) < length(vcf_chrom_pos)){ # new POS
       
-      missense_mutation <- count_missense_mutation_type(vcf_missense[new_chrom_pos_id,])
+      num_new_pos <- length(vcf_chrom_pos) -  length(IDs_in_vcf)
+      missense_mutations <- count_missense_mutation_type(vcf_missense[-IDs_in_vcf,])
       
-      temp_stats <- data.frame(vcf_missense[new_chrom_pos_id, c("CHROM", "POS")], missense_mutation, NumDiff = numeric(length(new_chrom_pos_id))+1, 
+      temp_stats <- data.frame(vcf_missense[-IDs_in_vcf, c("CHROM", "POS")], missense_mutations, NumDiff = numeric(num_new_pos)+1, 
                                stringsAsFactors = F)
       
       temp_stats$CHROM <- as.character(temp_stats$CHROM)
@@ -126,7 +99,8 @@ for(id in 1:num_files){
     # missense_stats[, c("ALT.A", "ALT.T", "ALT.G", "ALT.C", "NumDiff")] <- as.numeric(as.character(missense_stats[, c("ALT.A", "ALT.T", "ALT.G", "ALT.C", "NumDiff")]))
     
   }
+  
 }
 
 donor_missense_stats <- missense_stats
-save(donor_missense_stats, file = paste0(output_dir, "Matched_donor_missesense_stats_updated.RData"))
+save(donor_missense_stats, file = paste0(output_dir, "Matched_donor_missesense_stats_updated_1030.RData"))
