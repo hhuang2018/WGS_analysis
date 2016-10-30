@@ -7,7 +7,9 @@ chr.len = chr.len[grep("_|M", names(chr.len), invert = T)]
 
 ##############################
 chr <- (1:22)[-11]
-IBD_reformated_dir <- "../Output/IBDseq/cloud_Rformat/"
+IBD_reformated_dir <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/summary/"
+output_dir <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/summary/"
+
 stats_table <- data.frame(CHROM = character(length(chr)*2),
                           MeanIBD = numeric(length(chr)*2),
                           MedianIBD = numeric(length(chr)*2),
@@ -29,6 +31,7 @@ all_matched_Percent <- data.frame(SampleID1 = Matched_high_pert$SampleID1,
                                   IBDLength = numeric(length(Matched_high_pert$SampleID1)),
                                   IBDPercent = numeric(length(Matched_high_pert$SampleID1)),
                                   stringsAsFactors = F)
+chrLength <- 0
 for (chr_id in chr) {
   
   load(paste0(IBD_reformated_dir, "summaryIBDseq_summary_chr_", chr_id, ".RData"))
@@ -38,7 +41,9 @@ for (chr_id in chr) {
   #                          MedianIBD = numeric(2),
   #                          stringsAsFactors = F)
   # 
+  chrLength <- chrLength + chr.len[paste0("chr", chr_id)]  # total chromosome length
   counter <- counter + 1
+  
   stats_table$CHROM[(2*(counter-1)+1) : (2*counter)] <- paste0("chr", chr_id)
   stats_table$ChrLength[(2*(counter-1)+1) : (2*counter)] <- chr.len[paste0("chr", chr_id)]
   
@@ -93,10 +98,31 @@ for (chr_id in chr) {
     all_matched_Percent <- rbind(all_matched_Percent, new_segments2)
     
   }
-  
-  
 }
 
-total_IBD <- data.frame(CHROM = c("Total", "Total"),
-                        MeanIBD = mean(stats_table) )
+all_random_Percent$IBDPercent <- all_random_Percent$IBDLength/chrLength
+all_random_Percent$chrLength <- chrLength
 
+total_IBD <- data.frame(CHROM = character(2),
+                        MeanIBD = numeric(2),
+                        MedianIBD = numeric(2),
+                        ChrLength = numeric(2),
+                        Group = character(2),
+                        stringsAsFactors = F)
+total_IBD$CHROM <- "Total"
+total_IBD$ChrLength <- chrLength
+total_IBD$MeanIBD[1] <- mean(all_random_Percent$IBDPercent)
+total_IBD$MedianIBD[1] <- median(all_random_Percent$IBDPercent)
+total_IBD$Group[1] <- "RandomPair"
+
+total_IBD$MeanIBD[2] <- mean(all_matched_Percent$IBDPercent)
+total_IBD$MedianIBD[2] <- median(all_matched_Percent$IBDPercent)
+total_IBD$Group[2] <- "HLAMatched"
+
+stats_table <- rbind(stats_table, total_IBD)
+
+save(stats_table, total_IBD, all_matched_Percent, all_random_Percent, file = paste0(output_dir, "all_chromosome_stats.RData"))
+
+write.csv(stats_table, file = paste0(output_dir, "all_chromosome_stats.csv"), row.names = F)
+          
+          
