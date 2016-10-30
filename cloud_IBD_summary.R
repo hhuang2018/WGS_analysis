@@ -1,10 +1,35 @@
 source("util.R")
-library(BSgenome.Hsapiens.UCSC.hg38)
+# library(BSgenome.Hsapiens.UCSC.hg38)
+# 
+# chr.len = seqlengths(BSgenome.Hsapiens.UCSC.hg38)  # get chromosome lengths
+# # remove X,Y,M and random chromosomes
+# chr.len = chr.len[grep("_|M", names(chr.len), invert = T)]
 
-chr.len = seqlengths(BSgenome.Hsapiens.UCSC.hg38)  # get chromosome lengths
-# remove X,Y,M and random chromosomes
-chr.len = chr.len[grep("_|M", names(chr.len), invert = T)]
+ chr.len <- c(248956422, # chr1
+                242193529, # chr2
+                198295559, # chr3
+                190214555, # chr4
+                181538259, # chr5
+                170805979, # chr6
+                159345973, # chr7
+                145138636, # chr8
+                138394717, # chr9
+                133797422, # chr10
+                135086622, # chr11
+                133275309, # chr12
+                114364328, # chr13
+                107043718, # chr14
+                101991189, # chr15
+                90338345,  # chr16
+                83257441,  # chr17
+                80373285,  # chr18
+                58617616,  # chr19
+                64444167,  # chr20
+                46709983,  # chr21
+                50818468   # chr22
+)
 
+names(chr.len) <- sapply(1:22, function(x) paste0("chr", x))
 ##############################
 chr <- (1:22)[-11]
 IBD_reformated_dir <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/summary/"
