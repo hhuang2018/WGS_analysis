@@ -32,8 +32,8 @@ source("util.R")
 names(chr.len) <- sapply(1:22, function(x) paste0("chr", x))
 ##############################
 chr <- (1:22)[-11]
-IBD_reformated_dir <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/summary/"
-output_dir <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/summary/"
+IBD_reformated_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/"
+output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/summary/"
 
 stats_table <- data.frame(CHROM = character(length(chr)*2),
                           MeanIBD = numeric(length(chr)*2),
