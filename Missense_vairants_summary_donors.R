@@ -16,7 +16,7 @@ missense_stats <- data.frame(CHROM=character(0), POS=numeric(0), REF = character
                              ALT.A=numeric(0), ALT.T=numeric(0), ALT.G = numeric(0), ALT.C = numeric(0),
                              ALT.insertion = numeric(0), ALT.deletion = numeric(0), 
                              NumDiff = numeric(0), stringsAsFactors = F)
-for(id in 1:10 ){
+for(id in 1:num_files){
   
   vcf_file <- paste0(VCF_file_dir, file_names[id])
   vcf_info <- read.vcfR(vcf_file, verbose = FALSE)
@@ -38,18 +38,19 @@ for(id in 1:10 ){
     if(length(stats_exist_chrom_pos_id) >0){ # existing POS
       missense_stats$NumDiff[stats_exist_chrom_pos_id] <- missense_stats$NumDiff[stats_exist_chrom_pos_id] + 1
       
-      missense_mutation <- count_missense_mutation_type(vcf_missense[vcf_exist_chrom_pos_id,])
+      missense_mutations <- count_missense_mutation_type(vcf_missense[vcf_exist_chrom_pos_id,])
       
-      same_order_id <- which(vcf_chrom_pos[vcf_exist_chrom_pos_id] == all_chrom_pos[stats_exist_chrom_pos_id])
-      if(length(same_order_id) >0){ # same ordered ID
+      same_order_id <- which(vcf_chrom_pos[vcf_exist_chrom_pos_id] == all_chrom_pos[stats_exist_chrom_pos_id]) ### 
+      if(length(same_order_id) >0){ # same ordered ID (POS order)
         
         missense_stats[stats_exist_chrom_pos_id[same_order_id], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] <- 
           missense_stats[stats_exist_chrom_pos_id[same_order_id], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] + 
-          missense_mutation[same_order_id, c("ALT.A", "ALT.T", "ALT.G", "ALT.C")]
+          missense_mutations[same_order_id, c("ALT.A", "ALT.T", "ALT.G", "ALT.C")]
         
       }
       if(length(same_order_id) < length(vcf_exist_chrom_pos_id)){ # if there's different ordered ID
         
+        ################# debug this part ###################
         if(length(same_order_id) >0){ # if there's at least one same order ID
           
           vcf_diff_order <- vcf_exist_chrom_pos_id[-same_order_id]
@@ -57,7 +58,8 @@ for(id in 1:10 ){
           
           missense_stats[stats_exist_chrom_pos_id[all_diff_order], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] <- 
             missense_stats[stats_exist_chrom_pos_id[all_diff_order], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] + 
-            missense_mutation[vcf_diff_order, c("ALT.A", "ALT.T", "ALT.G", "ALT.C")]
+            missense_mutations[vcf_diff_order, c("ALT.A", "ALT.T", "ALT.G", "ALT.C")]
+          
         }else { # If all orders are not the same
           
           vcf_diff_order <- vcf_exist_chrom_pos_id
@@ -65,7 +67,7 @@ for(id in 1:10 ){
           
           missense_stats[stats_exist_chrom_pos_id[all_diff_order], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] <- 
             missense_stats[stats_exist_chrom_pos_id[all_diff_order], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] + 
-            missense_mutation[, c("ALT.A", "ALT.T", "ALT.G", "ALT.C")]
+            missense_mutations[, c("ALT.A", "ALT.T", "ALT.G", "ALT.C")]
           
         }
         
@@ -75,9 +77,9 @@ for(id in 1:10 ){
     
     if(length(new_chrom_pos_id) > 0){ # new POS
       
-      missense_mutation <- count_missense_mutation_type(vcf_missense[new_chrom_pos_id,])
+      missense_mutations <- count_missense_mutation_type(vcf_missense[new_chrom_pos_id,])
       
-      temp_stats <- data.frame(vcf_missense[new_chrom_pos_id, c("CHROM", "POS")], missense_mutation, NumDiff = numeric(length(new_chrom_pos_id))+1, 
+      temp_stats <- data.frame(vcf_missense[new_chrom_pos_id, c("CHROM", "POS")], missense_mutations, NumDiff = numeric(length(new_chrom_pos_id))+1, 
                                stringsAsFactors = F)
       
       temp_stats$CHROM <- as.character(temp_stats$CHROM)
@@ -126,3 +128,22 @@ for(id in 1:10 ){
 
 donor_missense_stats <- missense_stats
 save(donor_missense_stats, file = paste0(output_dir, "donor_missesense_stats_updated.RData"))
+
+for(id in 1:num_files){
+  
+  vcf_file <- paste0(VCF_file_dir, file_names[id])
+  vcf_info <- read.vcfR(vcf_file, verbose = FALSE)
+  temp_info <- vcf_info@fix
+  vcf_missense <- temp_info[temp_info[,"FILTER"] == "PASS", c("CHROM", "POS", "REF","ALT")]
+  
+  index <- which(missense_stats[, "CHROM"] == "chr4" & missense_stats[, "POS"] == 68647129)
+  index2 <- which(vcf_missense[, "CHROM"] == "chr4" & vcf_missense[, "POS"] == 68647129)
+  # index <- which(missense_mutations[, "CHROM"] == "chr4" & missense_stats[, "POS"] == 68647129)
+  if(length(index2) > 0){
+    cat(file_names[id], "\n")
+    print(missense_stats[index, ])
+    print(vcf_missense[index2, ])
+    cat("\n")
+  }
+  
+}

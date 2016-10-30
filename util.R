@@ -828,7 +828,11 @@ count_missense_mutation_type <- function(vcf_missense){
   
   het_index <- as.numeric(which(sapply(1:num_variants, function(x) nchar(vcf_missense[x, "REF"]) != nchar(vcf_missense[x, "ALT"]))))
   het_num <- length(het_index)
-  hom_index <- (1:num_variants)[-het_index]
+  if(het_num > 0){
+    hom_index <- (1:num_variants)[-het_index]
+  }else{
+    hom_index <- 1:num_variants
+  }
   hom_num <- length(hom_index)
   missense_mutations <- data.frame(REF = character(num_variants), ALT.A = numeric(num_variants), 
                                      ALT.T=numeric(num_variants), ALT.G=numeric(num_variants), 
