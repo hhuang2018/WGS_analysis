@@ -42,7 +42,7 @@ for(id in 1:num_files){
     ### existing records increase the numbers
     ordered_IDs_in_all <- sapply(1:length(IDs_in_vcf), function(x) which(all_chrom_pos[IDs_in_all] == vcf_chrom_pos[IDs_in_vcf[x]]))
     
-    missense_stats$NumDiff[ordered_IDs_in_all] <- missense_stats$NumDiff[ordered_IDs_in_all] + 1
+    missense_stats$NumDiff[IDs_in_all[ordered_IDs_in_all]] <- missense_stats$NumDiff[IDs_in_all[ordered_IDs_in_all]] + 1
     
     missense_stats[IDs_in_all[ordered_IDs_in_all], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] <- 
       missense_stats[IDs_in_all[ordered_IDs_in_all], c("ALT.A", "ALT.T", "ALT.G", "ALT.C")] +
