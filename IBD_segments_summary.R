@@ -231,7 +231,7 @@ for (chr_id in chr) {
 }
 
 total_IBD <- data.frame(CHROM = c("Total", "Total"),
-                        MeanIBD = mean(stats_table) )
+                        MeanIBD = mean(stats_table))
 
 
 #################
@@ -255,3 +255,4 @@ p1 <- ggplot(mc_new, aes(x = Group , y = NumSegments, fill = Group)) +
   ggtitle(paste0("Number of IBD segments \non Chromosome ", chr))
 
 t.test(mc$NumSegments[mc$Group == "Matched"], mc$NumSegments[mc$Group == "Random Pairs"])
+

@@ -5,7 +5,7 @@ load("../Data/ID_table.RData")
 load("../Data/GRCh38_gene_list.RData")
 
 IBD_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/IBD_output/IBD_seq_output/"
-IBD_reformat_output <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/"
+IBD_reformat_output <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/"
 
 IBD_files <- list.files(IBD_file_dir, pattern = "\\.gt.ibd$")
 num_files <- length(IBD_files)

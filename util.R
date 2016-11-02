@@ -854,3 +854,22 @@ count_missense_mutation_type <- function(vcf_missense){
   }
   return(missense_mutations)
 }
+
+#######################
+# convert IBD count vector to data.frame
+#######################
+IBD_count_2_data_frame <- function(IBD_segment_vector, chromosome){
+  
+  nonZeroPOS <- which(IBD_segment_vector != 0)
+  numNonZeroPOS <- length(nonZeroPOS)
+  IBD_segment_dataframe <- data.frame(CHROM = character(numNonZeroPOS),
+                                          POS = character(numNonZeroPOS),
+                                          NumPairs = numeric(numNonZeroPOS),
+                                          Proportion = numeric(numNonZeroPOS),
+                                          stringsAsFactors = F)
+  IBD_segment_dataframe$CHROM <- chromosome
+  IBD_segment_dataframe$POS <- nonZeroPOS
+  IBD_segment_dataframe$NumPairs <- IBD_segment_vector[nonZeroPOS]
+  
+  return(IBD_segment_dataframe)
+}
