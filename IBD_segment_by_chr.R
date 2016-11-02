@@ -58,7 +58,7 @@ for(fid in 1:num_files){
   # $LOD
   # $GeneNames
   
-  chr <- as.numeric(gsub())
+  chr <- as.numeric(gsub("chr", "", new_IBD_table$Chr[1]))
   MatchedPair_IBD_segment_counter <- vector(mode = "numeric", length = chrLengths[chr])
   RandomPair_IBD_segment_counter <- vector(mode = "numeric", length = chrLengths[chr])
   aGVHD_IBD_segment_counter <- vector(mode = "numeric", length = chrLengths[chr])
@@ -94,10 +94,10 @@ for(fid in 1:num_files){
     
   }
   
-  MatchedPair_IBD_dataframe <- IBD_count_2_data_frame(MatchedPair_IBD_segment_counter, new_IBD_table$Chr)
-  RandomPair_IBD_dataframe <- IBD_count_2_data_frame(RandomPair_IBD_segment_counter, new_IBD_table$Chr)
-  aGVHD_IBD_dataframe <- IBD_count_2_data_frame(aGVHD_IBD_segment_counter, new_IBD_table$Chr)
-  nGVHD_IBD_dataframe <- IBD_count_2_data_frame(nGVHD_IBD_segment_counter, new_IBD_table$Chr)
+  MatchedPair_IBD_dataframe <- IBD_count_2_data_frame(MatchedPair_IBD_segment_counter, new_IBD_table$Chr[1])
+  RandomPair_IBD_dataframe <- IBD_count_2_data_frame(RandomPair_IBD_segment_counter, new_IBD_table$Chr[1])
+  aGVHD_IBD_dataframe <- IBD_count_2_data_frame(aGVHD_IBD_segment_counter, new_IBD_table$Chr[1])
+  nGVHD_IBD_dataframe <- IBD_count_2_data_frame(nGVHD_IBD_segment_counter, new_IBD_table$Chr[1])
 
   file.out.RData <- gsub("_IBD.RData", "_segment_count.RData", IBD_files[fid])
   save(MatchedPair_IBD_dataframe, RandomPair_IBD_dataframe, 
