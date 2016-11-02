@@ -46,7 +46,7 @@ for(fid in 1:num_files){
   # IBD_table <- read.table(file = paste0(IBD_file_dir, IBD_files[fid]))
   # colnames(IBD_table) <- c("SampleID1", "HapID1", "SampleID2", "HapID2", "Chr", "StartInd", "EndInd", "LOD")
   
-  load(paste0(IBD_file_dir, IBD_files[fid]))
+  load(paste0(IBD_reformat_dir, IBD_files[fid]))
   # new_IBD_table
   # $SampleID1
   # $HapID1
