@@ -7,10 +7,11 @@ load("../Data/GRCh38_gene_list.RData")
 IBD_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/IBD_output/IBD_seq_output/"
 IBD_reformat_output <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/"
 
-IBD_files <- list.files(IBD_file_dir, pattern = "\\.gt.ibd$")
-num_files <- length(IBD_files)
-
-for(fid in 1:num_files){
+# IBD_files <- list.files(IBD_file_dir, pattern = "\\.gt.ibd$")
+# num_files <- length(IBD_files)
+IBD_files <- "ibdseq_output_all_chr11.gt.ibd"
+fid <- 1
+# for(fid in 1:num_files){
   ptm <- proc.time() 
   
   IBD_table <- read.table(file = paste0(IBD_file_dir, IBD_files[fid]))
@@ -62,17 +63,18 @@ for(fid in 1:num_files){
   cat(paste0("IBD table for ", IBD_files[fid]," has been converted and saved!\n"))
   print(proc.time() - ptm)
   cat("\n")
-}
+# }
 
 
 ###################
 # HBD
 ###################
 # rm(list = ls())
-IBD_files <- list.files(IBD_file_dir, pattern = "\\.gt.hbd$")
-num_files <- length(HBD_files)
-
-for(fid in 1:num_files){
+# IBD_files <- list.files(IBD_file_dir, pattern = "\\.gt.hbd$")
+# num_files <- length(HBD_files)
+IBD_files <- "ibdseq_output_all_chr11.gt.hbd"
+fid <- 1
+# for(fid in 1:num_files){
   ptm <- proc.time() 
   IBD_table <- read.table(file = paste0(IBD_file_dir, IBD_files[fid]))
   colnames(IBD_table) <- c("SampleID1", "HapID1", "SampleID2", "HapID2", "Chr", "StartInd", "EndInd", "LOD")
@@ -120,4 +122,4 @@ for(fid in 1:num_files){
   cat(paste0("HBD table for ", IBD_files[fid]," has been converted and saved!\n"))
   print(proc.time() - ptm)
   cat("\n")
-}
+# }
