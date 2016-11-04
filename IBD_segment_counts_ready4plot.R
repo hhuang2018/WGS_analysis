@@ -32,10 +32,10 @@ for(fid in 1:num_files){
   # aGVHD_all_IBD <- rbind(aGVHD_all_IBD, aGVHD_IBD_dataframe)
   # nGVHD_all_IBD <- rbind(nGVHD_all_IBD, nGVHD_IBD_dataframe)
   
-  write.csv(MatchedPair_IBD_dataframe, paste0(IBD_segment_count_output_dir, Matched_all_IBD_csv), row.names = F)
-  write.csv(RandomPair_IBD_dataframe, paste0(IBD_segment_count_output_dir, Random_all_IBD_csv), row.names = F)
-  write.csv(aGVHD_IBD_dataframe, paste0(IBD_segment_count_output_dir, aGVHD_all_IBD_csv), row.names = F)
-  write.csv(nGVHD_IBD_dataframe, paste0(IBD_segment_count_output_dir, nGVHD_all_IBD_csv), row.names = F)
+  write.csv(MatchedPair_IBD_dataframe, paste0(IBD_segment_count_output_dir, Matched_all_IBD_csv), row.names = F, append = TRUE)
+  write.csv(RandomPair_IBD_dataframe, paste0(IBD_segment_count_output_dir, Random_all_IBD_csv), row.names = F, append = TRUE)
+  write.csv(aGVHD_IBD_dataframe, paste0(IBD_segment_count_output_dir, aGVHD_all_IBD_csv), row.names = F, append = TRUE)
+  write.csv(nGVHD_IBD_dataframe, paste0(IBD_segment_count_output_dir, nGVHD_all_IBD_csv), row.names = F, append = TRUE)
   
   rm(MatchedPair_IBD_dataframe, RandomPair_IBD_dataframe, aGVHD_IBD_dataframe, nGVHD_IBD_dataframe) 
   
