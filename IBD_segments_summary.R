@@ -139,7 +139,7 @@ p1
 p2
 
 ##############################
-chr <- (1:22)[-11]
+chr <- (1:22)
 IBD_reformated_dir <- "../Output/IBDseq/cloud_Rformat/"
 stats_table <- data.frame(CHROM = character(length(chr)*2),
                           MeanIBD = numeric(length(chr)*2),
