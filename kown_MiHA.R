@@ -1,7 +1,9 @@
+library(corrgram)
 load("../Data/ID_table.RData")
 
-known_miha_freq <- read.csv("../WW_MiHA/HLA_restricted_knownMiHAs.csv", header = F)
-colnames(known_miha_freq) <- c("GroupType", "GroupID", "CHROM", "REF", "ALT", "HLA_type", "SNP")
+# known_miha_freq <- read.csv("../WW_MiHA/HLA_restricted_knownMiHAs.csv", header = F)
+known_miha_freq <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F)
+colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
 
 table(known_miha_freq[c("HLA_type","SNP")])
 
@@ -64,12 +66,12 @@ A_SNP <- A_SNP[-which(rowSums(A_SNP[, -c(1,2)])==0), ]
 A_a_SNP <- A_SNP[A_SNP$GroupType == "a", ]
 A_n_SNP <- A_SNP[A_SNP$GroupType == "n", ]
 
-library(corrgram)
+# library(corrgram)
 corrgram(A_a_SNP[, -1], order = T, lower.panel = panel.shade,
          upper.panel = panel.pie)
 
-corrgram(A_a_SNP[, -c(1,2)], order = T, lower.panel = panel.ellipse,text.panel=panel.txt,
-         upper.panel = panel.pts, diag.panel = panel.minmax)
+# corrgram(A_a_SNP[, -c(1,2)], order = T, lower.panel = panel.ellipse,text.panel=panel.txt,
+#          upper.panel = panel.pts, diag.panel = panel.minmax)
 
 col.corrgram <- function(ncol){   
   colorRampPalette(c("darkgoldenrod4", "burlywood1",
@@ -79,14 +81,16 @@ new_A_a_SNP <- A_a_SNP[,-c(1,2)]
 new_A_a_SNP[new_A_a_SNP>1] <- 1
 
 new_A_a_SNP <- cbind(A_a_SNP[, c(1,2)], new_A_a_SNP)
+Labels_SNP <- gsub("A\\*02:01-", "",colnames(new_A_a_SNP[nonZeros_rows, -c(1,2)]))
 corrgram(new_A_a_SNP[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade, 
          upper.panel=panel.pie, diag.panel = NULL, text.panel=panel.txt, 
-         main="Correlogram of HLA-A*02:01 restricted MiHAs \n in aGVHD groups", 
+         labels = Labels_SNP, #label.pos = c(0,0), label.srt = 45,
+         main="HLA-A*02:01 restricted MiHAs \n in aGVHD groups", 
          cor.method = "spearman")
 
 corrgram(A_a_SNP[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade, 
          upper.panel=panel.pie, diag.panel = NULL, text.panel=panel.txt, 
-         main="Correlogram of HLA-A*02:01 restricted MiHAs \n in aGVHD groups", 
+         main="HLA-A*02:01 restricted MiHAs \n in aGVHD groups", 
          cor.method = "spearman") #,
          # col.regions = colorRampPalette(c("darkgoldenrod4", "burlywood1",
          #                                  "darkkhaki", "darkgreen")))
@@ -94,6 +98,7 @@ corrgram(A_a_SNP[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade,
 nonZeros_rows <- which(rowSums(A_n_SNP[, -c(1,2)]) !=0)
 p_nGVHD <- corrgram(A_n_SNP[nonZeros_rows, -c(1,2)], order = F, lower.panel = panel.shade,
          upper.panel = panel.pie, text.panel=panel.txt, 
+         labels = Labels_SNP,
          main="Correlogram of HLA-A*02:01 restricted MiHAs \n in non-aGVHD groups",
          cor.method = "spearman") 
 
@@ -101,9 +106,11 @@ new_A_n_SNP <- A_n_SNP[,-c(1,2)]
 new_A_n_SNP[new_A_n_SNP>1] <- 1
 
 new_A_n_SNP <- cbind(A_n_SNP[, c(1,2)], new_A_n_SNP)
+Labels_SNP <- gsub("A\\*02:01-", "",colnames(new_A_n_SNP[nonZeros_rows, -c(1,2)]))
 corrgram(new_A_n_SNP[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade, 
          upper.panel=panel.pie, diag.panel = NULL, text.panel=panel.txt, 
-         main="Correlogram of HLA-A*02:01 restricted MiHAs \n in non-aGVHD groups", 
+         labels = Labels_SNP,
+         main="HLA-A*02:01 restricted MiHAs \n in non-aGVHD groups", 
          cor.method = "spearman")
 
 ## Log Ratio
@@ -117,7 +124,8 @@ corrgram(new_A_n_SNP[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade,
 # multiplot(p_aGVHD, p_nGVHD, cols = 2)
 ###
 # B*07:02
-B_SNP <- SNP_mat[, c(1:2, 17:26)]
+# B_SNP <- SNP_mat[, c(1:2, 17:26)]
+B_SNP <- SNP_mat[, c(1:2, 18:27)]
 B_SNP <- B_SNP[-which(rowSums(B_SNP[, -c(1,2)])==0), ]
 B_a_SNP <- B_SNP[B_SNP$GroupType == "a", ]
 B_n_SNP <- B_SNP[B_SNP$GroupType == "n", ]
@@ -127,27 +135,34 @@ new_B_a_SNP <- B_a_SNP[,-c(1,2)]
 new_B_a_SNP[new_B_a_SNP>1] <- 1
 new_B_a_SNP <- cbind(B_a_SNP[, c(1,2)], new_B_a_SNP)
 
+Labels_SNP <- gsub("B\\*07:02-", "",colnames(B_a_SNP[nonZeros_rows, -c(1,2)]))
 corrgram(B_a_SNP[nonZeros_rows, -c(1,2)], order= F, lower.panel=panel.shade, 
          upper.panel=panel.pie, text.panel=panel.txt, 
-         main="Correlogram of HLA-B*07:02 restricted MiHAs \n in aGVHD groups",
+         labels = Labels_SNP,
+         main="HLA-B*07:02 restricted MiHAs \n in aGVHD groups",
          cor.method = "spearman") #,
 # col.regions = colorRampPalette(c("darkgoldenrod4", "burlywood1",
 #                                  "darkkhaki", "darkgreen")))
 corrgram(new_B_a_SNP[nonZeros_rows, -c(1,2)], order= F, lower.panel=panel.shade, 
          upper.panel=panel.pie, text.panel=panel.txt, 
+         labels = Labels_SNP,
          main="Correlogram of HLA-B*07:02 restricted MiHAs \n in aGVHD groups",
          cor.method = "spearman")
 
 new_B_n_SNP <- B_n_SNP[,-c(1,2)]
 new_B_n_SNP[new_B_n_SNP>1] <- 1
 new_B_n_SNP <- cbind(B_n_SNP[, c(1,2)], new_B_n_SNP)
+
+Labels_SNP <- gsub("B\\*07:02-", "",colnames(new_B_n_SNP[, -c(1,2)]))
 corrgram(new_B_n_SNP[, -c(1,2)], order = F, lower.panel = panel.shade,
          upper.panel = panel.pie, text.panel=panel.txt, 
-         main="Correlogram of HLA-B*07:02 restricted MiHAs \n in non-GVHD groups",
+         labels = Labels_SNP,
+         main="HLA-B*07:02 restricted MiHAs \n in non-GVHD groups",
          cor.method = "spearman") 
 
 corrgram(B_n_SNP[, -c(1,2)], order = F, lower.panel = panel.shade,
          upper.panel = panel.pie, text.panel=panel.txt, 
+         labels = Labels_SNP,
          main="Correlogram of HLA-B*07:02 restricted MiHAs \n in non-GVHD groups",
          cor.method = "spearman") 
 

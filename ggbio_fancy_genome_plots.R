@@ -36,77 +36,81 @@ Ideogram(hg38_cytoband, xlabel = T, subchr = "chr1")
 #### Gene list
 genome <- BSgenome.Hsapiens.UCSC.hg38
 
-hg38_known_genes <- TxDb.Hsapiens.UCSC.hg38.knownGene
-knownGene_tx <- extractUpstreamSeqs(genome, hg38_known_genes)
+# hg38_known_genes <- TxDb.Hsapiens.UCSC.hg38.knownGene
+# knownGene_tx <- extractUpstreamSeqs(genome, hg38_known_genes)
 
-refGene_txdb <- makeTxDbFromUCSC("hg38", "refGene")
-refGene_up1000seqs <- extractUpstreamSeqs(genome, refGene_txdb)
-# load("../Data/GRCh38_gene_list.RData")
-GRCh38_known_gene_list <- read.delim("../UCSCgenome/database/knownGene.txt", header  = F)
-kg_table <- read.delim("../UCSCgenome/database/hgTables.txt")
+# refGene_txdb <- makeTxDbFromUCSC("hg38", "refGene")
+# refGene_up1000seqs <- extractUpstreamSeqs(genome, refGene_txdb)
+# # load("../Data/GRCh38_gene_list.RData")
+# GRCh38_known_gene_list <- read.delim("../UCSCgenome/database/knownGene.txt", header  = F)
+# kg_table <- read.delim("../UCSCgenome/database/hgTables.txt")
 # GeneSymbols <- sapply(GRCh38_known_gene_list$name, function(x) kg_table$geneSymbol[which(as.character(x) == as.character(kg_table$X.kgID))])
 
-num_genes <- dim(GRCh38_known_gene_list)[1]
-GeneSymbols <- data.frame(genesymbol = character(num_genes),
-                          stringsAsFactors = F)
-for(id in 1:num_genes){
-  index <- which(as.character(GRCh38_known_gene_list$name[id]) == as.character(kg_table$X.kgID))
-  if(length(index) == 1){
-  GeneSymbols$genesymbol[id] <- as.character(kg_table$geneSymbol[index])
-  } else GeneSymbols$genesymbol[id] <- NA
-}
-GRCh38_known_gene_list$genesymbol <- GeneSymbols$genesymbol
-colnames(GRCh38_known_gene_list) <- c("name","Chromosome", "strand", "txStart", "txEnd", "cdsStart", "cdsEnd",
-                                      "exonCount", "exonStarts", "exonEnds", "proteinID", "alignID", "genesymbol")
-# rownames(GRCh38_known_gene_list) <- GeneSymbols$genesymbol
-GRCh38_known_genesymbol <- makeGRangesFromDataFrame(GRCh38_known_gene_list, seqnames.field = "Chromosome",
-                                                    start.field = "txStart", end.field = "txEnd", 
-                                                    strand.field = "strand",
-                                                    keep.extra.columns = T)
-save(GRCh38_known_genesymbol, GRCh38_known_gene_list, file = "../Data/hg38_known_gene_symbols.RData")
+# num_genes <- dim(GRCh38_known_gene_list)[1]
+# GeneSymbols <- data.frame(genesymbol = character(num_genes),
+#                           stringsAsFactors = F)
+# for(id in 1:num_genes){
+#   index <- which(as.character(GRCh38_known_gene_list$name[id]) == as.character(kg_table$X.kgID))
+#   if(length(index) == 1){
+#   GeneSymbols$genesymbol[id] <- as.character(kg_table$geneSymbol[index])
+#   } else GeneSymbols$genesymbol[id] <- NA
+# }
+# GRCh38_known_gene_list$genesymbol <- GeneSymbols$genesymbol
+# colnames(GRCh38_known_gene_list) <- c("name","Chromosome", "strand", "txStart", "txEnd", "cdsStart", "cdsEnd",
+#                                       "exonCount", "exonStarts", "exonEnds", "proteinID", "alignID", "genesymbol")
+# # rownames(GRCh38_known_gene_list) <- GeneSymbols$genesymbol
+# GRCh38_known_genesymbol <- makeGRangesFromDataFrame(GRCh38_known_gene_list, seqnames.field = "Chromosome",
+#                                                     start.field = "txStart", end.field = "txEnd", 
+#                                                     strand.field = "strand",
+#                                                     keep.extra.columns = T)
+# save(GRCh38_known_genesymbol, GRCh38_known_gene_list, file = "../Data/hg38_known_gene_symbols.RData")
 #### HG38 Known gene list saved based on hgTable from USCS
 
 
+load("../Data/hg38_known_gene_symbols.RData")
 
 ### hg38 knwon gene names from HUGO Gene Nomenclature Committee
-GRCh38_known_gene_list <- read.delim("../UCSCgenome/database/knownGene.txt", header  = F)
-HGNC_table <- read.delim("../UCSCgenome/HUGO_Gene_Nomenclature_Committee.txt")
+# GRCh38_known_gene_list <- read.delim("../UCSCgenome/database/knownGene.txt", header  = F)
+# HGNC_table <- read.delim("../UCSCgenome/HUGO_Gene_Nomenclature_Committee.txt")
 # GeneSymbols <- sapply(GRCh38_known_gene_list$name, function(x) kg_table$geneSymbol[which(as.character(x) == as.character(kg_table$X.kgID))])
 
-num_genes <- dim(GRCh38_known_gene_list)[1]
-GeneSymbols <- data.frame(genesymbol = character(num_genes),
-                          stringsAsFactors = F)
-for(id in 1:num_genes){
-  index <- which(as.character(GRCh38_known_gene_list$name[id]) == as.character(HGNC_table$UCSC.ID.supplied.by.UCSC.))
-  if(length(index) == 1){
-    GeneSymbols$genesymbol[id] <- as.character(HGNC_table$Approved.Symbol[index])
-  } else GeneSymbols$genesymbol[id] <- NA
-}
+# num_genes <- dim(GRCh38_known_gene_list)[1]
+# GeneSymbols <- data.frame(genesymbol = character(num_genes),
+#                           stringsAsFactors = F)
+# for(id in 1:num_genes){
+#   index <- which(as.character(GRCh38_known_gene_list$name[id]) == as.character(HGNC_table$UCSC.ID.supplied.by.UCSC.))
+#   if(length(index) == 1){
+#     GeneSymbols$genesymbol[id] <- as.character(HGNC_table$Approved.Symbol[index])
+#   } else GeneSymbols$genesymbol[id] <- NA
+# }
+# 
+# GRCh38_known_gene_list$genesymbol <- GeneSymbols$genesymbol
+# colnames(GRCh38_known_gene_list) <- c("name","Chromosome", "strand", "txStart", "txEnd", "cdsStart", "cdsEnd",
+#                                       "exonCount", "exonStarts", "exonEnds", "proteinID", "alignID", "genesymbol")
+# # rownames(GRCh38_known_gene_list) <- GeneSymbols$genesymbol
+# GRCh38_known_genesymbol <- makeGRangesFromDataFrame(GRCh38_known_gene_list, seqnames.field = "Chromosome",
+#                                                     start.field = "txStart", end.field = "txEnd", 
+#                                                     strand.field = "strand",
+#                                                     keep.extra.columns = T)
+# save(GRCh38_known_genesymbol, GRCh38_known_gene_list, file = "../Data/hg38_known_gene_symbols_HGNC.RData")
 
-GRCh38_known_gene_list$genesymbol <- GeneSymbols$genesymbol
-colnames(GRCh38_known_gene_list) <- c("name","Chromosome", "strand", "txStart", "txEnd", "cdsStart", "cdsEnd",
-                                      "exonCount", "exonStarts", "exonEnds", "proteinID", "alignID", "genesymbol")
-# rownames(GRCh38_known_gene_list) <- GeneSymbols$genesymbol
-GRCh38_known_genesymbol <- makeGRangesFromDataFrame(GRCh38_known_gene_list, seqnames.field = "Chromosome",
-                                                    start.field = "txStart", end.field = "txEnd", 
-                                                    strand.field = "strand",
-                                                    keep.extra.columns = T)
-save(GRCh38_known_genesymbol, GRCh38_known_gene_list, file = "../Data/hg38_known_gene_symbols_HGNC.RData")
+load("../Data/hg38_known_gene_symbols_HGNC.RData")
 
 #####
-MHC_regions <- GRCh38_known_gene_list[grepl("HLA-A|HLA-B|HLA-C|HLA-DRB|HLA-DQB", GRCh38_known_gene_list$genesymbol),]
-MHC_regions <- MHC_regions[grep("chr6$", MHC_regions$Chromosome),]
-MHC_regions$Chromosome <- as.character(MHC_regions$Chromosome)
-# GRCh38_known_gene_list$genesymbol[grepl("HLA-A|HLA-B|HLA-C|HLA-DRB|HLA-DQB", GRCh38_known_gene_list$genesymbol)]
-GR_MHC_regions <- makeGRangesFromDataFrame(MHC_regions, seqnames.field = "Chromosome",
-                                           start.field = "txStart", end.field = "txEnd", 
-                                           strand.field = "strand",
-                                           keep.extra.columns = T)
-seqlengths(GR_MHC_regions) <- chr.len[names(seqlengths(GR_MHC_regions))]
-save(GR_MHC_regions, MHC_regions, file = "../Data/hg38_MHC_region_gene_symbols_HGNC.RData")
+# MHC_regions <- GRCh38_known_gene_list[grepl("HLA-A|HLA-B|HLA-C|HLA-DRB|HLA-DQB", GRCh38_known_gene_list$genesymbol),]
+# MHC_regions <- MHC_regions[grep("chr6$", MHC_regions$Chromosome),]
+# MHC_regions$Chromosome <- as.character(MHC_regions$Chromosome)
+# # GRCh38_known_gene_list$genesymbol[grepl("HLA-A|HLA-B|HLA-C|HLA-DRB|HLA-DQB", GRCh38_known_gene_list$genesymbol)]
+# GR_MHC_regions <- makeGRangesFromDataFrame(MHC_regions, seqnames.field = "Chromosome",
+#                                            start.field = "txStart", end.field = "txEnd", 
+#                                            strand.field = "strand",
+#                                            keep.extra.columns = T)
+# seqlengths(GR_MHC_regions) <- chr.len[names(seqlengths(GR_MHC_regions))]
+# save(GR_MHC_regions, MHC_regions, file = "../Data/hg38_MHC_region_gene_symbols_HGNC.RData")
 #######
 
 
+load("../Data/hg38_MHC_region_gene_symbols_HGNC.RData")
 
 #### all missense 
 # library(ggplot2)
@@ -167,7 +171,7 @@ pp <- autoplot(hg38, layout = "karyogram", cytoband = T)#+ scale_fill_giemsa()
 #                  getOption("biovizBase")$cytobandColor[c("acen", "gneg", "gpos100", "gpos25", "gpos50", "gpos75", "gvar","stalk")] 
 #                  )
 # names(colorValues) <- NULL
-pp + layout_karyogram(known_MiHA_SNPs, layout = "karyogram", size = 1, color = "red") + #scale_color_discrete("red") +
+pp + layout_karyogram(known_MiHA_SNPs, layout = "karyogram", size = 0.6, color = "red") + #scale_color_discrete("red") +
   layout_karyogram(GR_MHC_regions, layout = "karyogram", size = 1, color = "#009E73") +
   layout_karyogram(GR_all_mc, aes(x = POS3, y = NumDiff, color = factor(group)),
                    ylim = c(10,40), rect.height = 5, geom="point", size = 0.5, alpha = 0.1) + 
