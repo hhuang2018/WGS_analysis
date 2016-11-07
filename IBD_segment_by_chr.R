@@ -11,7 +11,7 @@ IBD_segment_count_output_dir <-  "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_s
 
 # IBD_files <- list.files(IBD_reformat_dir, pattern = "\\.RData$")
 # num_files <- length(IBD_files)
-IBD_files <- "ibdseq_output_all_chr11.gt.ibd.RData"
+IBD_files <- "ibdseq_output_all_chr11_IBD.RData"
 ###################
 # Overall IBD segments on genome
 ###################
