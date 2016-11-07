@@ -10,7 +10,7 @@ library(BSgenome.Hsapiens.UCSC.hg38)
 #                 145138636, # chr8
 #                 138394717, # chr9
 #                 133797422, # chr10
-#                 135086622, # chr11 
+#                 135086622, # chr11
 #                 133275309, # chr12
 #                 114364328, # chr13
 #                 107043718, # chr14
@@ -29,12 +29,12 @@ chr.len = seqlengths(BSgenome.Hsapiens.UCSC.hg38)  # get chromosome lengths
 chr.len = chr.len[grep("_|M", names(chr.len), invert = T)]
 #### Summarize Beagles output
 
-beagles_output_dir <- "../Output/IBDseq/R_reformated/"
-IBDseq_summary_output <- "../Output/IBDseq/Figures/"
-# beagles_output_dir <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/"
-# IBDseq_summary_output <- "/mnt/cloudbiodata_nfs_2/hhuang/IBD/IBD_seq_output/summary"
-#chr <- 10 
-chr_list <- 1
+# beagles_output_dir <- "../Output/IBDseq/R_reformated/"
+# IBDseq_summary_output <- "../Output/IBDseq/Figures/"
+beagles_output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/"
+IBDseq_summary_output <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/summary"
+chr <- 11
+# chr_list <- 11
 
 for(chr in chr_list){
   
@@ -124,7 +124,7 @@ for(chr in chr_list){
   ordered_Matched <- Matched_group_length[order(Matched_group_length$Percent, decreasing = T), ]
   Matched_high_pert <- ordered_Matched[which(ordered_Matched$Percent > 0), ]
   # }
-  # save(mc, mc_length, p1, p2, Random_high_pert, Matched_high_pert, file = paste0(IBDseq_summary_output, "IBDseq_summary_chr_", chr, ".RData"))
+  save(mc, mc_length, p1, p2, Random_high_pert, Matched_high_pert, file = paste0(IBDseq_summary_output, "IBDseq_summary_chr_", chr, ".RData"))
 }
 
 ##############################
