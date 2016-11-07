@@ -31,7 +31,7 @@ source("util.R")
 
 names(chr.len) <- sapply(1:22, function(x) paste0("chr", x))
 ##############################
-chr <- (1:22)[-11]
+chr <- (1:22)
 IBD_reformated_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/summary/"
 output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/summary/"
 
