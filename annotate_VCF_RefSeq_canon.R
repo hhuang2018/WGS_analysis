@@ -16,19 +16,19 @@ num_files <- length(Not_annotated_index)
 
 for(id in 1:num_files){
   ptm <- proc.time()
-  t1 <- system(paste0("java -Xmx32g -jar ", snpEff_dir, "snpEff.jar -t -noStats -dataDir ", snpEff_database,
+  t1 <- system(paste0("java -Xmx32g -jar ", snpEff_dir, "snpEff.jar -t -canon -noStats -dataDir ", snpEff_database,
                       " -v GRCh38.p7.RefSeq ", 
                       # destination_dir, filenames[Not_annotated_index[id]], "_snpEff_RefSeq_summary.csv -v ",
-                       original_file_dir, filenames[Not_annotated_index[id]], ".vcf.gz > ",
-                      destination_dir, filenames[Not_annotated_index[id]],"_RefSeq_annotated.vcf"),
+                      original_file_dir, filenames[Not_annotated_index[id]], ".vcf.gz > ",
+                      destination_dir, filenames[Not_annotated_index[id]],"_RefSeq_annotated_canon.vcf"),
                intern = TRUE)
   proc.time() - ptm
   
-  system(paste0("bgzip ", destination_dir, filenames[Not_annotated_index[id]],"_RefSeq_annotated.vcf"))
-  system(paste0("tabix -p vcf ", destination_dir, filenames[Not_annotated_index[id]],"_RefSeq_annotated.vcf.gz"))
+  system(paste0("bgzip ", destination_dir, filenames[Not_annotated_index[id]],"_RefSeq_annotated_canon.vcf"))
+  system(paste0("tabix -p vcf ", destination_dir, filenames[Not_annotated_index[id]],"_RefSeq_annotated_canon.vcf.gz"))
   # system(paste0("mv snpEff_genes.txt ",  destination_dir, filenames[Not_annotated_index[id]], "_snpEff_RefSeq_genes.txt"))
   # system(paste0("mv snpEff_summary.html ",  destination_dir, filenames[Not_annotated_index[id]], "_snpEff_RefSeq_summary.html"))
-  save(t1, file = paste0(destination_dir, filenames[Not_annotated_index[id]],"_RefSeq_annotated.out.RData"))
+  save(t1, file = paste0(destination_dir, filenames[Not_annotated_index[id]],"_RefSeq_annotated.out_canon.RData"))
 }
 
 ##### need csv format of summary
