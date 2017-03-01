@@ -448,3 +448,111 @@ table(available_HLA_typing_ten$Group[unique(c(typ1_res, typ2_res))])
 # remove false positive
 
 length(unique(c(typ1_mismatch, typ2_mismatch, typ1_res, typ2_res)))
+
+#########################################################################
+HLA_typings <- read.csv(file = "../HLI_hla_mg_v3.csv")
+load("../Data/ID_table.RData")
+
+available_IDs <-ID_table[ID_table$GroupID %in% ID_table$GroupID[duplicated(ID_table$GroupID)],]
+
+available_IDs_HLA_typing <- HLA_typings[(HLA_typings$nmdp_rid %in% available_IDs$R_D_ID),]
+num_groups <- dim(available_IDs_HLA_typing)[1]
+group_type <- sapply(1:num_groups, function(x) available_IDs$Group[available_IDs$R_D_ID %in% available_IDs_HLA_typing$nmdp_rid[x]])
+group_type[group_type == "a"] <- "aGVHD"
+group_type[group_type == "n"] <- "non-GVHD"
+
+reformated_HLA_typing_list <- available_IDs_HLA_typing[, 1:3]
+reformated_HLA_typing_list$RRace <- available_IDs_HLA_typing$rid.broad.race
+reformated_HLA_typing_list$DRace <- available_IDs_HLA_typing$did.broad.race
+reformated_HLA_typing_list$RSex <- available_IDs_HLA_typing$rid_sex
+reformated_HLA_typing_list$DSex <- available_IDs_HLA_typing$donor_sex
+
+reformated_HLA_typing_list$HLA_A1 <- sapply(as.character(available_IDs_HLA_typing$r_a_typ1.gl), function(x) unlist(strsplit(x, "/"))[1])
+reformated_HLA_typing_list$HLA_A2 <- sapply(as.character(available_IDs_HLA_typing$r_a_typ2.gl), function(x) unlist(strsplit(x, "/"))[1])
+reformated_HLA_typing_list$HLA_B1 <- sapply(as.character(available_IDs_HLA_typing$r_b_typ1.gl), function(x) unlist(strsplit(x, "/"))[1])
+reformated_HLA_typing_list$HLA_B2 <- sapply(as.character(available_IDs_HLA_typing$r_b_typ2.gl), function(x) unlist(strsplit(x, "/"))[1])
+reformated_HLA_typing_list$HLA_C1 <- sapply(as.character(available_IDs_HLA_typing$r_c_typ1.gl), function(x) unlist(strsplit(x, "/"))[1])
+reformated_HLA_typing_list$HLA_C2 <- sapply(as.character(available_IDs_HLA_typing$r_c_typ2.gl), function(x) unlist(strsplit(x, "/"))[1])
+reformated_HLA_typing_list$HLA_DRB11 <- sapply(as.character(available_IDs_HLA_typing$r_drb1_typ1.gl), function(x) unlist(strsplit(x, "/"))[1])
+reformated_HLA_typing_list$HLA_DRB12 <- sapply(as.character(available_IDs_HLA_typing$r_drb1_typ2.gl), function(x) unlist(strsplit(x, "/"))[1])
+reformated_HLA_typing_list$HLA_DQB11 <- sapply(as.character(available_IDs_HLA_typing$r_dqb1_typ1.gl), function(x) unlist(strsplit(x, "/"))[1])
+reformated_HLA_typing_list$HLA_DQB12 <- sapply(as.character(available_IDs_HLA_typing$r_dqb1_typ2.gl), function(x) unlist(strsplit(x, "/"))[1])
+
+get_two_field <- function(HLA_typing){
+  
+  reformat_typing <- unlist(strsplit(HLA_typing, ":"))
+  if(length(reformat_typing) > 2){
+    
+    two_fields <- paste0(reformat_typing[c(1,2)], collapse = ":")
+    
+  }else two_fields <- HLA_typing
+  
+  return(two_fields)
+}
+
+reformated_HLA_typing_list$HLA_A1 <- sapply(reformated_HLA_typing_list$HLA_A1, get_two_field)
+reformated_HLA_typing_list$HLA_A2 <- sapply(reformated_HLA_typing_list$HLA_A2, get_two_field)
+reformated_HLA_typing_list$HLA_B1 <- sapply(reformated_HLA_typing_list$HLA_B1, get_two_field)
+reformated_HLA_typing_list$HLA_B2 <- sapply(reformated_HLA_typing_list$HLA_B2, get_two_field)
+reformated_HLA_typing_list$HLA_C1 <- sapply(reformated_HLA_typing_list$HLA_C1, get_two_field)
+reformated_HLA_typing_list$HLA_C2 <- sapply(reformated_HLA_typing_list$HLA_C2, get_two_field)
+reformated_HLA_typing_list$HLA_DRB11 <- sapply(reformated_HLA_typing_list$HLA_DRB11, get_two_field)
+reformated_HLA_typing_list$HLA_DRB12 <- sapply(reformated_HLA_typing_list$HLA_DRB12, get_two_field)
+reformated_HLA_typing_list$HLA_DQB11 <- sapply(reformated_HLA_typing_list$HLA_DQB11, get_two_field)
+reformated_HLA_typing_list$HLA_DQB12 <- sapply(reformated_HLA_typing_list$HLA_DQB12, get_two_field)
+
+write.csv(reformated_HLA_typing_list, file = "../ClinVar/reformated_HLA_typing.cvs")
+
+HLA_A <- data.frame(Typing = c(reformated_HLA_typing_list$HLA_A1, reformated_HLA_typing_list$HLA_A2),
+                    GroupType = rep(group_type, each = 2),
+                    stringsAsFactors = F)
+HLA_A_redundant_ID <- seq(from = 1, to = dim(HLA_A)[1], by = 2)[sapply(seq(from = 1, to = dim(HLA_A)[1], by = 2), function(x) if(HLA_A$Typing[x] == HLA_A$Typing[x+1]) TRUE else FALSE)]
+HLA_A_non_redundant <- HLA_A[-HLA_A_redundant_ID, ]
+
+HLA_B <- data.frame(Typing = c(reformated_HLA_typing_list$HLA_B1, reformated_HLA_typing_list$HLA_B2),
+                    GroupType = rep(group_type, each = 2),
+                    stringsAsFactors = F)
+HLA_B_redundant_ID <- seq(from = 1, to = dim(HLA_B)[1], by = 2)[sapply(seq(from = 1, to = dim(HLA_B)[1], by = 2), function(x) if(HLA_B$Typing[x] == HLA_B$Typing[x+1]) TRUE else FALSE)]
+HLA_B_non_redundant <- HLA_B[-HLA_B_redundant_ID, ]
+
+HLA_C <- data.frame(Typing = c(reformated_HLA_typing_list$HLA_C1, reformated_HLA_typing_list$HLA_C2),
+                    GroupType = rep(group_type, each = 2),
+                    stringsAsFactors = F)
+HLA_C_redundant_ID <- seq(from = 1, to = dim(HLA_C)[1], by = 2)[sapply(seq(from = 1, to = dim(HLA_C)[1], by = 2), function(x) if(HLA_C$Typing[x] == HLA_C$Typing[x+1]) TRUE else FALSE)]
+HLA_C_non_redundant <- HLA_C[-HLA_C_redundant_ID, ]
+
+HLA_DRB1 <- data.frame(Typing = c(reformated_HLA_typing_list$HLA_DRB11, reformated_HLA_typing_list$HLA_DRB12),
+                    GroupType = rep(group_type, each = 2),
+                    stringsAsFactors = F)
+HLA_DRB1_redundant_ID <- seq(from = 1, to = dim(HLA_DRB1)[1], by = 2)[sapply(seq(from = 1, to = dim(HLA_DRB1)[1], by = 2), function(x) if(HLA_DRB1$Typing[x] == HLA_DRB1$Typing[x+1]) TRUE else FALSE)]
+HLA_DRB1_non_redundant <- HLA_DRB1[-HLA_DRB1_redundant_ID, ]
+
+HLA_DQB1 <- data.frame(Typing = c(reformated_HLA_typing_list$HLA_DQB11, reformated_HLA_typing_list$HLA_DQB12),
+                    GroupType = rep(group_type, each = 2),
+                    stringsAsFactors = F)
+HLA_DQB1_redundant_ID <- seq(from = 1, to = dim(HLA_DQB1)[1], by = 2)[sapply(seq(from = 1, to = dim(HLA_DQB1)[1], by = 2), function(x) if(HLA_DQB1$Typing[x] == HLA_DQB1$Typing[x+1]) TRUE else FALSE)]
+HLA_DQB1_non_redundant <- HLA_DQB1[-HLA_DQB1_redundant_ID, ]
+
+plot_typing_summary(HLA_A_non_redundant, "HLA-A Typing")
+# plot_typing_summary(HLA_A, "HLA-A Typing")
+
+plot_typing_summary(HLA_B_non_redundant, "HLA-B Typing")
+plot_typing_summary(HLA_C_non_redundant, "HLA-C Typing")
+plot_typing_summary(HLA_DRB1_non_redundant, "HLA-DRB1 Typing")
+plot_typing_summary(HLA_DQB1_non_redundant, "HLA-DQB1 Typing")
+
+
+unique_HLA_A <- sapply(cbind(reformated_HLA_typing_list$HLA_A1, reformated_HLA_typing_list$HLA_A2), function(x) unique(x))
+
+
+
+
+
+
+A_0201_ID <- sort(union(which(highest_IDs_table$reformated_HLA_typing_list %in% "02:01"), which(reformated_HLA_typing_list$HLA_A2 %in% "02:01")))
+table(highest_IDs_table$HLA_B1[A_0201_ID])
+
+A_0201_B_0702_ID2 <- sort(union(which(highest_IDs_table$HLA_B1[A_0201_ID] %in% "07:02"), which(highest_IDs_table$HLA_B2[A_0201_ID] %in% "07:02")))
+A_0201_B_0702_ID <- A_0201_ID[A_0201_B_0702_ID2]
+
+table(highest_IDs_table$HLA_C1[A_0201_B_0702_ID])

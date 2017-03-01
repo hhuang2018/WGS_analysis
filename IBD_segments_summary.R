@@ -235,7 +235,7 @@ total_IBD <- data.frame(CHROM = c("Total", "Total"),
 
 
 #################
-# Outlier analysis -- most likely related pairs
+# Outlier analysis -- most likely related pairs,
 # 
 library(ggplot2)
 NumSeg_percentiles <- quantile(mc$NumSegments)

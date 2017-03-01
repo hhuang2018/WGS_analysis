@@ -48,11 +48,13 @@ colnames(beeswarm_all_var) <- c("x", "y", "GVHD")
 ggplot(beeswarm_all_var, aes(x, y)) +
   xlab("") +
   scale_y_continuous(expression("#All mutated variants in IDH1")) + 
-  geom_point(aes(colour = GVHD), size = 2) +
+  geom_jitter(width = 0.2, aes(color = GVHD), size = 3, alpha = 0.8) +
+  # geom_point(aes(colour = GVHD), size = 2) +
   scale_colour_manual(values = c("#D55E00", "#0072B2")) + 
   scale_x_continuous(breaks = c(1:2), 
                      labels = c("acute GVHD", "non GVHD"), expand = c(0, 0.05)) +
   geom_boxplot(aes(x, y, group = round_any(beeswarm_all_var$x, 1, round)), outlier.shape = NA, alpha = 0)
+
 
 ## exon
 

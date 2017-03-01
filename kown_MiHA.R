@@ -120,7 +120,6 @@ corrgram(new_A_n_SNP[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade,
 
 
 
-
 # multiplot(p_aGVHD, p_nGVHD, cols = 2)
 ###
 # B*07:02
