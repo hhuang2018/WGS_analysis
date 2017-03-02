@@ -826,7 +826,8 @@ count_missense_mutation_type <- function(vcf_missense){
   
   num_variants <- dim(vcf_missense)[1]
   
-  het_index <- as.numeric(which(sapply(1:num_variants, function(x) nchar(vcf_missense[x, "REF"]) != nchar(vcf_missense[x, "ALT"]))))
+  # het_index <- as.numeric(which(sapply(1:num_variants, function(x) nchar(vcf_missense[x, "REF"]) != nchar(vcf_missense[x, "ALT"]))))
+  het_index <- which(grepl(",", vcf_missense[, "ALT"]))
   het_num <- length(het_index)
   if(het_num > 0){
     hom_index <- (1:num_variants)[-het_index]
@@ -835,22 +836,57 @@ count_missense_mutation_type <- function(vcf_missense){
   }
   hom_num <- length(hom_index)
   missense_mutations <- data.frame(REF = character(num_variants), ALT.A = numeric(num_variants), 
-                                     ALT.T=numeric(num_variants), ALT.G=numeric(num_variants), 
-                                     ALT.C=numeric(num_variants), stringsAsFactors = F)
-  # A - 1; T - 2; G - 3; C - 4;
+                                   ALT.T=numeric(num_variants), ALT.G=numeric(num_variants), 
+                                   ALT.C=numeric(num_variants), 
+                                   ALT.insertion = numeric(0), # len(ALT) > len(REF)
+                                   ALT.deletion = numeric(0),  # len(ALT) < len(REF)
+                                   Single_double = numeric(0), # 0 - single postion mutation; 1 - both positions mutated
+                                   stringsAsFactors = F)
+  # A - 1; T - 2; G - 3; C - 4; Insertion - 5; Deletion - 6 
   
-  # homozygous variants
+  # single variants
   missense_mutations$REF[hom_index] <- vcf_missense[hom_index, "REF"]
   for(hom_id in hom_index){
-    missense_mutations[hom_id, which(c("A", "T", "G", "C") %in% vcf_missense[hom_id, "ALT"])+1] <- 
-      missense_mutations[hom_id, which(c("A", "T", "G", "C") %in% vcf_missense[hom_id, "ALT"])+1] + 1
+    
+    if(length(vcf_missense[hom_id, "ALT"]) > length(vcf_missense[hom_id, "REF"])){ # insertion
+      
+      missense_mutations[hom_id, 6] <- missense_mutations[hom_id, 6] + 1
+      
+    }else if(length(vcf_missense[hom_id, "ALT"]) < length(vcf_missense[hom_id, "REF"])){ # deletion
+      
+      missense_mutations[hom_id, 7] <- missense_mutations[hom_id, 7] + 1
+      
+    }else { # single nucleotide mutation
+      missense_mutations[hom_id, which(c("A", "T", "G", "C") %in% vcf_missense[hom_id, "ALT"])+1] <- 
+        missense_mutations[hom_id, which(c("A", "T", "G", "C") %in% vcf_missense[hom_id, "ALT"])+1] + 1
+    }
   }
-  
-  # heterozygous variants
+  # two variants at a single position
   missense_mutations$REF[het_index] <- vcf_missense[het_index, "REF"]
+  missense_mutations$Single_double[het_index] <- missense_mutations$Single_double[het_index] + 1
   for(het_id in het_index){
-    missense_mutations[het_id, which(c("A", "T", "G", "C") %in% unlist(strsplit(vcf_missense[het_id, "ALT"], ",")))+1] <- 
-      missense_mutations[het_id, which(c("A", "T", "G", "C") %in% unlist(strsplit(vcf_missense[het_id, "ALT"], ",")))+1] + 1
+    
+    pos_mutations <- unlist(strsplit(vcf_missense[het_id, "ALT"], ","))
+    
+    for(het_pos_id in 1:2){
+      
+      if(length(pos_mutations[het_pos_id]) > length(vcf_missense[het_id, "REF"])){ # insertion
+        
+        missense_mutations[het_id, 6] <- missense_mutations[het_id, 6] + 1
+        
+      }else if(length(pos_mutations[het_pos_id]) < length(vcf_missense[het_id, "REF"])){ # deletion
+        
+        missense_mutations[het_id, 7] <- missense_mutations[het_id, 7] + 1
+        
+      }else { # single nucleotide mutation
+        missense_mutations[het_id, which(c("A", "T", "G", "C") %in% pos_mutations[het_pos_id])+1] <- 
+          missense_mutations[het_id, which(c("A", "T", "G", "C") %in% pos_mutations[het_pos_id])+1] + 1
+      }
+    }
+    
+    # 
+    # missense_mutations[het_id, which(c("A", "T", "G", "C") %in% unlist(strsplit(vcf_missense[het_id, "ALT"], ",")))+1] <- 
+    #   missense_mutations[het_id, which(c("A", "T", "G", "C") %in% unlist(strsplit(vcf_missense[het_id, "ALT"], ",")))+1] + 1
   }
   return(missense_mutations)
 }
