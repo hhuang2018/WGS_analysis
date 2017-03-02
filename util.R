@@ -838,9 +838,9 @@ count_missense_mutation_type <- function(vcf_missense){
   missense_mutations <- data.frame(REF = character(num_variants), ALT.A = numeric(num_variants), 
                                    ALT.T=numeric(num_variants), ALT.G=numeric(num_variants), 
                                    ALT.C=numeric(num_variants), 
-                                   ALT.insertion = numeric(0), # len(ALT) > len(REF)
-                                   ALT.deletion = numeric(0),  # len(ALT) < len(REF)
-                                   Single_double = numeric(0), # 0 - single postion mutation; 1 - both positions mutated
+                                   ALT.insertion = numeric(num_variants), # len(ALT) > len(REF)
+                                   ALT.deletion = numeric(num_variants),  # len(ALT) < len(REF)
+                                   Single_double = numeric(num_variants), # 0 - single postion mutation; 1 - both positions mutated
                                    stringsAsFactors = F)
   # A - 1; T - 2; G - 3; C - 4; Insertion - 5; Deletion - 6 
   
