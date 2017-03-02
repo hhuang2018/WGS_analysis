@@ -1,5 +1,5 @@
 # list .vcf.gz files
-original_file_dir = "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/hli_vcf_annotated_RefSeq/"
+original_file_dir = "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq/"
 destination_dir = "/mnt/cloudbiodata_nfs_2/users/hhuang/vcf_missense_variants_RefSeq_canonical/"
 snpEff_dir = "/home/hhuang/tools/snpEff/"
 
