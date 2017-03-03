@@ -132,13 +132,20 @@ MHC_region_index <- data.frame(HLA = c("A", "B", "C", "DRB1", "DQB1"),
 
 MHC_random_Percent <- data.frame(SampleID1 = Random_high_pert$SampleID1, 
                                  SampleID2 = Random_high_pert$SampleID2,
-                                 IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 IBDPercent = numeric(length(Random_high_pert$SampleID2)),
+                                 HLA.A.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 HLA.B.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 HLA.C.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 HLA.DRB1.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 HLA.DQB1.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 # IBDPercent = numeric(length(Random_high_pert$SampleID2)),
                                  stringsAsFactors = F)
 MHC_matched_Percent <- data.frame(SampleID1 = Matched_high_pert$SampleID1, 
                                   SampleID2 = Matched_high_pert$SampleID2,
-                                  IBDLength = numeric(length(Matched_high_pert$SampleID1)),
-                                  IBDPercent = numeric(length(Matched_high_pert$SampleID1)),
+                                  HLA.A.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  HLA.B.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  HLA.C.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  HLA.DRB1.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  HLA.DQB1.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
                                   stringsAsFactors = F)
 IBDseq_output_dir <- "../Output/IBDseq/R_reformated/"
 IBD_file <- "ibdseq_output_all_chr6_IBD.RData"

@@ -8,6 +8,7 @@ filenames <- filenames[grepl("n_", filenames)]
 filenames <- gsub("_RefSeq_annotated_canon.vcf.gz", "", filenames)
 
 annotated_filenames <- list.files(destination_dir, pattern = "\\.vcf.gz$")
+annotated_filenames <- annotated_filenames[grepl("n_", annotated_filenames)]
 annotated_filenames <- gsub("_RefSeq_canon_missense_any.vcf.gz", "", annotated_filenames)
 
 Not_annotated_index <- which(!(filenames %in% annotated_filenames))
