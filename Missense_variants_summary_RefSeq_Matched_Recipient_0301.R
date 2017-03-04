@@ -44,9 +44,9 @@ for(id in 1:num_files){
     
     missense_stats$NumDiff[IDs_in_all[ordered_IDs_in_all]] <- missense_stats$NumDiff[IDs_in_all[ordered_IDs_in_all]] + 1
     
-    missense_stats[IDs_in_all[ordered_IDs_in_all], c("ALT.A", "ALT.T", "ALT.G", "ALT.C", "ALT.insertion", "ALT.deletion", "Single_double"))] <- 
-      missense_stats[IDs_in_all[ordered_IDs_in_all], c("ALT.A", "ALT.T", "ALT.G", "ALT.C", "ALT.insertion", "ALT.deletion", "Single_double"))] +
-      missense_mutations[, c("ALT.A", "ALT.T", "ALT.G", "ALT.C", "ALT.insertion", "ALT.deletion", "Single_double"))]
+    missense_stats[IDs_in_all[ordered_IDs_in_all], c("ALT.A", "ALT.T", "ALT.G", "ALT.C", "ALT.insertion", "ALT.deletion", "Single_double")] <- 
+      missense_stats[IDs_in_all[ordered_IDs_in_all], c("ALT.A", "ALT.T", "ALT.G", "ALT.C", "ALT.insertion", "ALT.deletion", "Single_double")] +
+      missense_mutations[, c("ALT.A", "ALT.T", "ALT.G", "ALT.C", "ALT.insertion", "ALT.deletion", "Single_double")]
     
     ### new records added to the bottom
     if(length(IDs_in_vcf) < length(vcf_chrom_pos)){ # new POS
