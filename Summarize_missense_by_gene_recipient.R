@@ -1,10 +1,12 @@
-load("../Output/Missense_variant_stats/RefSeq_canon_0228/Recipient_missesense_stats_RefSeq_canon_0228.RData")
-recipient_missense_stats <- donor_missense_stats
-load("../Output/Missense_variant_stats/RefSeq_canon_0228/donor_missesense_stats_RefSeq_canon_0228.RData")
+output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/vcf_missense_variants_RefSeq_canonical/stats/"
 
-recipient_missense_stats$NumDiff <- -recipient_missense_stats$NumDiff
-recipient_missense_stats$PertDiff <- recipient_missense_stats$NumDiff/240
-donor_missense_stats$PertDiff <- donor_missense_stats$NumDiff/216
+load(paste(output_dir, "Recipient_missesense_stats_RefSeq_canon_0228.RData"))
+# recipient_missense_stats <- donor_missense_stats
+# load("../Output/Missense_variant_stats/RefSeq_canon_0228/donor_missesense_stats_RefSeq_canon_0228.RData")
+
+# recipient_missense_stats$NumDiff <- -recipient_missense_stats$NumDiff
+# recipient_missense_stats$PertDiff <- recipient_missense_stats$NumDiff/240
+donor_missense_stats$PertDiff <- donor_missense_stats$NumDiff/240 # recipient
 
 # known gene list
 load("../Data/hg38_known_gene_symbols_HGNC.RData")
@@ -39,3 +41,6 @@ for(chr_id in 1:22){
   }
   
 }
+
+recipient_gene_stats <- donor_gene_stats
+save(recipient_gene_stats, file = paste0(output_dir, "Recipient_missesense_stats_RefSeq_canon_0228_byGene.RData"))
