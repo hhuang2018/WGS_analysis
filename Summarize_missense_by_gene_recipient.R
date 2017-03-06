@@ -1,6 +1,6 @@
 output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/vcf_missense_variants_RefSeq_canonical/stats/"
 
-load(paste(output_dir, "Recipient_missesense_stats_RefSeq_canon_0228.RData"))
+load(paste0(output_dir, "Recipient_missesense_stats_RefSeq_canon_0228.RData"))
 # recipient_missense_stats <- donor_missense_stats
 # load("../Output/Missense_variant_stats/RefSeq_canon_0228/donor_missesense_stats_RefSeq_canon_0228.RData")
 
