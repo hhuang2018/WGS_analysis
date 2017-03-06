@@ -8,8 +8,12 @@ chr.len = seqlengths(BSgenome.Hsapiens.UCSC.hg38)  # get chromosome lengths
 # remove X,Y,M and random chromosomes
 chr.len = chr.len[grep("_|M", names(chr.len), invert = T)]
 
-load("../Output/Missense_variant_stats/donor_missesense_stats_updated.RData")
-load("../Output/Missense_variant_stats/recipient_missesense_stats_updated.RData")
+load("../Output/Missense_variant_stats/RefSeq_canon_0228/Recipient_missesense_stats_RefSeq_canon_0228.RData")
+recipient_missense_stats <- donor_missense_stats
+load("../Output/Missense_variant_stats/RefSeq_canon_0228/donor_missesense_stats_RefSeq_canon_0228.RData")
+
+# load("../Output/Missense_variant_stats/donor_missesense_stats_updated.RData")
+# load("../Output/Missense_variant_stats/recipient_missesense_stats_updated.RData")
 
 # write.csv(recipient_missense_stats, file = "../Output/Missense_variant_stats/all_recipient_missesense_stats_updated.csv", row.names = F)
 # write.csv(donor_missense_stats, file = "../Output/Missense_variant_stats/all_donor_missesense_stats.csv_updated", row.names = F)
