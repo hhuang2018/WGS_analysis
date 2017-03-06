@@ -20,10 +20,10 @@ donor_gene_stats <- data.frame(GeneName = GRCh38_known_gene_list$name,
 
 temp_mat <- donor_missense_stats
 counter <- 0
-for(chr_id in 1:22){
+for(chr_id in c(1:22, "X", "Y")){
   
-  CH_gene_list <- GRCh38_known_gene_list[which(GRCh38_known_gene_list$Chromosome %in% paste0("chr", chr_ind)),]
-  temp_mat_list <- temp_mat[which(temp_mat$CHROM %in% paste0("chr", chr_ind)), ]
+  CH_gene_list <- GRCh38_known_gene_list[which(GRCh38_known_gene_list$Chromosome %in% paste0("chr", chr_id)),]
+  temp_mat_list <- temp_mat[which(temp_mat$CHROM %in% paste0("chr", chr_id)), ]
   num_CH_gene <- dim(CH_gene_list)[1]
   
   for(id in 1:num_CH_gene){
