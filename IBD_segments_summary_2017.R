@@ -129,6 +129,7 @@ MHC_region_index <- data.frame(HLA = c("A", "B", "C", "DRB1", "DQB1"),
                                startID = c(29941260, 31353872, 31268749, 32578769, 32659467),
                                endID = c(29945884, 31357187, 31272086, 32589848, 32668383),
                                stringsAsFactors = F)
+MHC_region_index <- MHC_region_index[order(MHC_region_index$startID), ]
 
 MHC_random_Percent <- data.frame(SampleID1 = Random_high_pert$SampleID1, 
                                  SampleID2 = Random_high_pert$SampleID2,
@@ -164,10 +165,21 @@ Random_pair_ID <- which(SampleID1$GroupID != SampleID2$GroupID)
 Random_pair_ID <- Random_pair_ID[which(sapply(1:length(Random_pair_ID), function(x) SampleID1$R_D[Random_pair_ID[x]]!=SampleID2$R_D[Random_pair_ID[x]]))]
 
 Seg_summary <- aggregate(numdup ~., data=transform(new_IBD_table[Matched_pair_ID, c(1, 3)], numdup=1), length)
+sorted_table <- new_IBD_table[order(new_IBD_table$StartID), ]
+startID <- unique(sorted_table$StartID)
+endID <- unique(sorted_table$EndID)
+start_interval_flags <-findInterval(startID, MHC_region_index$startID)
+end_interval_flags <- findInterval(endID, MHC_region_index$endID)
+
+start_flag_id <- sapply(1:length(startID), function(x) which(new_IBD_table$StartID %in% startID[x]))
+end_flag_id <- sapply(1:length(endID), function(x) which(new_IBD_table$EndID %in% endID[x]))
+
 
 for(id in 1:num_region){
+
+
   
-   
+  
   
   aGVHD_group_segments <- Seg_summary[which(grepl("a.",Seg_summary[, 1])),3]
   nGVHD_group_segments <- Seg_summary[which(grepl("n.",Seg_summary[, 1])),3]

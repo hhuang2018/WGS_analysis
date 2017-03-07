@@ -43,4 +43,12 @@ for(chr_id in c(1:22, "X", "Y")){
 }
 
 recipient_gene_stats <- donor_gene_stats
+for(id in 1:num_gene){
+  
+ g_index <-  which(recipient_gene_stats$GeneName[id] %in% GRCh38_known_gene_list$name)
+ recipient_gene_stats$GeneSymbol[id] <- GRCh38_known_gene_list$genesymbol[g_index]
+  
+}
+recipient_gene_stats$GeneName
 save(recipient_gene_stats, file = paste0(output_dir, "Recipient_missesense_stats_RefSeq_canon_0228_byGene.RData"))
+
