@@ -1,6 +1,6 @@
 source("util.R")
 library(BSgenome.Hsapiens.UCSC.hg38)
-#  chrLengths <- c(248956422, # chr1
+# chr.len <- c(248956422, # chr1
 #                 242193529, # chr2
 #                 198295559, # chr3
 #                 190214555, # chr4
@@ -32,6 +32,8 @@ chr.len = chr.len[grep("_|M", names(chr.len), invert = T)]
 ##############################
 chr <- (1:22)
 IBD_reformated_dir <- "../Output/IBDseq/cloud_Rformat/"
+# IBD_reformated_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/summary/"
+
 stats_table <- data.frame(CHROM = character(length(chr)*2),
                           MeanIBD = numeric(length(chr)*2),
                           MedianIBD = numeric(length(chr)*2),
@@ -43,6 +45,7 @@ stats_table <- data.frame(CHROM = character(length(chr)*2),
 
 
 load(paste0(IBD_reformated_dir, "summaryIBDseq_summary_chr_1.RData"))
+
 all_random_Percent <- data.frame(SampleID1 = Random_high_pert$SampleID1, 
                                  SampleID2 = Random_high_pert$SampleID2,
                                  IBDLength = numeric(length(Random_high_pert$SampleID2)),
@@ -120,7 +123,7 @@ total_IBD <- data.frame(CHROM = c("Total", "Total"),
                         MeanIBD = mean(stats_table))
 
 ################# MHC region 
-#     HLA-A: chr6:29,941,260-29,945,884
+#     HLA-A: chr6:29,941,260-29,945,884; 
 #     HLA-B: chr6:31,353,872-31,357,187
 #     HLA-C: chr6:31,268,749-31,272,086
 #  HLA-DRB1: chr6:32,578,769-32,589,848 
@@ -130,6 +133,14 @@ MHC_region_index <- data.frame(HLA = c("A", "B", "C", "DRB1", "DQB1"),
                                endID = c(29945884, 31357187, 31272086, 32589848, 32668383),
                                stringsAsFactors = F)
 MHC_region_index <- MHC_region_index[order(MHC_region_index$startID), ]
+MHC_region_index_vector <- sort(c(MHC_region_index$startID, MHC_region_index$endID), decreasing = F)
+
+MHC_ARS_index <- data.frame(HLA_ARS = c("A2", "A3", "C2", "C3", "B2", "B3", "DRB1", "DQB1"),
+                            startID = c(29942757, 29943268, 31271599, 31271073, 31356688,31356167, 32584109, 32664798),
+                            endID = c(29943026, 29943543, 31271868, 31271348, 31356957, 31356442, 32584378, 32665067), 
+                            stringsAsFactors = F)
+MHC_ARS_index <- MHC_ARS_index[order(MHC_ARS_index$startID),]
+MHC_ARS_index_vector <- sort(c(MHC_ARS_index$startID, MHC_ARS_index$endID))
 
 MHC_random_Percent <- data.frame(SampleID1 = Random_high_pert$SampleID1, 
                                  SampleID2 = Random_high_pert$SampleID2,
@@ -149,6 +160,7 @@ MHC_matched_Percent <- data.frame(SampleID1 = Matched_high_pert$SampleID1,
                                   HLA.DQB1.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
                                   stringsAsFactors = F)
 IBDseq_output_dir <- "../Output/IBDseq/R_reformated/"
+# IBDseq_output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/"
 IBD_file <- "ibdseq_output_all_chr6_IBD.RData"
 
 load(file = paste0(IBDseq_output_dir, IBD_file))
@@ -165,22 +177,123 @@ Random_pair_ID <- which(SampleID1$GroupID != SampleID2$GroupID)
 Random_pair_ID <- Random_pair_ID[which(sapply(1:length(Random_pair_ID), function(x) SampleID1$R_D[Random_pair_ID[x]]!=SampleID2$R_D[Random_pair_ID[x]]))]
 
 Seg_summary <- aggregate(numdup ~., data=transform(new_IBD_table[Matched_pair_ID, c(1, 3)], numdup=1), length)
+
 sorted_table <- new_IBD_table[order(new_IBD_table$StartID), ]
 startID <- unique(sorted_table$StartID)
 endID <- unique(sorted_table$EndID)
-start_interval_flags <-findInterval(startID, MHC_region_index$startID)
-end_interval_flags <- findInterval(endID, MHC_region_index$endID)
+
+start_interval_flags <-findInterval(startID, MHC_region_index_vector)
+end_interval_flags <- findInterval(endID, MHC_region_index_vector)
 
 start_flag_id <- sapply(1:length(startID), function(x) which(new_IBD_table$StartID %in% startID[x]))
 end_flag_id <- sapply(1:length(endID), function(x) which(new_IBD_table$EndID %in% endID[x]))
 
+num_flag_ids <- length(startID)
+new_IBD_table$StartID_flag <- NA
+for(id in 1:num_flag_ids){
+  
+  new_IBD_table$StartID_flag[start_flag_id[[id]]] <- start_interval_flags[id]
+  
+}
 
+num_flag_ids <- length(endID)
+new_IBD_table$EndID_flag <- NA
+for(id in 1:num_flag_ids){
+  
+  new_IBD_table$EndID_flag[end_flag_id[[id]]] <- end_interval_flags[id]
+  
+}
+
+#### ARS region
+ARS_start_interval_flags <- findInterval(startID, MHC_ARS_index_vector)
+ARS_end_interval_flags <- findInterval(endID, MHC_ARS_index_vector)
+
+num_flag_ids <- length(startID)
+new_IBD_table$StartID_ARS_flag <- NA
+for(id in 1:num_flag_ids){
+  
+  new_IBD_table$StartID_ARS_flag[start_flag_id[[id]]] <- ARS_start_interval_flags[id]
+  
+}
+
+num_flag_ids <- length(endID)
+new_IBD_table$EndID_ARS_flag <- NA
+for(id in 1:num_flag_ids){
+  
+  new_IBD_table$EndID_ARS_flag[end_flag_id[[id]]] <- ARS_end_interval_flags[id]
+  
+}
+
+######### 
+load("../Data/IBD_chr6_wMHC_ARS_2.RData")
+
+MHC_IBD_table <- new_IBD_table
+MHC_IBD_matched_id <- which(((new_IBD_table$StartID_flag %% 2 == 1) | (new_IBD_table$EndID_flag %% 2 == 1)) | 
+                              (floor((new_IBD_table$EndID_flag - new_IBD_table$EndID_flag)/2)>0) ) # multigenes
+
+# MHC_IBD_table <- MHC_IBD_table[MHC_IBD_matched_id, ]
+
+MHC_region_number <- length(MHC_IBD_matched_id)
+MHC_IBD_table$MHC_IBD_length <- 0
+MHC_IBD_table$ARS_IBD_length <- 0
+for(id in 1: MHC_region_number){
+  
+  # MHC region IBD length
+  record <- MHC_IBD_table[MHC_IBD_matched_id[id], ]
+  if(record$StartID_flag == record$EndID_flag){ # within the range
+    
+    MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- min(MHC_region_index_vector[record$EndID_flag], record$EndID) - 
+                                                               max(MHC_region_index_vector[record$StartID_flag], record$StartID) + 1
+    
+  }else{ # partly within the range
+    cross_genes <- floor((record$EndID_flag - record$StartID_flag + 1) / 2) # number of crossed regions
+    if(cross_genes == 1){ # only within one MHC gene
+      
+      if(record$StartID_flag %% 2 == 1){ # startID is within the range
+        
+        MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- MHC_region_index_vector[record$EndID_flag] - record$StartID + 1
+        
+      }else{ # endID is within the range
+        
+        MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- record$EndID - MHC_region_index_vector[record$StartID_flag+1] + 1
+        
+      }
+      
+    }else{ # cross multiple regions
+      
+      if(record$StartID_flag %% 2 == 1) {
+        start_regions_id <- record$StartID_flag + 1
+      }else start_regions_id <- record$StartID_flag 
+      if(record$EndID_flag %% 2 == 1){
+        end_regions_id <- record$EndID_flag
+      }else end_regions_id <- record$EndID_flag - 1
+      
+      for(region_id in 1:cross_genes){
+        if(region_id == 1){
+          MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] + 
+            MHC_region_index_vector[start_regions_id+1] - MHC_region_index_vector[start_regions_id] + 1
+        }else if(region_id == cross_genes){
+          MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] + 
+            MHC_region_index_vector[end_regions_id] - MHC_region_index_vector[start_regions_id] + 1
+        }
+        MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] +
+          MHC_IBD_matched_id
+        
+      }
+      
+    }
+      
+    
+    
+  }
+  MHC_region_index
+  
+  
+}
+
+######
 for(id in 1:num_region){
 
-
-  
-  
-  
   aGVHD_group_segments <- Seg_summary[which(grepl("a.",Seg_summary[, 1])),3]
   nGVHD_group_segments <- Seg_summary[which(grepl("n.",Seg_summary[, 1])),3]
   all_matched_segments <- Seg_summary[, 3]
