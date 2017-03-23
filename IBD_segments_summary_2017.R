@@ -433,8 +433,8 @@ load(file = paste0(IBDseq_output_dir, IBD_file))
 
 num_region <- dim(MHC_region_index)[1]
 
-SampleID1 <- as.data.frame(t(as.data.frame(strsplit(new_IBD_table$SampleID1, "\\."), row.names = c("GVHD", "GroupID", "R_D"), stringsAsFactors = F)), stringsAsFactors = F)
-SampleID2 <- as.data.frame(t(as.data.frame(strsplit(new_IBD_table$SampleID2, "\\."), row.names = c("GVHD", "GroupID", "R_D"), stringsAsFactors = F)), stringsAsFactors = F)
+SampleID1 <- as.data.frame(t(as.data.frame(strsplit(MHC_IBD_table$SampleID1, "\\."), row.names = c("GVHD", "GroupID", "R_D"), stringsAsFactors = F)), stringsAsFactors = F)
+SampleID2 <- as.data.frame(t(as.data.frame(strsplit(MHC_IBD_table$SampleID2, "\\."), row.names = c("GVHD", "GroupID", "R_D"), stringsAsFactors = F)), stringsAsFactors = F)
 
 Matched_pair_ID <- which(SampleID1$GroupID == SampleID2$GroupID)
 Matched_pair_ID <- Matched_pair_ID[which(sapply(1:length(Matched_pair_ID), function(x) SampleID1$R_D[Matched_pair_ID[x]]!=SampleID2$R_D[Matched_pair_ID[x]]))]
@@ -445,61 +445,3 @@ Random_pair_ID_idx <- which(SampleID1$GroupID != SampleID2$GroupID)
 Random_pair_ID <- Random_pair_ID_idx[which(sapply(1:length(Random_pair_ID_idx), function(x) SampleID1$R_D[Random_pair_ID_idx[x]]!=SampleID2$R_D[Random_pair_ID_idx[x]]))]
 
 
-
-# for(id in 1: MHC_region_number){
-#   
-#   # MHC region IBD length
-#   record <- MHC_IBD_table[MHC_IBD_matched_id[id], ]
-#   if(record$StartID_flag == record$EndID_flag){ # within the range
-#     
-#     MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- min(MHC_region_index_vector[record$EndID_flag], record$EndID) - 
-#                                                                max(MHC_region_index_vector[record$StartID_flag], record$StartID) + 1
-#     
-#   }else{ # partly within the range
-#     cross_genes <- floor((record$EndID_flag - record$StartID_flag + 1) / 2) # number of crossed regions
-#     if(cross_genes == 1){ # only within one MHC gene
-#       
-#       if(record$StartID_flag %% 2 == 1){ # startID is within the range
-#         
-#         MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- MHC_region_index_vector[record$EndID_flag] - record$StartID + 1
-#         
-#       }else{ # endID is within the range
-#         
-#         MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- record$EndID - MHC_region_index_vector[record$StartID_flag+1] + 1
-#         
-#       }
-#       
-#     }else{ # cross multiple regions
-#       
-#       if(record$StartID_flag %% 2 == 1) {
-#         start_regions_id <- record$StartID_flag + 1
-#       }else start_regions_id <- record$StartID_flag 
-#       
-#       if(record$EndID_flag %% 2 == 1){
-#         end_regions_id <- record$EndID_flag
-#       }else end_regions_id <- record$EndID_flag - 1
-#       
-#       for(region_id in 1:cross_genes){
-#         if(region_id == 1){ # the first region
-#           MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] + 
-#             MHC_region_index_vector[start_regions_id+1] - MHC_region_index_vector[start_regions_id] + 1
-#         }else if(region_id == cross_genes){ # the last region
-#           MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] + 
-#             MHC_region_index_vector[end_regions_id] - MHC_region_index_vector[start_regions_id] + 1
-#         }else {
-#           MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] <- MHC_IBD_table$MHC_IBD_length[MHC_IBD_matched_id[id]] +
-#             MHC_region_index_vector[start_regions_id+1] - MHC_region_index_vector[start_regions_id] + 1
-#         }
-#         
-#         
-#       }
-#       
-#     }
-#       
-#     
-#     
-#   }
-#   # MHC_region_index
-#   
-#   
-# }

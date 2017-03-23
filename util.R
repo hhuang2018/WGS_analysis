@@ -817,6 +817,80 @@ IBD_segment_data_frame <- function(IBD_table, genomeLength = 3236336281){
   
 }
 
+######################
+# Calculate MHC region IBD segment length matrix
+######################
+IBD_MHC_segment_matrix <- function(IBD_table, RegionName = "MHC", genomeLength = 3236336281){
+  
+  ##### RegionName options: MHC; MHC_A; MHC_B; MHC_C; MHC_DRB1; MHC_DQB1; ARS
+  RegionID <- which(colnames(IBD_table) %in% paste0(RegionName, "_IBD_length"))
+  
+  # IBD1 segment length
+  IBD_sample1 <- unique(IBD_table$SampleID1)
+  IBD_sample2 <- unique(IBD_table$SampleID2)
+  IBD_num_sample1 <- length(IBD_sample1)
+  IBD_num_sample2 <- length(IBD_sample2)
+  
+  IBD_samples <- unique(c(IBD_sample1, IBD_sample2))
+  
+  IBD_matrix <- matrix(data = 0, nrow = length(IBD_samples), ncol = length(IBD_samples))
+  rownames(IBD_matrix) <- IBD_samples
+  colnames(IBD_matrix) <- IBD_samples
+  
+  for(id in 1:IBD_num_sample1){
+    
+    samp1 <- IBD_sample1[id]
+    index1 <- which(IBD_table$SampleID1 == samp1)
+    
+    for(jd in 1:IBD_num_sample2){
+      
+      samp2 <- IBD_sample2[jd]
+      index2 <- which(IBD_table$SampleID2[index1] == samp2)
+      
+      IBD_matrix[samp1, samp2] <- sum(IBD_table[index1[index2], RegionID]) 
+    }
+    
+  }
+  
+  return(IBD_matrix/genomeLength)
+  
+}
+
+######################
+# Calculate MHC IBD segment length and proportion as a data.frame
+######################
+IBD_MHC_segment_data_frame <- function(IBD_table, RegionName = "MHC", genomeLength = 3236336281){
+  
+  ##### RegionName options: MHC; MHC_A; MHC_B; MHC_C; MHC_DRB1; MHC_DQB1; ARS
+  RegionID <- which(colnames(IBD_table) %in% paste0(RegionName, "_IBD_length"))
+  
+  IBD_samples <- unique(IBD_table[, c(1, 3)])
+  IBD_num <- dim(IBD_samples)[1]
+  
+  IBD_length_portion <- data.frame(IBD_samples, 
+                                   Length = vector(mode = "numeric", length = dim(IBD_samples)[1]),
+                                   Percent = vector(mode = "numeric", length = dim(IBD_samples)[1]))
+  #   rownames(IBD_matrix) <- IBD_samples
+  #   colnames(IBD_matrix) <- IBD_samples
+  
+  for(id in 1:IBD_num){
+    
+    samp1 <- IBD_samples$SampleID1[id]
+    index1 <- which(IBD_table$SampleID1 == samp1)
+    
+    # for(jd in 1:IBD_num){
+    samp2 <- IBD_samples$SampleID2[id]
+    index2 <- which(IBD_table$SampleID2[index1] == samp2)
+    
+    #iindex <- which((IBD_length_portion$SampleID1 %in% samp1) && (IBD_length_portion$SampleID2 %in% samp2))
+    IBD_length_portion$Length[id] <- IBD_length_portion$Length[id] + sum(IBD_table$EndID[index1[index2]] - IBD_table$StartID[index1[index2]] + 1) 
+  }
+  
+  IBD_length_portion$Percent <- IBD_length_portion$Length / genomeLength
+  
+  return(IBD_length_portion)
+  
+}
 
 
 ######################
