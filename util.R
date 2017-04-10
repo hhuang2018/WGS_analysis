@@ -883,7 +883,8 @@ IBD_MHC_segment_data_frame <- function(IBD_table, RegionName = "MHC", genomeLeng
     index2 <- which(IBD_table$SampleID2[index1] == samp2)
     
     #iindex <- which((IBD_length_portion$SampleID1 %in% samp1) && (IBD_length_portion$SampleID2 %in% samp2))
-    IBD_length_portion$Length[id] <- IBD_length_portion$Length[id] + sum(IBD_table$EndID[index1[index2]] - IBD_table$StartID[index1[index2]] + 1) 
+    # IBD_length_portion$Length[id] <- IBD_length_portion$Length[id] + sum(IBD_table$EndID[index1[index2]] - IBD_table$StartID[index1[index2]] + 1) 
+    IBD_length_portion$Length[id] <- IBD_length_portion$Length[id] +  sum(IBD_table[index1[index2], RegionID])
   }
   
   IBD_length_portion$Percent <- IBD_length_portion$Length / genomeLength

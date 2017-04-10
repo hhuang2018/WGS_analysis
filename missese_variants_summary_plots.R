@@ -79,6 +79,8 @@ for(chr_id in 1:22){
   
 }
 
+# known gene list
+load("../Data/hg38_known_gene_symbols_HGNC.RData")
 sorted_Missense_stats_LOD <- Missense_stats_LOD[order(Missense_stats_LOD$LOD, decreasing = T),]
 sorted_Missense_stats_LOD$GeneRegion <- ""
 sorted_Missense_stats_LOD$ProteinID <- ""

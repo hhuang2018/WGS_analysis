@@ -55,3 +55,4 @@ ggplot(Tau_list[1:100, ], aes(x=Gene, y=Tau)) +
   # xlab(paste0(Typing_name, " typing")) + ylab("Count of groups")  + 
   xlab(Typing_name) + ylab("Tau")  + 
   theme(axis.text.x = element_text(angle = Angle, hjust = H))
+

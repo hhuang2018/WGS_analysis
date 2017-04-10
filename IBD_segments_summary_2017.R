@@ -29,7 +29,7 @@ chr.len = seqlengths(BSgenome.Hsapiens.UCSC.hg38)  # get chromosome lengths
 chr.len = chr.len[grep("_|M", names(chr.len), invert = T)]
 #### 
 
-##############################
+##################################### chr 1:22 all 
 chr <- (1:22)
 IBD_reformated_dir <- "../Output/IBDseq/cloud_Rformat/"
 # IBD_reformated_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/summary/"
@@ -57,7 +57,10 @@ all_matched_Percent <- data.frame(SampleID1 = Matched_high_pert$SampleID1,
                                   IBDPercent = numeric(length(Matched_high_pert$SampleID1)),
                                   stringsAsFactors = F)
 counter <- 0
+chr_all_length <- 0
 for (chr_id in chr) {
+  
+  chr_all_length <- chr_all_length + as.numeric(chr.len[paste0("chr", chr_id)])
   
   load(paste0(IBD_reformated_dir, "summaryIBDseq_summary_chr_", chr_id, ".RData"))
   
@@ -119,8 +122,23 @@ for (chr_id in chr) {
   
 }
 
+all_matched_Percent$IBDPercent <- all_matched_Percent$IBDLength / chr_all_length
+all_random_Percent$IBDPercent <- all_random_Percent$IBDLength / chr_all_length
+
 total_IBD <- data.frame(CHROM = c("Total", "Total"),
                         MeanIBD = mean(stats_table))
+
+save(all_matched_Percent, all_random_Percent, file = "../Output/IBDseq/summary/all_chromosome_IBD_04062017.RData")
+
+#########
+load("../Output/IBDseq/summary/all_chromosome_IBD_04062017.RData")
+
+ordered_Rand <- all_random_Percent[order(all_random_Percent$IBDLength, decreasing = T), ] 
+all_Random_high_pert <- ordered_Rand[which(ordered_Rand$IBDPercent > 0), ]
+ordered_Matched <- all_matched_Percent[order(all_matched_Percent$IBDPercent, decreasing = T), ]
+all_Matched_high_pert <- ordered_Matched[which(ordered_Matched$IBDPercent > 0), ]
+all_Random_high_pert[1:10, ]
+all_Matched_high_pert[1:10,]
 
 ################# MHC region 
 #     HLA-A: chr6:29,941,260-29,945,884; 
@@ -173,25 +191,6 @@ MHC_ARS_index <- data.frame(HLA_ARS = c("A2", "A3", "C2", "C3", "B2", "B3", "DRB
 MHC_ARS_index <- MHC_ARS_index[order(MHC_ARS_index$startID),]
 MHC_ARS_index_vector <- sort(c(MHC_ARS_index$startID, MHC_ARS_index$endID))
 
-
-ARS_random_Percent <- data.frame(SampleID1 = Random_high_pert$SampleID1, 
-                                 SampleID2 = Random_high_pert$SampleID2,
-                                 HLA.A.IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 HLA.B.IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 HLA.C.IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 HLA.DRB1.IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 HLA.DQB1.IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 # IBDPercent = numeric(length(Random_high_pert$SampleID2)),
-                                 stringsAsFactors = F)
-ARS_matched_Percent <- data.frame(SampleID1 = Matched_high_pert$SampleID1, 
-                                  SampleID2 = Matched_high_pert$SampleID2,
-                                  HLA.A.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
-                                  HLA.B.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
-                                  HLA.C.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
-                                  HLA.DRB1.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
-                                  HLA.DQB1.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
-                                  stringsAsFactors = F)
-
 ARS_start_interval_flags <- findInterval(startID, MHC_ARS_index_vector)
 ARS_end_interval_flags <- findInterval(endID, MHC_ARS_index_vector)
 
@@ -210,6 +209,7 @@ for(id in 1:num_flag_ids){
   new_IBD_table$EndID_ARS_flag[end_flag_id[[id]]] <- ARS_end_interval_flags[id]
   
 }
+save(new_IBD_table, file = "../Data/IBD_chr6_wMHC_ARS_2.RData")
 
 ######### 
 load("../Data/IBD_chr6_wMHC_ARS_2.RData")
@@ -288,14 +288,14 @@ for(id in 1: MHC_region_number){
         
       }
       
-    }else{ # only one region
+    } else{ # only one region
       ### reg_start - first ID
       if(startID_even_odd == 0) {# startID is even, meaning between regions
         
         reg_start <- MHC_region_index_vector[MHC_IBD_table$StartID_flag[id]+1]
         # reg_end <- MHC_region_index_vector[MHC_IBD_table$StartID_flag[id]+2]
         
-      }else { # startID is odd, meaning within regions.
+      } else { # startID is odd, meaning within regions.
         
         reg_start <- MHC_IBD_table$StartID[id]
         # reg_end <- MHC_region_index_vector[MHC_IBD_table$StartID_flag[id]+1]
@@ -313,21 +313,22 @@ for(id in 1: MHC_region_number){
       }
     }
     
-    MHC_IBD_table$MHC_IBD_length[id] <- sum(reg_end - reg_start)
+    MHC_IBD_table$MHC_IBD_length[id] <- sum(reg_end - reg_start) + region_number
     
     MHC_region_id <- floor(MHC_IBD_table$StartID_flag[id]/2) # A: 0; C:1 ; B:2; DRB1: 3; DQB1: 4
-    MHC_IBD_table[id, (16 + MHC_region_id):(15 + MHC_region_id +region_number)] <- reg_end - reg_start
-    
-    ####################### ARS region IBD length
-    startID_ARS_even_odd <- MHC_IBD_table$StartID_ARS_flag[id] %% 2 ## 0: even; 1: odd
-    endID_ARS_even_odd <- MHC_IBD_table$EndID_ARS_flag[id] %% 2
-    
-    if(startID_ARS_even_odd * endID_ARS_even_odd == 1){ # both are odd numbers
-      region_ARS_number <- (MHC_IBD_table$EndID_ARS_flag[id] - MHC_IBD_table$StartID_ARS_flag[id])/2 + 1
-    }else{
-      region_ARS_number <- ceiling((MHC_IBD_table$EndID_ARS_flag[id] - MHC_IBD_table$StartID_ARS_flag[id])/2)
-    }
-    
+    MHC_IBD_table[id, (16 + MHC_region_id):(15 + MHC_region_id +region_number)] <- reg_end - reg_start + 1
+  }
+  
+  ####################### ARS region IBD length
+  startID_ARS_even_odd <- MHC_IBD_table$StartID_ARS_flag[id] %% 2 ## 0: even; 1: odd
+  endID_ARS_even_odd <- MHC_IBD_table$EndID_ARS_flag[id] %% 2
+  
+  if(startID_ARS_even_odd * endID_ARS_even_odd == 1){ # both are odd numbers
+    region_ARS_number <- (MHC_IBD_table$EndID_ARS_flag[id] - MHC_IBD_table$StartID_ARS_flag[id])/2 + 1
+  }else{
+    region_ARS_number <- ceiling((MHC_IBD_table$EndID_ARS_flag[id] - MHC_IBD_table$StartID_ARS_flag[id])/2)
+  }
+  if(region_ARS_number >0 ){
     reg_ARS_start <- vector(mode = "numeric", length=region_ARS_number)
     reg_ARS_end <- vector(mode = "numeric", length=region_ARS_number)
     if(region_ARS_number>1){ # multiple regions
@@ -401,33 +402,18 @@ for(id in 1: MHC_region_number){
       }
     }
     
-    MHC_IBD_table$ARS_IBD_length[id] <- sum(reg_ARS_end - reg_ARS_start)
+    MHC_IBD_table$ARS_IBD_length[id] <- sum(reg_ARS_end - reg_ARS_start) + region_ARS_number
   }
 }
 
-
+save(MHC_IBD_table, file = "../Data/IBD_info_chr6_wMHC_ARS_0406.RData")
 
 ###### Percentage MHC region
-MHC_random_Percent <- data.frame(SampleID1 = Random_high_pert$SampleID1, 
-                                 SampleID2 = Random_high_pert$SampleID2,
-                                 HLA.A.IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 HLA.B.IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 HLA.C.IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 HLA.DRB1.IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 HLA.DQB1.IBDLength = numeric(length(Random_high_pert$SampleID2)),
-                                 # IBDPercent = numeric(length(Random_high_pert$SampleID2)),
-                                 stringsAsFactors = F)
-MHC_matched_Percent <- data.frame(SampleID1 = Matched_high_pert$SampleID1, 
-                                  SampleID2 = Matched_high_pert$SampleID2,
-                                  HLA.A.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
-                                  HLA.B.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
-                                  HLA.C.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
-                                  HLA.DRB1.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
-                                  HLA.DQB1.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
-                                  stringsAsFactors = F)
-IBDseq_output_dir <- "../Output/IBDseq/R_reformated/"
+load("../Data/IBD_info_chr6_wMHC_ARS_0406.RData")
+
+IBDseq_output_dir <-  "../Output/IBDseq/cloud_Rformat/"
 # IBDseq_output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/"
-IBD_file <- "ibdseq_output_all_chr6_IBD.RData"
+IBD_file <- "summaryIBDseq_summary_chr_6.RData"  # chr 6
 
 load(file = paste0(IBDseq_output_dir, IBD_file))
 
@@ -444,4 +430,112 @@ Random_pair_ID_idx <- which(SampleID1$GroupID != SampleID2$GroupID)
 ##  Make sure random samples are R-D pairs
 Random_pair_ID <- Random_pair_ID_idx[which(sapply(1:length(Random_pair_ID_idx), function(x) SampleID1$R_D[Random_pair_ID_idx[x]]!=SampleID2$R_D[Random_pair_ID_idx[x]]))]
 
+MHC_random_Percent <- data.frame(SampleID1 = Random_high_pert$SampleID1, 
+                                 SampleID2 = Random_high_pert$SampleID2,
+                                 HLA.A.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 HLA.B.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 HLA.C.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 HLA.DRB1.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 HLA.DQB1.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 MHC.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 ARS.IBDLength = numeric(length(Random_high_pert$SampleID2)),
+                                 # IBDPercent = numeric(length(Random_high_pert$SampleID2)),
+                                 stringsAsFactors = F)
+MHC_matched_Percent <- data.frame(SampleID1 = Matched_high_pert$SampleID1, 
+                                  SampleID2 = Matched_high_pert$SampleID2,
+                                  HLA.A.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  HLA.B.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  HLA.C.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  HLA.DRB1.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  HLA.DQB1.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  MHC.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  ARS.IBDLength = numeric(length(Matched_high_pert$SampleID2)),
+                                  stringsAsFactors = F)
 
+# chrLength <- 133797422 # chr10 #170805979 # chr6
+MHC_region_index <- data.frame(HLA = c("A", "B", "C", "DRB1", "DQB1"),
+                               startID = c(29941260, 31353872, 31268749, 32578769, 32659467),
+                               endID = c(29945884, 31357187, 31272086, 32589848, 32668383),
+                               stringsAsFactors = F)
+MHC_region_index <- MHC_region_index[order(MHC_region_index$startID), ]
+MHC_region_index$Length <- MHC_region_index$endID - MHC_region_index$startID + 1
+
+GVHD_IBD <- IBD_MHC_segment_matrix(MHC_IBD_table, RegionName = "MHC", sum(MHC_region_index$Length))
+
+Matched_group_length <- IBD_MHC_segment_data_frame(MHC_IBD_table[Matched_pair_ID, ], RegionName = "MHC", sum(MHC_region_index$Length))
+Random_group_length <- IBD_MHC_segment_data_frame(MHC_IBD_table[Random_pair_ID, ], RegionName = "MHC", sum(MHC_region_index$Length))
+
+Matched_ARS_length <- IBD_MHC_segment_data_frame(MHC_IBD_table[Matched_pair_ID, ], RegionName = "ARS", sum(MHC_region_index$Length))
+Random_ARS_length <- IBD_MHC_segment_data_frame(MHC_IBD_table[Random_pair_ID, ], RegionName = "ARS", sum(MHC_region_index$Length))
+
+save(Matched_ARS_length, Random_ARS_length, Matched_group_length, Random_group_length,
+     Matched_high_pert, Random_high_pert, all_matched_Percent, all_random_Percent,
+     file = "../Output/IBDseq/summary/ARS_MHC_chr6_WGS_IBD_04062017.RData")
+
+
+############ Plot
+library(ggplot2)
+load("../Output/IBDseq/summary/ARS_MHC_chr6_WGS_IBD_04062017.RData")
+# load("../Output/IBDseq/summary/all_chromosome_stats_1030.RData")
+# load(paste0(IBD_reformated_dir, "summaryIBDseq_summary_chr_6.RData"))
+
+shared_DNA_theory <- data.frame(percent = c(0.5, 0.25, 0.125),
+                                groups = c("parent-child/siblings", "uncle/aunt-niece/nephew", "1st Cousin"))
+
+mc_length <- data.frame(Proportion = c(Matched_ARS_length$Percent, Random_ARS_length$Percent,     # ARS
+                                       Matched_group_length$Percent, Random_group_length$Percent, # MHC
+                                       Matched_high_pert$Percent, Random_high_pert$Percent, # Chr 6
+                                       all_matched_Percent$IBDPercent, all_random_Percent$IBDPercent), # WGS
+                        Group = c(rep("Matched ARS", length(Matched_ARS_length$Percent)), rep("Random ARS", length(Random_ARS_length$Percent)),
+                                  rep("Matched MHC", length(Matched_group_length$Percent)), rep("Random MHC", length(Random_group_length$Percent)),
+                                  rep("Matched Chr6", length(Matched_high_pert$Percent)), rep("Random Chr6", length(Random_high_pert$Percent)),
+                                  rep("Matched WGS", length(all_matched_Percent$IBDPercent)), rep("Random WGS", length(all_random_Percent$IBDPercent))),
+                        stringsAsFactors = F)
+
+mc_length$Group <- factor(mc_length$Group, 
+                          levels = c("Matched ARS", "Random ARS", 
+                                     "Matched MHC", "Random MHC", 
+                                     "Matched Chr6", "Random Chr6", 
+                                     "Matched WGS", "Random WGS"))
+
+mainplot <- ggplot(mc_length, aes(x = Group , y = Proportion, fill = Group)) + 
+  geom_boxplot(outlier.colour = "gray", outlier.size = 0) +
+  guides(fill=FALSE)  +
+  geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous("Percentage of IBD segments between pairs")
+  # coord_flip() +
+  # ggtitle(paste0("Length (%) of IBD segments \non Chromosome ", chr))
+library(grid)
+
+mc_length_chr6only <- data.frame(Proportion = c(Matched_high_pert$Percent, Random_high_pert$Percent),  # Chr 6
+                                 Group = c(rep("Matched Chr6", length(Matched_high_pert$Percent)), rep("Random Chr6", length(Random_high_pert$Percent))),
+                                 stringsAsFactors = F)
+subplot_chr6 <- ggplot(mc_length_chr6only, aes(x = Group , y = Proportion, fill = Group)) + 
+  geom_boxplot() +
+  guides(fill=FALSE) +
+  # geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous(element_blank()) + scale_x_discrete(element_blank()) 
+
+vp_chr6 <- viewport(width = 0.2, height = 0.35, 
+                   x = 0.73,
+                   y = unit(0.75, "npc"), just = "right")
+
+mc_length_WGSonly <- data.frame(Proportion = c(all_matched_Percent$IBDPercent, all_random_Percent$IBDPercent), # WGS
+                        Group = c(rep("Matched WGS", length(all_matched_Percent$IBDPercent)), rep("Random WGS", length(all_random_Percent$IBDPercent))),
+                        stringsAsFactors = F)
+
+subplot_wgs <- ggplot(mc_length_WGSonly, aes(x = Group , y = Proportion, fill = Group)) + 
+  geom_boxplot() +
+  guides(fill=FALSE) +
+  # geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous(element_blank()) + scale_x_discrete(element_blank()) 
+
+vp_wgs <- viewport(width = 0.2, height = 0.35, 
+               x = 0.95,
+               y = unit(0.75, "npc"), just = "right")
+
+print(mainplot)
+
+print(subplot_chr6, vp = vp_chr6)
+print(subplot_wgs, vp = vp_wgs)
+# theme_set(theme_bw())

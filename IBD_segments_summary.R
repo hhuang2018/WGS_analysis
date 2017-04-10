@@ -33,7 +33,7 @@ chr.len = chr.len[grep("_|M", names(chr.len), invert = T)]
 # IBDseq_summary_output <- "../Output/IBDseq/Figures/"
 beagles_output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/"
 IBDseq_summary_output <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/summary"
-chr <- 11
+chr <- 1
 # chr_list <- 11
 
 for(chr in chr_list){
@@ -61,7 +61,7 @@ for(chr in chr_list){
   nGVHD_group_segments <- Seg_summary[which(grepl("n.",Seg_summary[, 1])),3]
   all_matched_segments <- Seg_summary[, 3]
   
-  aa <- unique(new_IBD_table[Random_pair_ID, c(1, 3)])
+  # aa <- unique(new_IBD_table[Random_pair_ID, c(1, 3)])
   random_Seg_summary <- aggregate(numdup ~., data=transform(new_IBD_table[Random_pair_ID, c(1, 3)], numdup=1), length)
   
   random_pair_segments <- random_Seg_summary[, 3]
@@ -105,7 +105,7 @@ for(chr in chr_list){
   
   Random_group_length <- IBD_segment_data_frame(new_IBD_table[Random_pair_ID, ], chrLengths[chr])
   
-  mc_length <- data.frame(Proportion = c(aGVHD_group_length$Percent, nGVHD_group_length$Percent, 
+  mc_length <- data.frame(Percent = c(aGVHD_group_length$Percent, nGVHD_group_length$Percent, 
                                       Matched_group_length$Percent, Random_group_length$Percent),
                           Group = c(rep("aGVHD", length(aGVHD_group_length$Percent)), rep("non-GVHD", length(nGVHD_group_length$Percent)),
                                     rep("Matched", length(Matched_group_length$Percent)), rep("Random Pairs", length( Random_group_length$Percent))),
@@ -128,7 +128,7 @@ for(chr in chr_list){
 }
 
 ##############################
-chr <- 1
+chr <- 22
 
 IBD_reformated_dir <- "../Output/IBDseq/cloud_Rformat/"
 
