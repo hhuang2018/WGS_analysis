@@ -4,10 +4,10 @@ source('util.R', echo = FALSE)
 
 library(vcfR)
 
-VCF_file_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/vcf_missense_variants_RefSeq_canonical/"
-output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/vcf_missense_variants_RefSeq_canonical/stats/"
+VCF_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/wwang/hli_annotated/"
+output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/vcf_missense_variants_wwVersion/"
 
-all_vcf_files <- list.files(VCF_file_dir, pattern = "\\.vcf.gz$")
+all_vcf_files <- list.files(VCF_file_dir, pattern = "\\.vcf$")
 
 file_names <- all_vcf_files[grepl("_D_", all_vcf_files)] # 216 donors; 240 recipients
 
@@ -20,10 +20,22 @@ missense_stats <- data.frame(CHROM=character(0), POS=numeric(0), REF = character
 for(id in 1:num_files){
   
   vcf_file <- paste0(VCF_file_dir, file_names[id])
-  vcf_info <- read.vcfR(vcf_file, verbose = FALSE)
-  temp_info <- vcf_info@fix
-  vcf_missense <- temp_info[temp_info[,"FILTER"] == "PASS", c("CHROM", "POS", "REF","ALT")]
+  # vcf_info <- read.vcfR(vcf_file, verbose = FALSE)
+  # temp_info <- vcf_info@fix
+  # vcf_missense <- temp_info[temp_info[,"FILTER"] == "PASS", c("CHROM", "POS", "REF","ALT")]
+  # 
+  vcf_missense <- read.table(vcf_file)
+  colnames(vcf_missense) <- c("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "ANN", "INFO", "GT")
   
+  vcf_missense$CHROM <- as.character(vcf_missense$CHROM)
+  vcf_missense$POS <- as.numeric(as.character(vcf_missense$POS))
+  vcf_missense$REF <- as.character(vcf_missense$REF)
+  vcf_missense$ALT <- as.character(vcf_missense$ALT)
+  vcf_missense$QUAL <- as.numeric(as.character(vcf_missense$QUAL))
+  vcf_missense$ANN <- as.character(vcf_missense$ANN)
+  vcf_missense$INFO <- as.character(vcf_missense$INFO)
+  vcf_missense$GT <- as.character(vcf_missense$GT)
+   
   num_variants <- dim(vcf_missense)[1]
   
   # print(head(vcf_missense))
@@ -100,7 +112,7 @@ for(id in 1:num_files){
 }
 
 donor_missense_stats <- missense_stats
-save(donor_missense_stats, file = paste0(output_dir, "donor_missesense_stats_RefSeq_canon_0228.RData"))
+save(donor_missense_stats, file = paste0(output_dir, "donor_missesense_stats_wwVersion.RData"))
 # 
 # for(id in 1:num_files){
 #   
