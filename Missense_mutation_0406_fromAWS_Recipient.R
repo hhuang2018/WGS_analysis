@@ -112,7 +112,7 @@ for(id in 1:num_files){
 }
 
 donor_missense_stats <- missense_stats
-save(donor_missense_stats, file = paste0(output_dir, "donor_missesense_stats_wwVersion.RData"))
+save(donor_missense_stats, file = paste0(output_dir, "Recipients_missesense_stats_wwVersion.RData"))
 # 
 # for(id in 1:num_files){
 #   
