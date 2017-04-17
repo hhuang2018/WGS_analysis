@@ -24,35 +24,35 @@ for(id in 1:num_files){
   cat("VCF file #", id, "\n")
   out.filename <- gsub(".vcf.gz", "_A_E2.vcf", all_vcf_files[id])
   system(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_A_E2, " > ", output_dir, out.filename))
-  cat(paste0("tabix ", paired_vcf_dir, all_vcf_files[id], " ", HLA_A_E2, " > ", output_dir, out.filename), "\n")
+  cat(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_A_E2, " > ", output_dir, out.filename), "\n")
   
   out.filename <- gsub(".vcf.gz", "_A_E3.vcf", all_vcf_files[id])
   system(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id]," ", HLA_A_E3, " > ", output_dir, out.filename))
-  cat(paste0("tabix ", paired_vcf_dir, all_vcf_files[id], " ", HLA_A_E3, " > ", output_dir, out.filename), "\n")
+  cat(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_A_E3, " > ", output_dir, out.filename), "\n")
   
   out.filename <- gsub(".vcf.gz", "_B_E2.vcf", all_vcf_files[id])
   system(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id]," ", HLA_B_E2, " > ", output_dir, out.filename))
-  cat(paste0("tabix ", paired_vcf_dir, all_vcf_files[id], " ", HLA_B_E2, " > ", output_dir, out.filename), "\n")
+  cat(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_B_E2, " > ", output_dir, out.filename), "\n")
   
   out.filename <- gsub(".vcf.gz", "_B_E3.vcf", all_vcf_files[id])
   system(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_B_E3, " > ", output_dir, out.filename))
-  cat(paste0("tabix ", paired_vcf_dir, all_vcf_files[id], " ", HLA_B_E3, " > ", output_dir, out.filename), "\n")
+  cat(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_B_E3, " > ", output_dir, out.filename), "\n")
   
   out.filename <- gsub(".vcf.gz", "_C_E2.vcf", all_vcf_files[id])
   system(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_C_E2, " > ", output_dir, out.filename))
-  cat(paste0("tabix ", paired_vcf_dir, all_vcf_files[id], " ", HLA_C_E2, " > ", output_dir, out.filename), "\n")
+  cat(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_C_E2, " > ", output_dir, out.filename), "\n")
   
   out.filename <- gsub(".vcf.gz", "_C_E3.vcf", all_vcf_files[id])
   system(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_C_E3, " > ", output_dir, out.filename))
-  cat(paste0("tabix ", paired_vcf_dir, all_vcf_files[id], " ", HLA_C_E3, " > ", output_dir, out.filename), "\n")
+  cat(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_C_E3, " > ", output_dir, out.filename), "\n")
   
   out.filename <- gsub(".vcf.gz", "_DRB1_E2.vcf", all_vcf_files[id])
   system(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_DRB1_E2, " > ", output_dir, out.filename))
-  cat(paste0("tabix ", paired_vcf_dir, all_vcf_files[id], " ", HLA_DRB1_E2, " > ", output_dir, out.filename), "\n")
+  cat(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_DRB1_E2, " > ", output_dir, out.filename), "\n")
   
   out.filename <- gsub(".vcf.gz", "_DQB1_E2.vcf", all_vcf_files[id])
   system(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_DQB1_E2, " > ", output_dir, out.filename))
-  cat(paste0("tabix ", paired_vcf_dir, all_vcf_files[id], " ", HLA_DQB1_E2, " > ", output_dir, out.filename), "\n")
+  cat(paste0("tabix ", renamed_vcf_dir, all_vcf_files[id], " ", HLA_DQB1_E2, " > ", output_dir, out.filename), "\n")
   
   print(proc.time()-ptm)
 }
