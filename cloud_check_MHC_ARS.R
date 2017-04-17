@@ -14,7 +14,7 @@ HLA_A_E3 <- "chr6:29943268-29943543"
 HLA_B_E2 <- "chr6:31271599-31271868"
 HLA_B_E3 <- "chr6:31271073-31271348"
 HLA_C_E2 <- "chr6:31356688-31356957"
-HLA_C_E3 <- "chr6:31356167-31356442"
+HLA_C_E3 <- "chr6:31356167-31356442" 
 HLA_DRB1_E2 <- "chr6:32584109-32584378"
 HLA_DQB1_E2 <- "chr6:32584109-32584378"
 
@@ -94,29 +94,58 @@ for(id in 1:205){
   mismatch_table[id, 1] <- Available_paired_table$GroupID[id]
     
   for(jd in 1:8){
-    Exon_donor <- read.table(paste0(output_dir, prefix, "_D_", regions[jd], ".vcf"))
-    Exon_recipient <- read.table(paste0(output_dir, prefix, "_R_", regions[jd], ".vcf"))
-    
-    intersect_pos <- intersect(Exon_donor$V2, Exon_recipient$V2)
-    
-    donor_id <- which(Exon_donor$V2 %in% intersect_pos)
-    recipient_id <- which(Exon_recipient$V2 %in% intersect_pos)
-    
-    mismatch_table[id, 2*jd] <- length(Exon_donor$V2) - length(donor_id) + 
-      length(Exon_recipient$V2) - length(recipient_id)  # insertion
-    
-    same_pos_ALT <- intersect(Exon_donor$V5[donor_id], Exon_recipient$V5[recipient_id])
-    
-    donor_ALT_id <- which(Exon_donor$V5[donor_id] %in% same_pos_ALT)
-    recipient_ALT_id <- which(Exon_recipient$V5[recipient_id] %in% same_pos_ALT)
-    
-    mismatch_table[id, 2*jd] <-  mismatch_table[id, 2*jd] + 
-      length(donor_id) - length(donor_ALT_id) + 
-      length(recipient_id) - length(recipient_ALT_id)  # different ALT
-    
-    mismatch_table[id, 2*jd+1] <- length(which(c(as.character(Exon_donor$V7), as.character(Exon_recipient$V7))!= "PASS"))
+    Exon_donor <- tryCatch(read.table(paste0(output_dir, prefix, "_D_", Available_paired_table$DID[id], "_", regions[jd], ".vcf")), 
+                           error = function(err){
+                             temp_var <- matrix(data = NA, nrow=0, ncol=10)
+                             colnames(temp_var) <- paste0("V", 1:10)
+                             temp_var <- as.data.frame(temp_var)
+                             return(temp_var)
+                           })
+    Exon_recipient <- tryCatch(read.table(paste0(output_dir, prefix, "_R_", Available_paired_table$RID[id], "_", regions[jd], ".vcf")),
+                               error = function(err){
+                                 temp_var <- matrix(data = NA, nrow=0, ncol=10)
+                                 colnames(temp_var) <- paste0("V", 1:10)
+                                 temp_var <- as.data.frame(temp_var)
+                                 return(temp_var)
+                                 }
+                               )
+    if(dim(Exon_donor)[1] > 0 & dim(Exon_recipient)[1] > 0){
+      
+      intersect_pos <- intersect(Exon_donor$V2, Exon_recipient$V2)
+      
+      donor_id <- which(Exon_donor$V2 %in% intersect_pos)
+      recipient_id <- which(Exon_recipient$V2 %in% intersect_pos)
+      
+      mismatch_table[id, 2*jd] <- length(Exon_donor$V2) - length(donor_id) + 
+        length(Exon_recipient$V2) - length(recipient_id)  # insertion
+      
+      same_pos_ALT <- intersect(Exon_donor$V5[donor_id], Exon_recipient$V5[recipient_id])
+      
+      donor_ALT_id <- which(Exon_donor$V5[donor_id] %in% same_pos_ALT)
+      recipient_ALT_id <- which(Exon_recipient$V5[recipient_id] %in% same_pos_ALT)
+      
+      mismatch_table[id, 2*jd] <-  mismatch_table[id, 2*jd] + 
+        length(donor_id) - length(donor_ALT_id) + 
+        length(recipient_id) - length(recipient_ALT_id)  # different ALT
+      
+      mismatch_table[id, 2*jd+1] <- length(which(c(as.character(Exon_donor$V7), as.character(Exon_recipient$V7))!= "PASS"))
+    }else {
+      
+      mismatch_table[id, 2*jd] <- dim(Exon_donor)[1] + dim(Exon_recipient)[1]
+      mismatch_table[id, 2*jd+1] <- length(which(c(as.character(Exon_donor$V7), as.character(Exon_recipient$V7))!= "PASS"))
+      
+    }
   }
 }
 
 save(mismatch_table, file = paste0(output_dir, "mimatch_table_summary.RData"))
 
+####################
+load("../Data/mimatch_table_summary.RData")
+
+ARS_mismatch <- rowSums(mismatch_table[, 2*(1:8)])
+ARS_mismatch_lowQ <- rowSums(mismatch_table[, 2*(1:8)+1])
+all_table <- mismatch_table
+all_table$All_ARS_mismatch <- ARS_mismatch
+all_table$All_ARS_lowQ <- ARS_mismatch_lowQ
+write.csv(all_table, file = "../FirstPaper/ARS_mismatch_table.csv", row.names = F)
