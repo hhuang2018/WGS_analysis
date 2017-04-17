@@ -1,7 +1,7 @@
 
 renamed_vcf_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_renamed/"
 
-all_vcf_files <- list.files(paired_vcf_dir, pattern = "\\.vcf.gz$")
+all_vcf_files <- list.files(renamed_vcf_dir, pattern = "\\.vcf.gz$")
 
 output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/chr6_MHC_ARS/"
 
