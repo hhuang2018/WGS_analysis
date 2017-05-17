@@ -330,6 +330,7 @@ pp2 <- ggplot(mc_LLR, aes(x = name, ymax = LLR, ymin = 0, color = "#D55E00")) +
   # ggtitle("Known MiHAs") +
   theme_bw() +
   xlab("") +
+  # coord_flip() +
   # scale_colour(values = "#D55E00") +
   theme(axis.text.x = element_text(angle = 90, hjust = 1),
         legend.position = "none") 

@@ -5,10 +5,10 @@
 load("../Data/ID_table.RData")
 
 # known_miha_freq <- read.csv("../WW_MiHA/HLA_restricted_knownMiHAs.csv", header = F)
-# known_miha_freq <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F)
-# colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
+known_miha_freq <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F)
+colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
 
-known_miha_freq <- read.csv("../ClinVar//unRestrictedMiHAs.csv", header = F)
+# known_miha_freq <- read.csv("../ClinVar//Data/RestrictedMiHAs.csv", header = F)
 # colnames(known_miha_freq) <- c("GroupType", "GroupID", "HLA_type", "SNP", "CHROM", "REF", "ALT", "GENE", "Peptide")  # restricted table
 colnames(known_miha_freq) <- c("GroupType", "GroupID", "HLA_type", "SNP", "CHROM", "Donor", "Recipient") # unristricted table
 

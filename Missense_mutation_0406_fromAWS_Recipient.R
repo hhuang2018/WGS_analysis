@@ -3,7 +3,7 @@ source('util.R', echo = FALSE)
 # load("../Data/GRCh38_gene_list.RData")
 
 library(vcfR)
-
+ 
 VCF_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/wwang/hli_annotated/"
 output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/vcf_missense_variants_wwVersion/"
 

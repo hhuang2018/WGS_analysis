@@ -5,11 +5,13 @@ load("../Data/ID_table.RData")
 known_miha_freq <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F)
 colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
 
-table(known_miha_freq[c("HLA_type","SNP")])
+
+# table(known_miha_freq[c("HLA_type","SNP")])
 
 known_miha_freq$HLA_SNP <- sapply(1:dim(known_miha_freq)[1], 
                                   function(x) paste0(known_miha_freq$HLA_type[x], "-", known_miha_freq$SNP[x]))
 
+#################
 single_MiHA_stats <- as.data.frame(table(known_miha_freq[c("GroupType", "HLA_SNP")]))
 
 GroupID_MiHA_stats <- as.data.frame(table(known_miha_freq[c("GroupID", "HLA_SNP")]))
@@ -113,9 +115,33 @@ corrgram(new_A_n_SNP[nonZeros_rows, -c(1,2)], order=F, lower.panel=panel.shade,
          main="HLA-A*02:01 restricted MiHAs \n in non-aGVHD groups", 
          cor.method = "spearman")
 
-## Log Ratio
+##### Log Ratio
+known_MiHA_coordinates <- read.table("../WW_MiHA/Known_MiHA_coordinates.txt", header = T, stringsAsFactors = F)
+num_rows <- dim(known_miha_freq)[1] 
+known_miha_freq$MiHA_HLA_SNP_Gene <- sapply(1:num_rows, function(x) {ind <- which(known_MiHA_coordinates$SNPs == known_miha_freq$SNP[x])
+paste0(known_MiHA_coordinates$MiHAs[ind], "<>", known_miha_freq$HLA_SNP[x], "<>", known_MiHA_coordinates$Gene[ind])}) 
 
+unique_MiHAs <- unique(known_miha_freq$MiHA_HLA_SNP_Gene)
+num_unique_MiHAs <- length(unique_MiHAs)
 
+MiHA_LLR <- data.frame(MiHA_HLA_SNP_Gene = character(num_unique_MiHAs),
+                        aGVHD_count = numeric(num_unique_MiHAs),
+                        nGVHD_count = numeric(num_unique_MiHAs),
+                        LLR = numeric(num_unique_MiHAs),
+                       stringsAsFactors = F)
+
+for(id in 1:num_unique_MiHAs){
+  
+  index <- which(known_miha_freq$MiHA_HLA_SNP_Gene %in% unique_MiHAs[id])
+  
+  count_summary <- as.data.frame(table(known_miha_freq$GroupType[index]))
+  
+  MiHA_LLR$MiHA_HLA_SNP_Gene[id] <- unique_MiHAs[id]
+  MiHA_LLR$aGVHD_count[id] <- count_summary$Freq[which(count_summary$Var1[index] == "a")]
+  MiHA_LLR$nGVHD_count[id] <- count_summary$Freq[which(count_summary$Var1[index] == "n")]
+  MiHA_LLR$LLR[id] <- log10(MiHA_LLR$aGVHD_count[id] / MiHA_LLR$nGVHD_count[id])
+  
+}
 
 
 

@@ -20,10 +20,11 @@ for(id in 1:num_files){
     vcf_file <- paste0(VCF_file_dir, all_files[id])
     vcf_info <- read.vcfR(vcf_file, verbose = FALSE)
     total_num <- dim(vcf_info@fix)[1]
-    rm_id_noPass <- which(vcf_info@fix[, 7] != "PASS")
+    #rm_id_noPass <- which(vcf_info@fix[, 7] != "PASS")
     rm_id_noAlle <- which(!grepl("/", vcf_info@gt[, 2]))
     
-    rm_id <- unique(c(rm_id_noPass, rm_id_noAlle))
+    #rm_id <- unique(c(rm_id_noPass, rm_id_noAlle))
+    rm_id <- rm_id_noAlle
     
     new_vcf_info <- vcf_info
     new_vcf_info@fix <- new_vcf_info@fix[-rm_id, ]

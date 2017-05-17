@@ -1,27 +1,27 @@
 source("util.R")
 library(BSgenome.Hsapiens.UCSC.hg38)
-#  chrLengths <- c(248956422, # chr1
-#                 242193529, # chr2
-#                 198295559, # chr3
-#                 190214555, # chr4
-#                 181538259, # chr5
-#                 170805979, # chr6
-#                 159345973, # chr7
-#                 145138636, # chr8
-#                 138394717, # chr9
-#                 133797422, # chr10
-#                 135086622, # chr11
-#                 133275309, # chr12
-#                 114364328, # chr13
-#                 107043718, # chr14
-#                 101991189, # chr15
-#                 90338345,  # chr16
-#                 83257441,  # chr17
-#                 80373285,  # chr18
-#                 58617616,  # chr19
-#                 64444167,  # chr20
-#                 46709983,  # chr21
-#                 50818468   # chr22
+# chr.len <- c(248956422, # chr1
+#              242193529, # chr2
+#              198295559, # chr3
+#              190214555, # chr4
+#              181538259, # chr5
+#              170805979, # chr6
+#              159345973, # chr7
+#              145138636, # chr8
+#              138394717, # chr9
+#              133797422, # chr10
+#              135086622, # chr11
+#              133275309, # chr12
+#              114364328, # chr13
+#              107043718, # chr14
+#              101991189, # chr15
+#              90338345,  # chr16
+#              83257441,  # chr17
+#              80373285,  # chr18
+#              58617616,  # chr19
+#              64444167,  # chr20
+#              46709983,  # chr21
+#              50818468   # chr22
 # )
 
 chr.len = seqlengths(BSgenome.Hsapiens.UCSC.hg38)  # get chromosome lengths
@@ -124,6 +124,9 @@ for(chr in chr_list){
   ordered_Matched <- Matched_group_length[order(Matched_group_length$Percent, decreasing = T), ]
   Matched_high_pert <- ordered_Matched[which(ordered_Matched$Percent > 0), ]
   # }
+  save(mc, mc_length, p1, p2, Random_high_pert, Matched_high_pert, file = "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_renamed_all_chr6/IBD/IBDseq_summary_chr6_noFiltering.RData")
+  
+  
   save(mc, mc_length, p1, p2, Random_high_pert, Matched_high_pert, file = paste0(IBDseq_summary_output, "IBDseq_summary_chr_", chr, ".RData"))
 }
 

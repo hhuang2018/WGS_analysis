@@ -55,8 +55,6 @@ library(ggplot2)
 ggplot(peptide_summary_table, aes(x=nGroup, y=aGroup)) + geom_point(aes(color = factor(Tissues)))
 
 
-
-
 ####################### 04/06/2017
 expression_table <- read.csv(file = "../ExpressionAnalysis/aws_MiHAIP-v1.4.5_analysis/New_all_binder_joined.csv", 
                              header = T, sep = "\t")
@@ -130,7 +128,7 @@ ggplot(ordered_peptide_summary[which(ordered_peptide_summary$group == "Normal"),
 #####
 new_expression_table <- read.csv(file = "../ExpressionAnalysis/aws_MiHAIP-v1.4.5_analysis/New_all_binder_joined_rearranged.txt", 
                              header = T, sep = "\t")
-
+# new_expression_table <- read.csv("/mnt/cloudbiodata_nfs_1/hli_scratch/wwang/AWS_MiHAIP-1.4.5_output/New_all_binder_joined_rearranged.txt", header = T, sep = "\t")
 Blood_related_tissues <- c("Whole.Blood", "Cells...EBV.transformed.lymphocytes")
 Male_specific_tissues <- c("Testis", "Prostate")         # male specific
 Female_specific_tissues <- c("Ovary", "Fallopian.Tube")  # Female specific
@@ -167,8 +165,8 @@ for(id in 1:num_peptides){
     }
   }
   
-  # Tissue_spec <- unique(MAF_binder_table$TissueSpec[pp_ids])
-  # if(length(Tissue_spec) == 1) peptide_summary_table$Tissues[id] <- Tissue_spec else print(id)
+  Tissue_spec <- unique(MAF_binder_table$TissueSpec[pp_ids])
+  if(length(Tissue_spec) == 1) peptide_summary_table$Tissues[id] <- Tissue_spec else print(id)
   
 }
 

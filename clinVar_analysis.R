@@ -22,6 +22,7 @@ Location <- data.frame(CHROM = as.character(clinVar.AML$Chromosome[selected_inde
                        Genes = character(length(selected_index)),
                        Names = character(length(selected_index)),
                        stringsAsFactors = F)
+
 for(id in 1:length(selected_index)){
   
   Location$Genes[id] <- as.character(clinVar.AML$Gene.s.[selected_index[id]])
