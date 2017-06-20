@@ -1,24 +1,37 @@
 source('util.R', echo = FALSE)
-
-HLA_typings <- read.csv(file = "../Data/HLI_hla_mg_v3.csv")
-
-load("../Data/ID_table.RData")
-
-available_IDs <-ID_table[ID_table$GroupID %in% ID_table$GroupID[duplicated(ID_table$GroupID)],]
-
-avaialble_IDs_HLA_typing <- HLA_typings[(HLA_typings$nmdp_rid %in% available_IDs$R_D_ID),]
-num_groups <- dim(avaialble_IDs_HLA_typing)[1]
-group_type <- sapply(1:num_groups, function(x) available_IDs$Group[available_IDs$R_D_ID %in% avaialble_IDs_HLA_typing$nmdp_rid[x]])
-group_type[group_type == "a"] <- "aGVHD"
-group_type[group_type == "n"] <- "non-GVHD"
+library(vcfR)
 
 # file_path <- "../Output/snpEff_gene_stats/"
 # output_dir <- "../Output/"
+load("../Data/hg38_known_gene_symbols_HGNC.RData")
 
-file_path <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_stats/"
+file_path <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq/"
 output_dir <- file_path
-  
-all_files <- list.files(file_path, pattern = "\\.csv$")
+
+all_files <- list.files(file_path, pattern = "\\.vcf.gz$")
+
+
+vcf_info <- read.vcfR("../Data/a_36_D_52668563_RefSeq_annotated_canon.vcf.gz", verbose = FALSE)
+
+vcf_file_D <- paste0(VCF_file_dir, "n_197_D_annotated.vcf.gz")
+vcf_D <- read.vcfR(vcf_file_D, verbose = FALSE)
+
+vcf_variants <- as.data.frame(vcf_info@fix, stringsAsFactors = FALSE)
+vcf_variants$POS <- as.integer(vcf_variants$POS)
+
+# vcf_gt <- as.data.frame(vcf_info@gt, stringsAsFactors = FALSE)
+# vcf_gt <- vcf_gt[(vcf_variants$FILTER == "PASS"), ] ## QC
+
+vcf_variants <- vcf_variants[(vcf_variants$FILTER == "PASS"), ] # only look at high-quality variants
+
+chr_meta <- vcf_info@meta
+info_id <- which(grepl("INFO=", chr_meta))
+
+# Annotation
+annotation_info <- parse_meta_info(chr_meta[info_id], vcf_variants$INFO)
+
+
+genetype_info <- vcf_info@fix
 
 ## Effects by impact
 all_Effects_table_205_recipients <- data.frame(GroupID = numeric(0), 
@@ -203,7 +216,7 @@ for(fid in 1:length(all_files)){
   
   ############# Add to the total table
   sub_types <- unlist(strsplit(all_files[fid], "_"))
- 
+  
   if(sub_types[3] == "D"){ ## donor
     
     avail_did_index <- which(avaialble_IDs_HLA_typing$nmdp_id == as.numeric(sub_types[4]))
@@ -243,7 +256,7 @@ for(fid in 1:length(all_files)){
       
       all_Count_Region_table_205_donor <- rbind(all_Count_Region_table_205_donor, temp_Count_Region_table)
       all_Count_Region_table_donor <- rbind(all_Count_Region_table_donor, temp_Count_Region_table)
-
+      
       
     }else{ # not within the 205 pairs
       
@@ -450,10 +463,10 @@ all_Effects_table_205_donor$SubType <- "Donor"
 all_Effects_table_205_recipients$SubType <- "Recipient"
 
 df4 <- data.frame(Type = c(rep(all_Effects_table_205_donor$SubType, dim(all_Effects_table_205_donor)[2] -5), 
-                          rep(all_Effects_table_205_recipients$SubType, dim(all_Effects_table_205_recipients)[2] -5)),
-                 GenomicRegion = c(rep(colnames(all_Effects_table_205_donor)[-c(1:4, 9)], each = dim(all_Effects_table_205_donor)[1]), 
-                                   rep(colnames(all_Effects_table_205_recipients)[-c(1:4, 9)], each = dim(all_Effects_table_205_recipients)[1])),
-                 Count = c(as.vector(as.matrix(all_Effects_table_205_donor[, 5:8])), as.vector(as.matrix(all_Effects_table_205_recipients[, 5:8]))))
+                           rep(all_Effects_table_205_recipients$SubType, dim(all_Effects_table_205_recipients)[2] -5)),
+                  GenomicRegion = c(rep(colnames(all_Effects_table_205_donor)[-c(1:4, 9)], each = dim(all_Effects_table_205_donor)[1]), 
+                                    rep(colnames(all_Effects_table_205_recipients)[-c(1:4, 9)], each = dim(all_Effects_table_205_recipients)[1])),
+                  Count = c(as.vector(as.matrix(all_Effects_table_205_donor[, 5:8])), as.vector(as.matrix(all_Effects_table_205_recipients[, 5:8]))))
 
 # df3$GenomicRegion <- factor(df3$GenomicRegion, levels(df3$GenomicRegion)[c(3,1,2)])
 
@@ -489,13 +502,13 @@ all_Count_Region_table_205_donor$SubType <- "Donor"
 all_Count_Region_table_205_recipients$SubType <- "Recipient"
 
 df <- data.frame(Type = c(rep(all_Count_Region_table_205_donor$SubType, dim(all_Count_Region_table_205_donor)[2] -5), 
-                             rep(all_Count_Region_table_205_recipients$SubType, dim(all_Count_Region_table_205_recipients)[2] -5)),
+                          rep(all_Count_Region_table_205_recipients$SubType, dim(all_Count_Region_table_205_recipients)[2] -5)),
                  GenomicRegion = c(rep(colnames(all_Count_Region_table_205_donor)[-c(1:4,17)], each = dim(all_Count_Region_table_205_donor)[1]), 
                                    rep(colnames(all_Count_Region_table_205_recipients)[-c(1:4,17)], each = dim(all_Count_Region_table_205_recipients)[1])),
                  Count = c(as.vector(as.matrix(all_Count_Region_table_205_donor[, 5:16])), as.vector(as.matrix(all_Count_Region_table_205_recipients[, 5:16]))))
 
 df$GenomicRegion <- factor(df$GenomicRegion, levels(df$GenomicRegion)[c(5, 4, 10, 1, 2,3,6:9, 11,12)])
-  
+
 ggplot(data = df, aes(x = GenomicRegion, y = Count, fill = Type)) + 
   geom_boxplot() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
@@ -503,10 +516,10 @@ ggplot(data = df, aes(x = GenomicRegion, y = Count, fill = Type)) +
 
 
 df2 <- data.frame(Type = c(rep(all_Count_Region_table_205_donor$SubType, dim(all_Count_Region_table_205_donor)[2] -9), 
-                          rep(all_Count_Region_table_205_recipients$SubType, dim(all_Count_Region_table_205_recipients)[2] -9)),
-                 GenomicRegion = c(rep(colnames(all_Count_Region_table_205_donor)[-c(1:4,17, 8,9,5,14)], each = dim(all_Count_Region_table_205_donor)[1]), 
-                                   rep(colnames(all_Count_Region_table_205_recipients)[-c(1:4,17, 8,9,5,14)], each = dim(all_Count_Region_table_205_recipients)[1])),
-                 Count = c(as.vector(as.matrix(all_Count_Region_table_205_donor[, c(6,7,10:13, 15, 16)])), as.vector(as.matrix(all_Count_Region_table_205_recipients[, c(6,7,10:13, 15, 16)]))))
+                           rep(all_Count_Region_table_205_recipients$SubType, dim(all_Count_Region_table_205_recipients)[2] -9)),
+                  GenomicRegion = c(rep(colnames(all_Count_Region_table_205_donor)[-c(1:4,17, 8,9,5,14)], each = dim(all_Count_Region_table_205_donor)[1]), 
+                                    rep(colnames(all_Count_Region_table_205_recipients)[-c(1:4,17, 8,9,5,14)], each = dim(all_Count_Region_table_205_recipients)[1])),
+                  Count = c(as.vector(as.matrix(all_Count_Region_table_205_donor[, c(6,7,10:13, 15, 16)])), as.vector(as.matrix(all_Count_Region_table_205_recipients[, c(6,7,10:13, 15, 16)]))))
 
 ggplot(data = df2, aes(x = GenomicRegion, y = Count, fill = Type)) + geom_boxplot()
 

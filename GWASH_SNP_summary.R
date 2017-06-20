@@ -1,12 +1,49 @@
+######################################
+# Omni Express Chip SNPs - GRCh37.p13
+######################################
+GWASH_snps <- read.delim(file = "../ClinVar/GWASH/labcorp0814.map", header = FALSE)
+colnames(GWASH_snps) <- c("chr", "SNP", "GeneticPos(M)", "start")
+GWASH_snps$end <- GWASH_snps$start
+
+GWASH_snps$chr <- paste0("chr", GWASH_snps$chr)
+# GWASH_snps$chr[which(GWASH_snps$chr == 0)] <- "chrM"
+
+
+Known_MiHA_SNPs <- read.delim("../WW_MiHA/Known_MiHA_coordinates.txt")
+
+## liftover 
+# source("http://bioconductor.org/biocLite.R")
+# biocLite("rtracklayer")
+library(rtracklayer)
+# ??liftOver
+
+chain <- import.chain("../Data/hg19ToHg38.over.chain") ## liftOver chain file
+
+GWASH_snps_GRanges <- makeGRangesFromDataFrame(GWASH_snps, ignore.strand = TRUE, keep.extra.columns = TRUE)
+
+GWASH_snps_hg38 <- liftOver(GWASH_snps_GRanges, chain)
+
+GWASH_snps_hg38_dataFrame <- as.data.frame(GWASH_snps_hg38@unlistData)
+
+# check overlapped SNPs 
+Known_MiHA_SNPs$chr_POS <- sapply(1:dim(Known_MiHA_SNPs)[1], function(x) paste0(Known_MiHA_SNPs$Chr[x], "-", Known_MiHA_SNPs$Pos[x]))
+GWASH_snps_hg38_dataFrame$chr_POS <- sapply(1:dim(GWASH_snps_hg38_dataFrame)[1], function(x) paste0(GWASH_snps_hg38_dataFrame$seqnames[x], "-", GWASH_snps_hg38_dataFrame$start[x]))
+
+overlapping_SNPs <- GWASH_snps_hg38_dataFrame[which(GWASH_snps_hg38_dataFrame$chr_POS %in% Known_MiHA_SNPs$chr_POS), ]
+
+overlapping_SNPs$SNP_currentID <- sapply(1:length(overlapping_SNPs$chr_POS), function(x) Known_MiHA_SNPs$SNPs[which(Known_MiHA_SNPs$chr_POS %in% overlapping_SNPs$chr_POS[x])])
+
+##############
+# Double-check the overlappin cases with overlapping MiHA SNPs
+#############
 source("util.R")
-# library(BSgenome.Hsapiens.UCSC.hg38)
-# library(ggplot2)
+
 GWAS_samp_table_fp <- "../ClinVar/GWASH/Metadata/newfnldataib1203.csv"
 GWAS_file_fp <- "../ClinVar/GWASH/MIHA/data/"
 
 GWAS_sample_table <-read.csv(GWAS_samp_table_fp, header = T, stringsAsFactors = F)
 
-MiHA_SNPs <- read.table(paste0(GWAS_file_fp, "MiHAgeno.map"), stringsAsFactors = F)
+MiHA_SNPs <- read.table(paste0(GWAS_file_fp, "MiHAgeno.map"), stringsAsFactors = F) # overlapping MiHA 
 colnames(MiHA_SNPs) <- c("Map_ID", "SNP_ID", "Location", "POS")
 num_SNPs <- length(MiHA_SNPs$SNP_ID)
 
@@ -414,10 +451,10 @@ for(id in 1:Num_joint){
                              n_combined_table$`pres-abs`[id],
                              a_combined_table$`abs-pres`[id],
                              n_combined_table$`abs-pres`[id]),
-                           nrow = 2,
-                           dimnames = list(outcome = c(\"aGVHD\", \"non-GVHD\"),", rsNames, "
-                           = c(\"presence-absence\", \"absence-presence\")
-                           ))")))
+                             nrow = 2,
+                             dimnames = list(outcome = c(\"aGVHD\", \"non-GVHD\"),", rsNames, "
+                             = c(\"presence-absence\", \"absence-presence\")
+                             ))")))
   }
   
   
@@ -426,7 +463,7 @@ for(id in 1:Num_joint){
   # 
   p_values[id] <- fisher.test(test_matrix)$"p.value"
   
-}
+  }
 
 ordered_p_names <- names(p_values[order(p_values, decreasing = F)])
 ##########
@@ -480,7 +517,7 @@ for(iid in 1:Num_joint){
   cat(p_values[id])
   cat("\n====================================\n")
   
-}
+  }
 sink()
 
 #### HLI only
@@ -558,14 +595,14 @@ for(id in 1:Num_joint){
   }else{
     cat("ID = ", id, "\n")
     eval(parse(text = paste0("test_matrix <- matrix(c(
-                               a_combined_table$`pres-abs`[id],
-                               n_combined_table$`pres-abs`[id],
-                               a_combined_table$`abs-pres`[id],
-                               n_combined_table$`abs-pres`[id]), 
-                               nrow = 2, 
-                               dimnames = list(outcome = c(\"aGVHD\", \"non-GVHD\"),", rsNames, "
-                               = c(\"presence-absence\", \"absence-presence\")
-                               ))")))
+                             a_combined_table$`pres-abs`[id],
+                             n_combined_table$`pres-abs`[id],
+                             a_combined_table$`abs-pres`[id],
+                             n_combined_table$`abs-pres`[id]), 
+                             nrow = 2, 
+                             dimnames = list(outcome = c(\"aGVHD\", \"non-GVHD\"),", rsNames, "
+                             = c(\"presence-absence\", \"absence-presence\")
+                             ))")))
   }
   
   # chisq.test(chi_mat)$statistic
@@ -575,7 +612,7 @@ for(id in 1:Num_joint){
   
   
   
-}
+  }
 
 p_values[order(p_values, decreasing = F)]
 ##########
@@ -617,14 +654,14 @@ for(iid in 1:Num_joint){
     }else{
       cat("ID = ", id, "\n")
       eval(parse(text = paste0("test_matrix <- matrix(c(
-                             a_combined_table$`pres-abs`[id],
-                             n_combined_table$`pres-abs`[id],
-                             a_combined_table$`abs-pres`[id],
-                             n_combined_table$`abs-pres`[id]), 
-                             nrow = 2, 
-                             dimnames = list(outcome = c(\"aGVHD\", \"non-GVHD\"),", rsNames, "
-                             = c(\"presence-absence\", \"absence-presence\")
-                             ))")))
+                               a_combined_table$`pres-abs`[id],
+                               n_combined_table$`pres-abs`[id],
+                               a_combined_table$`abs-pres`[id],
+                               n_combined_table$`abs-pres`[id]), 
+                               nrow = 2, 
+                               dimnames = list(outcome = c(\"aGVHD\", \"non-GVHD\"),", rsNames, "
+                               = c(\"presence-absence\", \"absence-presence\")
+                               ))")))
     }
     
     print(test_matrix)
@@ -632,7 +669,7 @@ for(iid in 1:Num_joint){
     cat(p_values[id])
     cat("\n====================================\n")
     
-  }
+    }
   
   
 }
@@ -682,12 +719,12 @@ for(id in 1:num_avail_cases){
           GWASH_MiHA_freq_tab$HLA_type[counter] <- restricted_HLA
           GWASH_MiHA_freq_tab$SNP[counter] <- SNPs[pres_SNPs[jd]]
           GWASH_MiHA_freq_tab$HLA_SNP[counter] <- paste0(restricted_HLA, "-", SNPs[pres_SNPs[jd]]) 
-            
+          
           if(mismatch_MiHA_table$aGVHD[id] == 1){ # aGVHD
             
             Restricted_MiHA_summary[1, SNPs[pres_SNPs[jd]]] <- Restricted_MiHA_summary[1, SNPs[pres_SNPs[jd]]] + 1
             GWASH_MiHA_freq_tab$GroupType[counter] <- "aGVHD"
-
+            
           }else{ # non-aGVHD
             
             Restricted_MiHA_summary[2, SNPs[pres_SNPs[jd]]] <- Restricted_MiHA_summary[2, SNPs[pres_SNPs[jd]]] + 1
@@ -805,9 +842,9 @@ HLI_single_MiHA_stats <- single_MiHA_stats[index, ]
 
 # num_MiHAs <- length(unique_MiHAs)
 HLI_LLR_MiHAs <- data.frame(name = character(num_MiHAs),
-                        hla = character(num_MiHAs),
-                        LLR = numeric(num_MiHAs),
-                        stringsAsFactors = F)
+                            hla = character(num_MiHAs),
+                            LLR = numeric(num_MiHAs),
+                            stringsAsFactors = F)
 
 for(miha_id in 1:num_MiHAs){
   
@@ -887,13 +924,13 @@ write.csv(GWASH_single_MiHA_table, file = "../ClinVar/GWASH/GWASH_cohort_Restric
 
 num_MiHAs <- dim(GWASH_single_MiHA_stats)[1]/2
 HLI_single_MiHA_table <- data.frame(Gene = character(num_MiHAs), 
-                                      MiHA = character(num_MiHAs), 
-                                      rsNumber = character(num_MiHAs), 
-                                      HLA = character(num_MiHAs),
-                                      aGVHD = numeric(num_MiHAs), 
-                                      nGVHD = numeric(num_MiHAs), 
-                                      LLR10_avg = numeric(num_MiHAs),
-                                      stringsAsFactors = F)
+                                    MiHA = character(num_MiHAs), 
+                                    rsNumber = character(num_MiHAs), 
+                                    HLA = character(num_MiHAs),
+                                    aGVHD = numeric(num_MiHAs), 
+                                    nGVHD = numeric(num_MiHAs), 
+                                    LLR10_avg = numeric(num_MiHAs),
+                                    stringsAsFactors = F)
 
 for(miha_id in 1:num_MiHAs){
   
@@ -1005,13 +1042,13 @@ overlapping_GWASH_single_MiHA_stats <- as.data.frame(table(overlapping_GWASH_Res
 ###### save HLA restricted MiHA table
 num_MiHAs <- dim(GWASH_single_MiHA_stats)[1]/2
 overlap_GWASH_single_MiHA_table <- data.frame(Gene = character(num_MiHAs), 
-                                      MiHA = character(num_MiHAs), 
-                                      rsNumber = character(num_MiHAs), 
-                                      HLA = character(num_MiHAs),
-                                      aGVHD = numeric(num_MiHAs), 
-                                      nGVHD = numeric(num_MiHAs), 
-                                      LLR10_avg = numeric(num_MiHAs),
-                                      stringsAsFactors = F)
+                                              MiHA = character(num_MiHAs), 
+                                              rsNumber = character(num_MiHAs), 
+                                              HLA = character(num_MiHAs),
+                                              aGVHD = numeric(num_MiHAs), 
+                                              nGVHD = numeric(num_MiHAs), 
+                                              LLR10_avg = numeric(num_MiHAs),
+                                              stringsAsFactors = F)
 
 for(miha_id in 1:num_MiHAs){
   
@@ -1060,7 +1097,7 @@ ID_table$CaseNum <- numeric(dim(ID_table)[1])
 
 ID_table$CaseNum[Recipients] <- unlist(sapply(1:length(Recipients), function(x) HLA_typings$bmt_case_num[which(HLA_typings$nmdp_rid == ID_table$R_D_ID[Recipients[x]])]))
 ID_table$CaseNum[Donors] <- unlist(sapply(1:length(Donors), function(x) if(length(which(HLA_typings$nmdp_id == ID_table$R_D_ID[Donors[x]])) == 1) HLA_typings$bmt_case_num[which(HLA_typings$nmdp_id == ID_table$R_D_ID[Donors[x]])] 
-                                        else 0))
+                                          else 0))
 
 over_HLI_groupID <- unique(ID_table$GroupID[which(ID_table$CaseNum %in% overlapping_case_IDs)])
 
@@ -1127,8 +1164,4 @@ write.csv(overlappling_HLI_single_MiHA_table, file = "../ClinVar/GWASH/HLI_Non-o
 
 overlap_SNP_mat <- SNP_mat[which(SNP_mat$GroupID %in% over_HLI_groupID), ]
 write.csv(overlap_SNP_mat, file = "../ClinVar/GWASH/HLI_overlapping_cohort_count_table.csv", row.names = F)
-
-
-###### without overlapping cases
-
 

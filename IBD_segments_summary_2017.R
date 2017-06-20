@@ -58,7 +58,7 @@ all_matched_Percent <- data.frame(SampleID1 = Matched_high_pert$SampleID1,
                                   stringsAsFactors = F)
 counter <- 0
 # chr_all_length <- 0
-sink("../Output/Chr_tTest.txt")
+sink("../Output/Chr_tTest_wilcox.txt")
 for (chr_id in chr) {
   all_random_Percent <- data.frame(SampleID1 = Random_high_pert$SampleID1,
                                    SampleID2 = Random_high_pert$SampleID2,
@@ -134,6 +134,8 @@ for (chr_id in chr) {
   
   cat(paste0("Chromosome ", chr_id, ": \n"))
   print(t.test(all_matched_Percent$IBDLength, all_random_Percent$IBDLength))
+  cat("\n-----------------------------------------\n")
+  print(wilcox.test(all_matched_Percent$IBDLength, all_random_Percent$IBDLength, alternative = "two.sided"))
   
 }
 sink()

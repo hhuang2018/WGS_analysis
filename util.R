@@ -283,11 +283,11 @@ parse_meta_info <- function(Chrom_meta_info, Chrom_variants_info){
                                    row.names = NULL, stringsAsFactors = FALSE)
   LOF_info <- NULL
   NMD_info <- NULL
-  ann_counter <- 0
+  ann_counter <- 1
   for(id in 1:num_rows){
     all_info <- unlist(strsplit(Chrom_variants_info[id], ";"))
     ann_index <-which(grepl("ANN=", all_info))
-    ann_counter <- ann_counter + 1
+    # ann_counter <- ann_counter + 1
     
     if(ann_index > 1){ # if there is original info, in addition to ANNotation
       
@@ -300,7 +300,8 @@ parse_meta_info <- function(Chrom_meta_info, Chrom_variants_info){
       #ANNotation_info <- rbind(ANNotation_info, cbind(index = rep(id, dim(temp_info)[1]), temp_info))
       repeat_num <- dim(temp_info)[1]
       if((ann_counter+repeat_num) < dim(ANNotation_info)[1]){
-        ANNotation_info[ann_counter:(ann_counter+repeat_num), ] <- cbind(index = rep(id, repeat_num), temp_info)
+        ANNotation_info[ann_counter:(ann_counter+repeat_num-1), ] <- cbind(index = rep(id, repeat_num), temp_info)
+        ann_counter <- ann_counter+repeat_num
       }else if(ann_counter < dim(ANNotation_info)[1]){
         within_ids <-  dim(ANNotation_info)[1] - ann_counter
         ANNotation_info[ann_counter:dim(ANNotation_info)[1], ] <- cbind(index = rep(id, within_ids), temp_info[1:within_ids, ])
@@ -326,7 +327,8 @@ parse_meta_info <- function(Chrom_meta_info, Chrom_variants_info){
       # ANNotation_info <- rbind(ANNotation_info, cbind(index = rep(id, dim(temp_info)[1]), temp_info))
       repeat_num <- dim(temp_info)[1]
       if((ann_counter+repeat_num) < dim(ANNotation_info)[1]){
-        ANNotation_info[ann_counter:(ann_counter+repeat_num), ] <- cbind(index = rep(id, repeat_num), temp_info)
+        ANNotation_info[ann_counter:(ann_counter+repeat_num-1), ] <- cbind(index = rep(id, repeat_num), temp_info)
+        ann_counter <- ann_counter+repeat_num
       }else if(ann_counter < dim(ANNotation_info)[1]){
         within_ids <-  dim(ANNotation_info)[1] - ann_counter
         ANNotation_info[ann_counter:dim(ANNotation_info)[1], ] <- cbind(index = rep(id, within_ids), temp_info[1:within_ids, ])

@@ -5,11 +5,13 @@ colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHRO
 
 known_unrestricted_MiHA_table <- read.csv("../ClinVar/unRestrictedMiHAs.csv", header = F, stringsAsFactors = F)
 colnames(known_unrestricted_MiHA_table) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
-  
-known_Miha_stats <- as.data.frame(table(known_miha_freq$GroupID))
+
+class(known_miha_freq$GroupID) <- "charater"
+known_Miha_stats <- as.data.frame(table(known_miha_freq$GroupID), stringsAsFactors = F)
 colnames(known_Miha_stats) <- c("GroupID", "KnownRestrictedMiHAs")
 
-known_unrestricted_stats <- as.data.frame(table(known_unrestricted_MiHA_table$GroupID))
+class(known_unrestricted_MiHA_table$GroupID) <- "charater"
+known_unrestricted_stats <- as.data.frame(table(known_unrestricted_MiHA_table$GroupID),stringsAsFactors = F)
 colnames(known_unrestricted_stats) <- c("GroupID", "KnownUnRestrictedMiHAs")
 
 ############ check D-R missense mismatches
@@ -43,13 +45,69 @@ for(id in 1:num_files){
 }
 # colnames(All_stats) <- c("CHROM", row_names)
 WGS_wXY <- colSums(All_stats[, -1])
+WGS_wXY <- as.data.frame(WGS_wXY)
 WGS_woXY <- colSums(All_stats[-c(23,24), -1])
-
+WGS_woXY <- as.data.frame(WGS_woXY)
 #### Make miha_table: num_misense_mismatch, num_unrestricted_MiHA, num_Restricted_MiHa
 load("../Data/ID_table.RData")
 HLI_metadata <- read.csv("../HLI_hla_mg_v3.csv", stringsAsFactors = F)
 
+ID_table$caseNumber <- 0 
+for(id in 1:dim(ID_table)[1]){
+  
+  if(ID_table$subjectType[id] == "R"){ # recipients
+    
+    r_ind <- which(HLI_metadata$nmdp_rid %in% ID_table$R_D_ID[id])
+    if(length(r_ind) > 1) cat("id = ", id, "; r_ind = ", r_ind, "\n")
+    
+    ID_table$caseNumber[id] <- HLI_metadata$bmt_case_num[r_ind] 
+    
+  }else{  # donors
+    
+    d_ind <- which(HLI_metadata$nmdp_id %in% ID_table$R_D_ID[id])
+    if(length(d_ind) > 1) cat("id = ", id, "; d_ind = ", d_ind, "\n")
+    
+    ID_table$caseNumber[id] <- HLI_metadata$bmt_case_num[d_ind] 
+    
+  }
+  
+}
 
+n_cases <- 205
+miha_table <- data.frame(groupID = character(n_cases),
+                         GVHD = character(n_cases),
+                         SEX = character(n_cases),
+                         NumVar = numeric(n_cases),
+                         HLA.Unrestricted = numeric(n_cases),
+                         HLA.Restricted = numeric(n_cases),
+                         stringsAsFactors = F)
+
+for(id in 1:n_cases){
+  
+  miha_table$groupID[id] <- known_unrestricted_stats$GroupID[id]
+  miha_table$HLA.Unrestricted[id] <- known_unrestricted_stats$KnownUnRestrictedMiHAs[id]
+  
+  temp_ID_table_ind <- which(ID_table$GroupID %in% miha_table$groupID[id])
+  temp_HLI_ind <- which(HLI_metadata$bmt_case_num %in% unique(ID_table$caseNumber[temp_ID_table_ind]))
+  
+  miha_table$SEX[id] <- paste0(HLI_metadata$donor_sex[temp_HLI_ind], ">", HLI_metadata$rid_sex[temp_HLI_ind])
+  
+  miha_table$GVHD[id] <- if(unique(ID_table$Group[temp_ID_table_ind]) == "a") "aGVHD" else "nonGVHD"
+  
+  miha_table$NumVar[id] <- WGS_woXY[paste0(miha_table$groupID[id], ".txt"), ]
+  
+  temp_restricted_table_ind <- which(known_Miha_stats$GroupID %in% miha_table$groupID[id])
+  if(length(temp_restricted_table_ind) > 0){
+    
+    miha_table$HLA.Restricted[id] <- known_Miha_stats$KnownRestrictedMiHAs[temp_restricted_table_ind]
+    
+  }
+  
+}
+
+miha_table$SEX <- as.factor(miha_table$SEX)
+miha_table$GVHD <- as.factor(miha_table$GVHD)
+####### plots
 
 p1 <- ggplot(miha_table, aes(x = factor(GVHD), y = HLA.Restricted))
 p1 + geom_boxplot(aes(fill = GVHD)) + 
@@ -94,6 +152,7 @@ beeswarm(NumVar ~ SEX, data = miha_table, pch = 16, cex = 1.5, col=c("#009E73", 
 # colnames(beeswarm) <- c("x", "y", "ER", "event_survival") 
 library(ggplot2)
 library(plyr)
+# miha_table <- as.data.frame(miha_table)
 beeswarm_gender <- beeswarm(NumVar ~ SEX, data = miha_table, 
                             method = 'swarm', # 'square', 'hex', 'center', 'swarm'
                             spacing = .5,
@@ -146,21 +205,26 @@ ggplot(beeswarm_unresMiHA, aes(x, y)) +
 
 ##### Restricted MiHA
 beeswarm_ResMiHA_all <- beeswarm(HLA.Restricted ~ GVHD, data = miha_table, 
-         method = 'swarm',
-         spacing = 0.5)[, c(1,2,6)]
+                                 method = 'swarm',
+                                 spacing = 0.5)[, c(1,2,6)]
 colnames(beeswarm_ResMiHA_all) <- c("x", "y", "GVHD") 
 
 ggplot(beeswarm_ResMiHA_all, aes(x, y)) +
   xlab("") +
-  scale_y_continuous(expression("#HLA Restricted Known MiHA SNPs")) + 
+  scale_y_continuous(expression("#Mismatched HLA Restricted Known MiHA SNPs")) + 
   # geom_point(aes(colour = GVHD), size = 3, alpha = 0.5) +
   geom_jitter(width = 0.2, aes(color = GVHD), size = 3, alpha = 0.8) +
   scale_colour_manual(values = c("#D55E00", "#0072B2")) + 
   scale_x_continuous(breaks = c(1:2), 
-                     labels = c("acute GVHD", "non-aGVHD"), expand = c(0, 0.05)) +
-  geom_boxplot(aes(x, y, group = round_any(beeswarm_ResMiHA_all$x, 1, round)), outlier.shape = NA, alpha = 0)
+                     labels = c("acute GVHD", "non aGVHD"), expand = c(0, 0.05)) +
+  geom_boxplot(aes(x, y, group = round_any(beeswarm_ResMiHA_all$x, 1, round)), outlier.shape = NA, alpha = 0) +
+  theme(legend.position = "none")
 
+t.test(beeswarm_ResMiHA_all$y[which(beeswarm_ResMiHA_all$GVHD == "aGVHD")], beeswarm_ResMiHA_all$y[which(beeswarm_ResMiHA_all$GVHD == "nonGVHD")])
 
+wilcox.test(beeswarm_ResMiHA_all$y[which(beeswarm_ResMiHA_all$GVHD == "aGVHD")], beeswarm_ResMiHA_all$y[which(beeswarm_ResMiHA_all$GVHD == "nonGVHD")])
+
+wilcox.test(y ~ GVHD, beeswarm_ResMiHA_all)
 ###### Unrestricted MiHA
 
 beeswarm_UnResMiHA_all <- beeswarm(HLA.Unrestricted ~ GVHD, data = miha_table,
@@ -170,19 +234,24 @@ colnames(beeswarm_UnResMiHA_all) <- c("x", "y", "GVHD")
 
 ggplot(beeswarm_UnResMiHA_all, aes(x, y)) +
   xlab("") +
-  scale_y_continuous(expression("#HLA Unrestricted Known MiHA SNPs")) + 
+  scale_y_continuous(expression("#Mismatched HLA Unrestricted Known MiHA SNPs")) + 
   #geom_point(aes(colour = GVHD), size = 3, alpha = 0.7) +
   geom_jitter(width = 0.2, aes(color = GVHD), size = 3, alpha = 0.8) +
   scale_colour_manual(values = c("#D55E00", "#0072B2")) + 
   scale_x_continuous(breaks = c(1:2), 
-                     labels = c("acute GVHD", "non GVHD"), expand = c(0, 0.05)) +
-  geom_boxplot(aes(x, y, group = round_any(beeswarm_UnResMiHA_all$x, 1, round)), outlier.shape = NA, alpha = 0)
-  
+                     labels = c("acute GVHD", "non aGVHD"), expand = c(0, 0.05)) +
+  geom_boxplot(aes(x, y, group = round_any(beeswarm_UnResMiHA_all$x, 1, round)), outlier.shape = NA, alpha = 0) + 
+  theme(legend.position = "none")
 
+t.test(beeswarm_UnResMiHA_all$y[which(beeswarm_UnResMiHA_all$GVHD == "aGVHD")], beeswarm_UnResMiHA_all$y[which(beeswarm_UnResMiHA_all$GVHD == "nonGVHD")])
+
+wilcox.test(beeswarm_UnResMiHA_all$y[which(beeswarm_UnResMiHA_all$GVHD == "aGVHD")], beeswarm_UnResMiHA_all$y[which(beeswarm_UnResMiHA_all$GVHD == "nonGVHD")])
+
+wilcox.test(y ~ GVHD, beeswarm_UnResMiHA_all)
 ##### Number of Missense Mismatch
 beeswarm_MissenseMis <-  beeswarm(NumVar ~ GVHD, data = miha_table,
                                   method = 'swarm',
-                                  spacing = 0.7)[, c(1,2,6)]
+                                  spacing = 0.6)[, c(1,2,6)]
 colnames(beeswarm_MissenseMis) <- c("x", "y", "GVHD") 
 
 ggplot(beeswarm_MissenseMis, aes(x, y)) +
@@ -191,12 +260,16 @@ ggplot(beeswarm_MissenseMis, aes(x, y)) +
   geom_point(aes(colour = GVHD), size = 3, alpha = 0.6) +
   scale_colour_manual(values = c("#D55E00", "#0072B2")) + 
   scale_x_continuous(breaks = c(1:2), 
-                     labels = c("acute GVHD", "non GVHD"), expand = c(0, 0.05)) +
-  geom_boxplot(aes(x, y, group = round_any(beeswarm_MissenseMis$x, 1, round)), outlier.shape = NA, alpha = 0)
+                     labels = c("acute GVHD", "non aGVHD"), expand = c(0, 0.05)) +
+  geom_boxplot(aes(x, y, group = round_any(beeswarm_MissenseMis$x, 1, round)), outlier.shape = NA, alpha = 0)+ 
+  theme(legend.position = "none")
 
 
+t.test(beeswarm_MissenseMis$y[which(beeswarm_MissenseMis$GVHD == "aGVHD")], beeswarm_MissenseMis$y[which(beeswarm_MissenseMis$GVHD == "nonGVHD")])
 
+wilcox.test(beeswarm_MissenseMis$y[which(beeswarm_MissenseMis$GVHD == "aGVHD")], beeswarm_MissenseMis$y[which(beeswarm_MissenseMis$GVHD == "nonGVHD")])
 
+wilcox.test(y ~ GVHD, beeswarm_MissenseMis)
 
 
 
@@ -306,9 +379,9 @@ for(id in 1:22){
     if(length(index) > 0){
       MiHA_SNP <- lapply(1:length(index), function(x) cbind(mc[index[x], ], known_MiHA_chr[which(known_MiHA_chr$POS == mc$position[index[x]]), ]))
       MiHA_SNP <- do.call(rbind.data.frame, MiHA_SNP)
-
+      
       names(MiHA_SNP)[3] <- "Group"
-
+      
       all_MiHA_SNP <- rbind(all_MiHA_SNP, MiHA_SNP)
       # print(
       #   ggplot(MiHA_SNP, aes(x = MiHAs, ymax = frequency, ymin = 0, color = Group)) +
@@ -434,7 +507,7 @@ for(id in 1:22){
                    group = c(rep("aGVHD", length(aGVHD_Mutation$POS)), rep("nGVHD", length(nGVHD_Mutation$POS))), 
                    stringsAsFactors = F)
   inter_pos <- sort(intersect(aGVHD_Mutation$POS, nGVHD_Mutation$POS), decreasing = F)
-
+  
   log_ratio <- data.frame(position = c(aGVHD_Mutation$POS, nGVHD_Mutation$POS), 
                           log_ratio = numeric(length(aGVHD_Mutation$POS) + length(nGVHD_Mutation$POS)),
                           group = character(length(aGVHD_Mutation$POS) + length(nGVHD_Mutation$POS)),
@@ -463,9 +536,9 @@ for(id in 1:22){
   #   geom_linerange()
   if(min(log_ratio$position) > 1){
     log_ratio <- rbind(log_ratio, data.frame(position = 1,
-                               log_ratio = 0,
-                               group = "nGVHD_only", 
-                               stringsAsFactors = F))
+                                             log_ratio = 0,
+                                             group = "nGVHD_only", 
+                                             stringsAsFactors = F))
   }
   
   if(max(log_ratio$position) < chrLengths[id]){
@@ -474,24 +547,24 @@ for(id in 1:22){
                                              group = "nGVHD_only",
                                              stringsAsFactors = F))
   }
-
+  
   # mc$group[which(mc$position %in% known_MiHA_chr$POS)] <- "MiHA"
   
- # print(
+  # print(
   p1 <- ggplot(log_ratio[which(log_ratio$group == "nGVHD_only" | log_ratio$group == "aGVHD_only"), ], aes(x = position, y = log_ratio, color=factor(group))) +
-      geom_point(aes(shape = factor(group)), alpha = 1/2) +
-      geom_hline(yintercept = 0) +
-      #ggtitle(chr) +
-      theme_bw() +
-      scale_x_continuous(breaks = round(seq(1, chrLengths[id], by = 2e7), 2),
-                         labels= paste0(round(seq(1, chrLengths[id], by = 2e7)/1e6, 2), " Mb")) +
-      scale_color_manual(values = c("#009E73", "#0072B2")) +
-      theme(axis.title.x=element_blank(),
-            axis.text.x=element_blank(),
-            axis.title.y=element_blank(),
-            axis.ticks.x=element_blank(),
-            legend.position = "none")
-
+    geom_point(aes(shape = factor(group)), alpha = 1/2) +
+    geom_hline(yintercept = 0) +
+    #ggtitle(chr) +
+    theme_bw() +
+    scale_x_continuous(breaks = round(seq(1, chrLengths[id], by = 2e7), 2),
+                       labels= paste0(round(seq(1, chrLengths[id], by = 2e7)/1e6, 2), " Mb")) +
+    scale_color_manual(values = c("#009E73", "#0072B2")) +
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.ticks.x=element_blank(),
+          legend.position = "none")
+  
   p2 <-  ggplot(log_ratio[which(log_ratio$group == "log_odds"), ], aes(x = position, y = log_ratio)) +
     geom_point(shape = 16, color = "#D55E00", alpha = 1/4) +
     geom_hline(yintercept = 0) + 

@@ -10,7 +10,7 @@ colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHRO
 
 # known_miha_freq <- read.csv("../ClinVar//Data/RestrictedMiHAs.csv", header = F)
 # colnames(known_miha_freq) <- c("GroupType", "GroupID", "HLA_type", "SNP", "CHROM", "REF", "ALT", "GENE", "Peptide")  # restricted table
-colnames(known_miha_freq) <- c("GroupType", "GroupID", "HLA_type", "SNP", "CHROM", "Donor", "Recipient") # unristricted table
+# colnames(known_miha_freq) <- c("GroupType", "GroupID", "HLA_type", "SNP", "CHROM", "Donor", "Recipient") # unristricted table
 
 table(known_miha_freq[c("HLA_type","SNP")])
 
