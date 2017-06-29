@@ -1,4 +1,4 @@
-load("../Data/ID_table.RData")
+load("../Data/ID_table_wCaseID.RData")
 HLI_metadata <- read.csv("../HLI_hla_mg_v3.csv", stringsAsFactors = F)
 HLI_cohort <- read.csv("../Data/HLI-pull.csv")
 
@@ -12,14 +12,54 @@ donor_ages <- floor(age_calc(donor_dob, enddate = transplant_dt, units = "years"
 
 HLI_cohort$Rage <- recipient_ages
 HLI_cohort$Dage <- donor_ages
+HLI_cohort$tx_year <- as.numeric(format(transplant_dt, "%Y"))
 
+##### Add BMTcase number to the ID table
+# Recipient_ids <- which(ID_table$subjectType == "R")
+# Donor_ids <- which(ID_table$subjectType == "D")
+# num_Rcases <- length(Recipient_ids)
+# num_Dcases <- length(Donor_ids)
+# ID_table$caseID <- 0
+# for(id in 1:num_Rcases){
+#    
+#    caseID1 <- HLI_cohort$pair_id[which(HLI_cohort$rid %in% ID_table$R_D_ID[Recipient_ids[id]])]
+#    caseID2 <- HLI_metadata$bmt_case_num[which(HLI_metadata$nmdp_rid %in% ID_table$R_D_ID[Recipient_ids[id]])]
+#    
+#    if(length(caseID1) == 1){
+#      
+#      if(caseID1 == caseID2){
+#        
+#        ID_table$caseID[Recipient_ids[id]] <- caseID1
+#        
+#      }else cat("Recipient ", id ,"- Inconsistent IDs between HLI metadata and HLI cohort.\n")
+#    }else cat("Recipient ", id ,"- Multiple recipient cases.\n")
+# } # Recipient BMTcaseID
+#  
+# for(id in 1:num_Dcases){
+#   
+#   caseID1 <- HLI_cohort$pair_id[which(HLI_cohort$did %in% ID_table$R_D_ID[Donor_ids[id]])]
+#   caseID2 <- HLI_metadata$bmt_case_num[which(HLI_metadata$nmdp_id %in% ID_table$R_D_ID[Donor_ids[id]])]
+#   
+#   if(length(caseID1) == 1){
+#     
+#     if(caseID1 == caseID2){
+#       
+#       ID_table$caseID[Donor_ids[id]] <- caseID1
+#       
+#     }else cat("Donor ", id ,"- Inconsistent IDs between HLI metadata and HLI cohort.\n")
+#   }else cat("Donor ", id ,"- Multiple Donor cases.\n") # id = 70 is the multiple donor case
+# } # Donor BMTcaseID
+
+# write.csv(ID_table, file = "../Data/ID_table_wCaseID.csv", row.names = F)
+# save(ID_table, file = "../Data/ID_table_wCaseID.RData")
+################
 groups_stats <- as.data.frame(table(ID_table$GroupID))
 paired_ID_table <- ID_table[which(ID_table$GroupID %in% groups_stats$Var1[which(groups_stats$Freq == 2)]), ]
-paired_case_num <- unique(paired_ID_table$caseNumber)
+paired_case_num <- unique(paired_ID_table$caseID)
 
 HLI_paired_cohort <- HLI_cohort[which(HLI_cohort$pair_id %in% paired_case_num),]
 
-HLI_paired_cohort$Group <- sapply(1:length(HLI_paired_cohort$pair_id), function(x) unique(paired_ID_table$Group[which(paired_ID_table$caseNumber %in% HLI_paired_cohort$pair_id[x])]))
+HLI_paired_cohort$Group <- sapply(1:length(HLI_paired_cohort$pair_id), function(x) unique(paired_ID_table$Group[which(paired_ID_table$caseID %in% HLI_paired_cohort$pair_id[x])]))
 
 HLI_paired_cohort$R_sex <- sapply(1:length(HLI_paired_cohort$pair_id), function(x) HLI_metadata$rid_sex[which(HLI_metadata$bmt_case_num %in% HLI_paired_cohort$pair_id[x])])
 HLI_paired_cohort$D_sex <- sapply(1:length(HLI_paired_cohort$pair_id), function(x) HLI_metadata$donor_sex[which(HLI_metadata$bmt_case_num %in% HLI_paired_cohort$pair_id[x])])
@@ -192,8 +232,64 @@ for(id in 1:length(aGVHD_index)){
   
 }
 
+######## Transplant year suumary 
+recipient_transplant_year <- as.data.frame(table(HLI_paired_cohort[c("Group", "tx_year")]))
+recipient_transplant_year$tx_year <- as.character(recipient_transplant_year$tx_year)
+recipient_tx_year_table <- t(data.frame("2000" = vector(mode = "numeric", length = 2),
+                                              "2001" = vector(mode = "numeric", length = 2),
+                                              "2002" = vector(mode = "numeric", length = 2),
+                                              "2003" = vector(mode = "numeric", length = 2),
+                                              "2004" = vector(mode = "numeric", length = 2),
+                                              "2005" = vector(mode = "numeric", length = 2),
+                                              "2006" = vector(mode = "numeric", length = 2),
+                                              "2007" = vector(mode = "numeric", length = 2),
+                                              "2008" = vector(mode = "numeric", length = 2),
+                                              "2009" = vector(mode = "numeric", length = 2),
+                                              "2010" = vector(mode = "numeric", length = 2),
+                                              "2011" = vector(mode = "numeric", length = 2)))
+colnames(recipient_tx_year_table) <- c("aGVHD", "nonGVHD")
 
-####### Ethnicity ##################################################
+aGVHD_index <- which(recipient_transplant_year$Group == "a")
+nGVHD_index <- which(recipient_transplant_year$Group == "n")
+for(id in 1:length(aGVHD_index)){
+  
+  ##### aGVHD groups
+  switch(recipient_transplant_year$tx_year[aGVHD_index[id]],
+         "2000" = {recipient_tx_year_table[1, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2001" = {recipient_tx_year_table[2, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2002" = {recipient_tx_year_table[3, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2003" = {recipient_tx_year_table[4, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2004" = {recipient_tx_year_table[5, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2005" = {recipient_tx_year_table[6, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2006" = {recipient_tx_year_table[7, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2007" = {recipient_tx_year_table[8, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2008" = {recipient_tx_year_table[9, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2009" = {recipient_tx_year_table[10, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2010" = {recipient_tx_year_table[11, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]},
+         "2011" = {recipient_tx_year_table[12, 1] <- recipient_transplant_year$Freq[aGVHD_index[id]]}
+  )
+
+  ##### nonGVHD groups
+  switch(recipient_transplant_year$tx_year[nGVHD_index[id]],
+         "2000" = {recipient_tx_year_table[1, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2001" = {recipient_tx_year_table[2, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2002" = {recipient_tx_year_table[3, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2003" = {recipient_tx_year_table[4, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2004" = {recipient_tx_year_table[5, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2005" = {recipient_tx_year_table[6, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2006" = {recipient_tx_year_table[7, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2007" = {recipient_tx_year_table[8, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2008" = {recipient_tx_year_table[9, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2009" = {recipient_tx_year_table[10, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2010" = {recipient_tx_year_table[11, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]},
+         "2011" = {recipient_tx_year_table[12, 2] <- recipient_transplant_year$Freq[nGVHD_index[id]]}
+  )
+  
+}
+
+write.csv(recipient_tx_year_table, file="../FirstPaper/Table/tx_year.csv")
+
+1####### Ethnicity ##################################################
 # Broad Race - AFA; API; CAU; HIS; NAM
 num_cases <- dim(HLI_paired_cohort)[1]
 HLI_paired_cohort$R_BroadRace <- character(num_cases)
@@ -476,3 +572,65 @@ write.csv(all_table, file = "../FirstPaper/HLI_demographics_summary.csv")
 
 
 ######### HLA-Table
+reformated_HLA_typing_list <- read.csv("../ClinVar/reformated_HLA_typing.csv", stringsAsFactors = F)
+num_cases <- dim(reformated_HLA_typing_list)[1]
+
+reformated_HLA_typing_list$GL_HLA_A1 <- sapply(1:num_cases, function(x) paste0("A*", reformated_HLA_typing_list$HLA_A1[x]))
+reformated_HLA_typing_list$GL_HLA_A2 <- sapply(1:num_cases, function(x) paste0("A*", reformated_HLA_typing_list$HLA_A2[x]))
+reformated_HLA_typing_list$GL_HLA_B1 <- sapply(1:num_cases, function(x) paste0("B*", reformated_HLA_typing_list$HLA_B1[x]))
+reformated_HLA_typing_list$GL_HLA_B2 <- sapply(1:num_cases, function(x) paste0("B*", reformated_HLA_typing_list$HLA_B2[x]))
+reformated_HLA_typing_list$GL_HLA_C1 <- sapply(1:num_cases, function(x) paste0("C*", reformated_HLA_typing_list$HLA_C1[x]))
+reformated_HLA_typing_list$GL_HLA_C2 <- sapply(1:num_cases, function(x) paste0("C*", reformated_HLA_typing_list$HLA_C2[x]))
+reformated_HLA_typing_list$GL_HLA_DRB11 <- sapply(1:num_cases, function(x) paste0("DRB1*", reformated_HLA_typing_list$HLA_DRB11[x]))
+reformated_HLA_typing_list$GL_HLA_DRB12 <- sapply(1:num_cases, function(x) paste0("DRB1*", reformated_HLA_typing_list$HLA_DRB12[x]))
+reformated_HLA_typing_list$GL_HLA_DQB11 <- sapply(1:num_cases, function(x) paste0("DQB1*", reformated_HLA_typing_list$HLA_DQB11[x]))
+reformated_HLA_typing_list$GL_HLA_DQB12 <- sapply(1:num_cases, function(x) paste0("DQB1*", reformated_HLA_typing_list$HLA_DQB12[x]))
+
+reformated_HLA_typing_list$Group <- sapply(1:num_cases, function(x) unique(paired_ID_table$Group[which(paired_ID_table$caseID %in% reformated_HLA_typing_list$bmt_case_num[x])]))
+
+
+restricted_MiHA_table <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F)
+colnames(restricted_MiHA_table) <- c("Group", "GroupID", "HLA", "MiHA", "CHROM", "Donor", "Recipient")
+restricted_MiHA_table$HLA <- as.character(restricted_MiHA_table$HLA)
+
+Restricted_HLA <- unique(restricted_MiHA_table$HLA)
+num_cases <- dim(reformated_HLA_typing_list)[1]
+num_HLA <- length(Restricted_HLA)
+
+HLI_cohort_HLA_case_presAbs <- as.data.frame(matrix(0, nrow = num_cases, ncol = num_HLA))
+colnames(HLI_cohort_HLA_case_presAbs) <- Restricted_HLA
+HLI_cohort_HLA_case_presAbs$total <- 0
+for(id in 1:num_cases){
+  
+  for(jd in 1:num_HLA){
+    
+    pres_ind <- which(as.character(reformated_HLA_typing_list[id, 19:28]) %in% Restricted_HLA[jd])
+    if(length(pres_ind) > 0){
+      HLI_cohort_HLA_case_presAbs[id, jd] <- HLI_cohort_HLA_case_presAbs[id, jd] + 1
+    }
+    
+  }
+  if(sum(HLI_cohort_HLA_case_presAbs[id, ]) > 0) HLI_cohort_HLA_case_presAbs$total[id] <- HLI_cohort_HLA_case_presAbs$total[id] + 1
+  
+  
+}
+
+# Restricted_HLA_summary <-colSums(HLI_cohort_HLA_case_presAbs)
+
+aGVHD_id <- which(reformated_HLA_typing_list$Group == "a")
+nGVHD_id <- which(reformated_HLA_typing_list$Group == "n")
+
+Restricted_HLA_summary_aGVHD <- colSums(HLI_cohort_HLA_case_presAbs[aGVHD_id, ])
+Restricted_HLA_summary_aGVHD <- as.matrix(Restricted_HLA_summary_aGVHD)
+colnames(Restricted_HLA_summary_aGVHD) <- "aGVHD"
+Restricted_HLA_summary_nGVHD <- colSums(HLI_cohort_HLA_case_presAbs[nGVHD_id, ])
+Restricted_HLA_summary_nGVHD <- as.matrix(Restricted_HLA_summary_nGVHD)
+colnames(Restricted_HLA_summary_nGVHD) <- "nGVHD"
+Restricted_HLA_summary_all <- cbind(Restricted_HLA_summary_aGVHD, Restricted_HLA_summary_nGVHD)
+write.csv(Restricted_HLA_summary_all, file = "../FirstPaper/Table/Restricted_HLA_summary_all.csv")
+
+Restricted_HLA_CountTable <- as.matrix(Restricted_HLA_summary)
+colnames(Restricted_HLA_CountTable) <- "Counts"
+write.csv(Restricted_HLA_CountTable, file = "../FirstPaper/Table/Restricted_HLA_counts_table.csv")
+
+length(unique(restricted_MiHA_table$GroupID))

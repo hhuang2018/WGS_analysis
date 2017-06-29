@@ -243,14 +243,15 @@ for(id in 1:num_samples){
 # 40 - CML;
 # 50 - MDS;
 
-Avail_cases_table <- GWAS_sample_table[which(GWAS_sample_table$pres_abs == 1), ]
-# Total: 988 cases (987 pairs with available data)
+Avail_cases_table <- GWAS_sample_table[which(GWAS_sample_table$pres_abs == 1), ] 
+# Donor-recipient paired cases
+# Total: 989 cases (987 pairs with available data)
 # AML  - 332 cases 
 # ALL  - 123 cases 
 # CML  - 343 cases
 # MDS  - 191 cases -- could be considered as AML
 
-write.csv(Avail_cases_table[, 1:3], file = "../ClinVar/GWASH/GWASH_available_IDs.csv", row.names = F)
+write.csv(Avail_cases_table[, c(1:3, 7:8, 10, 13:22, 54, 56)], file = "../ClinVar/GWASH/GWASH_available_IDs.csv", row.names = F)
 
 AML_cases_table <- Avail_cases_table[which(Avail_cases_table$disease == 10), ] # 332
 # aGVHD Grades II-IV  

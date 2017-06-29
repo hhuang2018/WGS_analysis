@@ -43,3 +43,5 @@ for(id in 1:num_files){
 #   # system(paste0("mv snpEff_summary.csv ",  destination_dir, filenames[Not_annotated_index[id]], "_snpEff_summary.csv"))
 #   #save(t1, file = paste0(destination_dir, filenames[Not_annotated_index[id]],"_annotated.out.RData"))
 # }
+
+## java -jar /home/hhuang/tools/snpEff/snpEff.jar -canon -dataDir /mnt/common/data/reference/grch38/SnpEff_database/ -csvStats /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_geneStats/test.csv -v GRCh38.p7.RefSeq /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_renamed/a_100_R_6394954.vcf.gz > test_a_100_R.vcf

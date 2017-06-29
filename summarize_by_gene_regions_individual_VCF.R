@@ -9,26 +9,26 @@ file_path <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq/"
 output_dir <- file_path
 
 all_files <- list.files(file_path, pattern = "\\.vcf.gz$")
-
-
-vcf_info <- read.vcfR("../Data/a_36_D_52668563_RefSeq_annotated_canon.vcf.gz", verbose = FALSE)
-
-vcf_file_D <- paste0(VCF_file_dir, "n_197_D_annotated.vcf.gz")
-vcf_D <- read.vcfR(vcf_file_D, verbose = FALSE)
-
-vcf_variants <- as.data.frame(vcf_info@fix, stringsAsFactors = FALSE)
-vcf_variants$POS <- as.integer(vcf_variants$POS)
-
-# vcf_gt <- as.data.frame(vcf_info@gt, stringsAsFactors = FALSE)
-# vcf_gt <- vcf_gt[(vcf_variants$FILTER == "PASS"), ] ## QC
-
-vcf_variants <- vcf_variants[(vcf_variants$FILTER == "PASS"), ] # only look at high-quality variants
-
-chr_meta <- vcf_info@meta
-info_id <- which(grepl("INFO=", chr_meta))
-
-# Annotation
-annotation_info <- parse_meta_info(chr_meta[info_id], vcf_variants$INFO)
+num_files <- length(all_files)
+for(id in 1:num_files){
+  
+  vcf_file <- paste0(VCF_file_dir, all_files[id])
+  vcf_info <- read.vcfR(vcf_file, verbose = FALSE)
+  #vcf_info <- read.vcfR("../Data/a_36_D_52668563_RefSeq_annotated_canon.vcf.gz", verbose = FALSE)
+  
+  vcf_variants <- as.data.frame(vcf_info@fix, stringsAsFactors = FALSE)
+  vcf_variants$POS <- as.integer(vcf_variants$POS)
+  rm(vcf_info)
+  
+  vcf_variants <- vcf_variants[(vcf_variants$FILTER == "PASS"), ] # only look at high-quality variants
+  
+  chr_meta <- vcf_info@meta
+  info_id <- which(grepl("INFO=", chr_meta))
+  
+  # Annotation
+  annotation_info <- parse_meta_info(chr_meta[info_id], vcf_variants$INFO)
+  
+}
 
 
 genetype_info <- vcf_info@fix

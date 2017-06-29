@@ -934,6 +934,7 @@ num_groups <- dim(avaialble_IDs_HLA_typing)[1]
 
 overlapping_case_IDs <- intersect(GWAS_sample_table$bmt_case, avaialble_IDs_HLA_typing$bmt_case_num)
 ## 69 cases
+save(overlapping_case_IDs, file = "../Data/GWASH_HLI_Overlapping_CaseIDs.RData")
 
 ###### GWASH table
 KnownMiHA_table <- read.csv("../ClinVar/Data/KnownMiHA_Table_Ref.csv", stringsAsFactors = F)
@@ -1129,6 +1130,82 @@ overlap_SNP_mat <- SNP_mat[which(SNP_mat$GroupID %in% over_HLI_groupID), ]
 write.csv(overlap_SNP_mat, file = "../ClinVar/GWASH/HLI_overlapping_cohort_count_table.csv", row.names = F)
 
 
-###### without overlapping cases
+###### GWAS HLA stats
+######### GWAS Table
+GWAS_HLA_table <- read.csv("../ClinVar/GWASH/Metadata/GWASH_HLA.csv", stringsAsFactors = F)
+
+
+
+
+######### HLA-Table
+load("../Data/GWASH_HLI_Overlapping_CaseIDs.RData") # overlapping_case_IDs 69 cases
+
+reformated_HLA_typing_list <- read.csv("../ClinVar/reformated_HLA_typing.csv", stringsAsFactors = F)
+num_cases <- dim(reformated_HLA_typing_list)[1]
+
+reformated_HLA_typing_list$GL_HLA_A1 <- sapply(1:num_cases, function(x) paste0("A*", reformated_HLA_typing_list$HLA_A1[x]))
+reformated_HLA_typing_list$GL_HLA_A2 <- sapply(1:num_cases, function(x) paste0("A*", reformated_HLA_typing_list$HLA_A2[x]))
+reformated_HLA_typing_list$GL_HLA_B1 <- sapply(1:num_cases, function(x) paste0("B*", reformated_HLA_typing_list$HLA_B1[x]))
+reformated_HLA_typing_list$GL_HLA_B2 <- sapply(1:num_cases, function(x) paste0("B*", reformated_HLA_typing_list$HLA_B2[x]))
+reformated_HLA_typing_list$GL_HLA_C1 <- sapply(1:num_cases, function(x) paste0("C*", reformated_HLA_typing_list$HLA_C1[x]))
+reformated_HLA_typing_list$GL_HLA_C2 <- sapply(1:num_cases, function(x) paste0("C*", reformated_HLA_typing_list$HLA_C2[x]))
+reformated_HLA_typing_list$GL_HLA_DRB11 <- sapply(1:num_cases, function(x) paste0("DRB1*", reformated_HLA_typing_list$HLA_DRB11[x]))
+reformated_HLA_typing_list$GL_HLA_DRB12 <- sapply(1:num_cases, function(x) paste0("DRB1*", reformated_HLA_typing_list$HLA_DRB12[x]))
+reformated_HLA_typing_list$GL_HLA_DQB11 <- sapply(1:num_cases, function(x) paste0("DQB1*", reformated_HLA_typing_list$HLA_DQB11[x]))
+reformated_HLA_typing_list$GL_HLA_DQB12 <- sapply(1:num_cases, function(x) paste0("DQB1*", reformated_HLA_typing_list$HLA_DQB12[x]))
+
+reformated_HLA_typing_list$Group <- sapply(1:num_cases, function(x) unique(paired_ID_table$Group[which(paired_ID_table$caseID %in% reformated_HLA_typing_list$bmt_case_num[x])]))
+
+
+restricted_MiHA_table <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F)
+colnames(restricted_MiHA_table) <- c("Group", "GroupID", "HLA", "MiHA", "CHROM", "Donor", "Recipient")
+restricted_MiHA_table$HLA <- as.character(restricted_MiHA_table$HLA)
+
+Restricted_HLA <- unique(restricted_MiHA_table$HLA)
+num_cases <- dim(reformated_HLA_typing_list)[1]
+num_HLA <- length(Restricted_HLA)
+
+HLI_cohort_HLA_case_presAbs <- as.data.frame(matrix(0, nrow = num_cases, ncol = num_HLA))
+colnames(HLI_cohort_HLA_case_presAbs) <- Restricted_HLA
+HLI_cohort_HLA_case_presAbs$total <- 0
+for(id in 1:num_cases){
+  
+  for(jd in 1:num_HLA){
+    
+    pres_ind <- which(as.character(reformated_HLA_typing_list[id, 19:28]) %in% Restricted_HLA[jd])
+    if(length(pres_ind) > 0){
+      HLI_cohort_HLA_case_presAbs[id, jd] <- HLI_cohort_HLA_case_presAbs[id, jd] + 1
+    }
+    
+  }
+  if(sum(HLI_cohort_HLA_case_presAbs[id, ]) > 0) HLI_cohort_HLA_case_presAbs$total[id] <- HLI_cohort_HLA_case_presAbs$total[id] + 1
+  
+  
+}
+## remove overlapping IDs
+overlapped <- which(reformated_HLA_typing_list$bmt_case_num %in% overlapping_case_IDs)
+
+removed_reformated_HLA_typing_list <- reformated_HLA_typing_list[-overlapped, ]
+removed_HLI_cohort_HLA_case_presAbs <- HLI_cohort_HLA_case_presAbs[-overlapped, ]
+# Restricted_HLA_summary <-colSums(HLI_cohort_HLA_case_presAbs)
+
+aGVHD_id <- which(removed_reformated_HLA_typing_list$Group == "a")
+nGVHD_id <- which(removed_reformated_HLA_typing_list$Group == "n")
+
+Restricted_HLA_summary_aGVHD <- colSums(removed_HLI_cohort_HLA_case_presAbs[aGVHD_id, ])
+Restricted_HLA_summary_aGVHD <- as.matrix(Restricted_HLA_summary_aGVHD)
+colnames(Restricted_HLA_summary_aGVHD) <- "aGVHD"
+Restricted_HLA_summary_nGVHD <- colSums(removed_HLI_cohort_HLA_case_presAbs[nGVHD_id, ])
+Restricted_HLA_summary_nGVHD <- as.matrix(Restricted_HLA_summary_nGVHD)
+colnames(Restricted_HLA_summary_nGVHD) <- "nGVHD"
+Restricted_HLA_summary_all <- cbind(Restricted_HLA_summary_aGVHD, Restricted_HLA_summary_nGVHD)
+write.csv(Restricted_HLA_summary_all, file = "../FirstPaper/Table/OverlappingRemoved_Restricted_HLA_summary_all.csv")
+
+Restricted_HLA_CountTable <- as.matrix(Restricted_HLA_summary)
+colnames(Restricted_HLA_CountTable) <- "Counts"
+write.csv(Restricted_HLA_CountTable, file = "../FirstPaper/Table/Restricted_HLA_counts_table.csv")
+
+length(unique(restricted_MiHA_table$GroupID))
+
 
 
