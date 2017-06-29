@@ -1,7 +1,7 @@
 
 # file_fp <- "/mnt/cloudbiodata_nfs_1/hli_scratch/wwang/MiHAIP/DtoR/"
 # KnownMiHA_table <- read.csv("../ClinVar/Data/KnownMiHA_Table_Ref.csv", stringsAsFactors = F)
-Known_MiHA_SNPs <- read.delim("../WW_MiHA/Known_MiHA_coordinates.txt")
+Known_MiHA_SNPs <- read.delim("../Known_MiHA_coordinates.txt")
 Known_MiHA_SNPs_Pos <- unique(Known_MiHA_SNPs[, -1])
 Known_MiHA_SNPs_Pos$CHROM_POS <- sapply(1:dim(Known_MiHA_SNPs_Pos)[1], function(x) paste0(Known_MiHA_SNPs_Pos$Chr[x], "-", Known_MiHA_SNPs_Pos$Pos[x]))
 
