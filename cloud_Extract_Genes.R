@@ -20,12 +20,13 @@ for(id in 1:dim(GeneList)[1]){
   
   for(jd in 1:num_files){
     system(paste0("tabix ", original_file_dir, filenames[Not_extracted_index[jd]],".vcf.gz ", GeneList$GenePOS[id], 
-                  " > ", destination_dir, filenames[Not_extracted_index[id]], "_", GeneList$GeneNames[id],
+                  " > ", destination_dir, filenames[Not_extracted_index[jd]], "_", GeneList$GeneNames[id],
                   ".vcf"),
            intern = TRUE)
   print(paste0("Extracting File: ", filenames[Not_extracted_index[jd]]))
   }
   
 }
+
 
 
