@@ -10,6 +10,8 @@ filenames <- gsub(".vcf.gz", "", filenames)
 GeneList <- data.frame(GeneNames = c('IL10', 'IL10RB'),
                        GenePOS = c("chr1:206,767,602-206,772,494", "chr21:33,266,358-33,297,234"))
 
+load("../Data/HLI_available_pairs_dis_table.RData")
+
 for(id in 1:dim(GeneList)[1]){
   extracted_filenames <- list.files(destination_dir, pattern = "\\.vcf.gz$")
   extracted_filenames <- gsub(paste0(GeneList$GeneNames[id], ".vcf.gz"), "", extracted_filenames) 
