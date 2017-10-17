@@ -566,3 +566,111 @@ print(mainplot)
 print(subplot_chr6, vp = vp_chr6)
 print(subplot_wgs, vp = vp_wgs)
 # theme_set(theme_bw())
+
+################
+# ARS and MHC
+################
+mc_length_ARSonly <- data.frame(Proportion = c(Matched_ARS_length$Percent, Random_ARS_length$Percent),  # ARS
+                                 Group = c(rep("Matched ARS", length(Matched_ARS_length$Percent)), rep("Random ARS", length(Random_ARS_length$Percent))),
+                                 stringsAsFactors = F)
+ggplot(mc_length_ARSonly, aes(x = Group , y = Proportion, fill = Group)) + 
+  geom_boxplot(outlier.colour = 'gray', outlier.alpha = 0.2) +
+  guides(fill=FALSE) +
+  #geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous(limits = c(0, 1)) + scale_x_discrete(element_blank()) +
+  theme_light()
+
+mc_length_MHConly <- data.frame(Proportion = c(Matched_group_length$Percent, Random_group_length$Percent),  # MHC
+                                Group = c(rep("Matched MHC", length(Matched_group_length$Percent)), rep("Random MHC", length(Random_group_length$Percent))),
+                                stringsAsFactors = F)
+ggplot(mc_length_MHConly, aes(x = Group , y = Proportion, fill = Group)) + 
+  geom_boxplot(outlier.colour = 'gray', outlier.alpha = 0.3) +
+  guides(fill=FALSE) +
+  #geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous(element_blank()) + scale_x_discrete(element_blank()) + 
+  theme_light()
+
+######
+# chr6 and WGS
+###### 
+mc_length_chr6only <- data.frame(Proportion = c(Matched_high_pert$Percent, Random_high_pert$Percent),  # Chr 6
+                                 Group = c(rep("Matched Chr6", length(Matched_high_pert$Percent)), rep("Random Chr6", length(Random_high_pert$Percent))),
+                                 stringsAsFactors = F)
+ggplot(mc_length_chr6only, aes(x = Group , y = Proportion, fill = Group)) + 
+  geom_boxplot(outlier.colour = 'gray', outlier.alpha = 0.2) +
+  guides(fill=FALSE) +
+  # geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous(limits = c(0, .52)) + scale_x_discrete(element_blank()) + 
+  theme_light()
+
+mc_length_WGSonly <- data.frame(Proportion = c(all_matched_Percent$IBDPercent, all_random_Percent$IBDPercent), # WGS
+                                Group = c(rep("Matched WGS", length(all_matched_Percent$IBDPercent)), rep("Random WGS", length(all_random_Percent$IBDPercent))),
+                                stringsAsFactors = F)
+
+ggplot(mc_length_WGSonly, aes(x = Group , y = Proportion, fill = Group)) + 
+  geom_boxplot(outlier.colour = 'gray', outlier.alpha = 0.2) +
+  guides(fill=FALSE) +
+  # geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous(limits = c(0, .52)) + scale_x_discrete(element_blank()) + 
+  theme_light()
+##########
+# Remove outliers
+##########
+# compute lower and upper whiskers
+# ylim1 = boxplot.stats(df$y)$stats[c(1, 5)]
+
+mc_length_ARSonly <- data.frame(Proportion = c(Matched_ARS_length$Percent, Random_ARS_length$Percent),  # ARS
+                                Group = c(rep("Matched ARS", length(Matched_ARS_length$Percent)), rep("Random ARS", length(Random_ARS_length$Percent))),
+                                stringsAsFactors = F)
+ggplot(mc_length_ARSonly, aes(x = Group , y = Proportion, fill = Group)) + 
+  geom_boxplot(outlier.size = NA) +
+  guides(fill=FALSE) +
+  #geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous(limits = c(0, 1)) + scale_x_discrete(element_blank()) +
+  theme_light()
+
+#ylim1 = boxplot.stats(mc_length_ARSonly$Proportion)$stats[c(1, 5)]
+
+#ARS_only_pp + coord_cartesian(ylim = ylim1*1.05)
+#
+mc_length_MHConly <- data.frame(Proportion = c(Matched_group_length$Percent, Random_group_length$Percent),  # MHC
+                                Group = c(rep("Matched MHC", length(Matched_group_length$Percent)), rep("Random MHC", length(Random_group_length$Percent))),
+                                stringsAsFactors = F)
+ggplot(mc_length_MHConly, aes(x = Group , y = Proportion, fill = Group)) + 
+  geom_boxplot(outlier.size = NA) +
+  guides(fill=FALSE) +
+ # geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous(element_blank()) + scale_x_discrete(element_blank()) +
+  theme_light()
+
+#ylim2 = boxplot.stats(mc_length_MHConly$Proportion)$stats[c(1, 5)]
+
+#MHConly_pp + coord_cartesian(ylim = ylim2*1.05)
+
+######
+# chr6 and WGS
+###### 
+mc_length_chr6only <- data.frame(Proportion = c(Matched_high_pert$Percent, Random_high_pert$Percent),  # Chr 6
+                                 Group = c(rep("Matched Chr6", length(Matched_high_pert$Percent)), rep("Random Chr6", length(Random_high_pert$Percent))),
+                                 stringsAsFactors = F)
+ggplot(mc_length_chr6only, aes(x = Group , y = Proportion, fill = Group)) + 
+  #geom_boxplot() +
+  geom_boxplot(outlier.size = NA)+
+  guides(fill=FALSE) +
+  #geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous(limits = c(0, .06)) + scale_x_discrete(element_blank()) +
+  theme_light()
+
+
+mc_length_WGSonly <- data.frame(Proportion = c(all_matched_Percent$IBDPercent, all_random_Percent$IBDPercent), # WGS
+                                Group = c(rep("Matched WGS", length(all_matched_Percent$IBDPercent)), rep("Random WGS", length(all_random_Percent$IBDPercent))),
+                                stringsAsFactors = F)
+
+ggplot(mc_length_WGSonly, aes(x = Group , y = Proportion, fill = Group)) + 
+  geom_boxplot(outlier.size = NA) +
+  guides(fill=FALSE) +
+  #geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  # geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
+  scale_y_continuous(limits = c(0, .06)) + scale_x_discrete(element_blank()) +
+  theme_light()
+

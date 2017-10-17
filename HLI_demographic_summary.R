@@ -572,28 +572,31 @@ write.csv(all_table, file = "../FirstPaper/HLI_demographics_summary.csv")
 
 
 ######### HLA-Table
-reformated_HLA_typing_list <- read.csv("../ClinVar/reformated_HLA_typing.csv", stringsAsFactors = F)
+# reformated_HLA_typing_list <- read.csv("../ClinVar/reformated_HLA_typing.csv", stringsAsFactors = F)
+load("../Data/HLI_reformatted_HLA_table_corrected.RData") ## reformated_HLA_typing_list
 num_cases <- dim(reformated_HLA_typing_list)[1]
+# 
+# reformated_HLA_typing_list$GL_HLA_A1 <- sapply(1:num_cases, function(x) paste0("A*", reformated_HLA_typing_list$HLA_A1[x]))
+# reformated_HLA_typing_list$GL_HLA_A2 <- sapply(1:num_cases, function(x) paste0("A*", reformated_HLA_typing_list$HLA_A2[x]))
+# reformated_HLA_typing_list$GL_HLA_B1 <- sapply(1:num_cases, function(x) paste0("B*", reformated_HLA_typing_list$HLA_B1[x]))
+# reformated_HLA_typing_list$GL_HLA_B2 <- sapply(1:num_cases, function(x) paste0("B*", reformated_HLA_typing_list$HLA_B2[x]))
+# reformated_HLA_typing_list$GL_HLA_C1 <- sapply(1:num_cases, function(x) paste0("C*", reformated_HLA_typing_list$HLA_C1[x]))
+# reformated_HLA_typing_list$GL_HLA_C2 <- sapply(1:num_cases, function(x) paste0("C*", reformated_HLA_typing_list$HLA_C2[x]))
+# reformated_HLA_typing_list$GL_HLA_DRB11 <- sapply(1:num_cases, function(x) paste0("DRB1*", reformated_HLA_typing_list$HLA_DRB11[x]))
+# reformated_HLA_typing_list$GL_HLA_DRB12 <- sapply(1:num_cases, function(x) paste0("DRB1*", reformated_HLA_typing_list$HLA_DRB12[x]))
+# reformated_HLA_typing_list$GL_HLA_DQB11 <- sapply(1:num_cases, function(x) paste0("DQB1*", reformated_HLA_typing_list$HLA_DQB11[x]))
+# reformated_HLA_typing_list$GL_HLA_DQB12 <- sapply(1:num_cases, function(x) paste0("DQB1*", reformated_HLA_typing_list$HLA_DQB12[x]))
+# 
+# reformated_HLA_typing_list$Group <- sapply(1:num_cases, function(x) unique(paired_ID_table$Group[which(paired_ID_table$caseID %in% reformated_HLA_typing_list$bmt_case_num[x])]))
 
-reformated_HLA_typing_list$GL_HLA_A1 <- sapply(1:num_cases, function(x) paste0("A*", reformated_HLA_typing_list$HLA_A1[x]))
-reformated_HLA_typing_list$GL_HLA_A2 <- sapply(1:num_cases, function(x) paste0("A*", reformated_HLA_typing_list$HLA_A2[x]))
-reformated_HLA_typing_list$GL_HLA_B1 <- sapply(1:num_cases, function(x) paste0("B*", reformated_HLA_typing_list$HLA_B1[x]))
-reformated_HLA_typing_list$GL_HLA_B2 <- sapply(1:num_cases, function(x) paste0("B*", reformated_HLA_typing_list$HLA_B2[x]))
-reformated_HLA_typing_list$GL_HLA_C1 <- sapply(1:num_cases, function(x) paste0("C*", reformated_HLA_typing_list$HLA_C1[x]))
-reformated_HLA_typing_list$GL_HLA_C2 <- sapply(1:num_cases, function(x) paste0("C*", reformated_HLA_typing_list$HLA_C2[x]))
-reformated_HLA_typing_list$GL_HLA_DRB11 <- sapply(1:num_cases, function(x) paste0("DRB1*", reformated_HLA_typing_list$HLA_DRB11[x]))
-reformated_HLA_typing_list$GL_HLA_DRB12 <- sapply(1:num_cases, function(x) paste0("DRB1*", reformated_HLA_typing_list$HLA_DRB12[x]))
-reformated_HLA_typing_list$GL_HLA_DQB11 <- sapply(1:num_cases, function(x) paste0("DQB1*", reformated_HLA_typing_list$HLA_DQB11[x]))
-reformated_HLA_typing_list$GL_HLA_DQB12 <- sapply(1:num_cases, function(x) paste0("DQB1*", reformated_HLA_typing_list$HLA_DQB12[x]))
 
-reformated_HLA_typing_list$Group <- sapply(1:num_cases, function(x) unique(paired_ID_table$Group[which(paired_ID_table$caseID %in% reformated_HLA_typing_list$bmt_case_num[x])]))
-
-
-restricted_MiHA_table <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F)
-colnames(restricted_MiHA_table) <- c("Group", "GroupID", "HLA", "MiHA", "CHROM", "Donor", "Recipient")
-restricted_MiHA_table$HLA <- as.character(restricted_MiHA_table$HLA)
+# restricted_MiHA_table <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F)
+restricted_MiHA_table <- read.csv("../FirstPaper/Table/HLI_Restricted_MiHA_final_table.csv", stringsAsFactors = F)
+# colnames(restricted_MiHA_table) <- c("Group", "GroupID", "HLA", "MiHA", "CHROM", "Donor", "Recipient")
+restricted_MiHA_table$HLA <- restricted_MiHA_table$Restricted_HLA
 
 Restricted_HLA <- unique(restricted_MiHA_table$HLA)
+Restricted_HLA <- Restricted_HLA[-(14:17)]
 num_cases <- dim(reformated_HLA_typing_list)[1]
 num_HLA <- length(Restricted_HLA)
 
@@ -604,7 +607,7 @@ for(id in 1:num_cases){
   
   for(jd in 1:num_HLA){
     
-    pres_ind <- which(as.character(reformated_HLA_typing_list[id, 19:28]) %in% Restricted_HLA[jd])
+    pres_ind <- which(as.character(reformated_HLA_typing_list[id, 8:17]) %in% Restricted_HLA[jd])
     if(length(pres_ind) > 0){
       HLI_cohort_HLA_case_presAbs[id, jd] <- HLI_cohort_HLA_case_presAbs[id, jd] + 1
     }
@@ -617,8 +620,8 @@ for(id in 1:num_cases){
 
 # Restricted_HLA_summary <-colSums(HLI_cohort_HLA_case_presAbs)
 
-aGVHD_id <- which(reformated_HLA_typing_list$Group == "a")
-nGVHD_id <- which(reformated_HLA_typing_list$Group == "n")
+aGVHD_id <- which(reformated_HLA_typing_list$GroupType == "a")
+nGVHD_id <- which(reformated_HLA_typing_list$GroupType == "n")
 
 Restricted_HLA_summary_aGVHD <- colSums(HLI_cohort_HLA_case_presAbs[aGVHD_id, ])
 Restricted_HLA_summary_aGVHD <- as.matrix(Restricted_HLA_summary_aGVHD)
@@ -627,7 +630,7 @@ Restricted_HLA_summary_nGVHD <- colSums(HLI_cohort_HLA_case_presAbs[nGVHD_id, ])
 Restricted_HLA_summary_nGVHD <- as.matrix(Restricted_HLA_summary_nGVHD)
 colnames(Restricted_HLA_summary_nGVHD) <- "nGVHD"
 Restricted_HLA_summary_all <- cbind(Restricted_HLA_summary_aGVHD, Restricted_HLA_summary_nGVHD)
-write.csv(Restricted_HLA_summary_all, file = "../FirstPaper/Table/Restricted_HLA_summary_all.csv")
+write.csv(Restricted_HLA_summary_all, file = "../FirstPaper/Table/Restricted_HLA_summary_all_ClassIonly_0630.csv")
 
 Restricted_HLA_CountTable <- as.matrix(Restricted_HLA_summary)
 colnames(Restricted_HLA_CountTable) <- "Counts"

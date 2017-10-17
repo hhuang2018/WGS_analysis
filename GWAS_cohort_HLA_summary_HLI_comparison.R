@@ -313,6 +313,8 @@ save(overlapping_case_IDs, file = "../Data/GWAS_HLI_Overlapping_Cases_availableP
 # save(overlapping_case_IDs, file = "../Data/GWAS_HLI_Overlapping_Cases_All.RData")
 
 ###### GWASH table
+load("../Data/GWAS_HLI_Overlapping_Cases_availablePairs.RData") # overlapping_case_IDs
+load("../Data/GWASH_mismatch_MiHA_table_AllSamples.RData") # mismatch_MiHA_table
 KnownMiHA_table <- read.csv("../ClinVar/Data/KnownMiHA_Table_Ref.csv", stringsAsFactors = F)
 KnownMiHA_table$HLA_SNP <- sapply(1:dim(KnownMiHA_table)[1], function(x) paste0(KnownMiHA_table$HLA[x], "-", KnownMiHA_table$rs.number[x]))
 
@@ -380,6 +382,7 @@ overlapping_GWASH_single_MiHA_stats <- as.data.frame(table(overlapping_GWASH_Res
 
 
 ###### save HLA restricted MiHA table
+unique_MiHAs <- unique(GWASH_single_MiHA_stats$HLA_SNP)
 num_MiHAs <- dim(GWASH_single_MiHA_stats)[1]/2
 overlap_GWASH_single_MiHA_table <- data.frame(Gene = character(num_MiHAs), 
                                               MiHA = character(num_MiHAs), 
@@ -397,6 +400,9 @@ for(miha_id in 1:num_MiHAs){
     
     overlap_GWASH_single_MiHA_table$aGVHD[miha_id] <- overlapping_GWASH_single_MiHA_stats[index[which(overlapping_GWASH_single_MiHA_stats[index, "GroupType"] == "aGVHD")], "Freq"]
     overlap_GWASH_single_MiHA_table$nGVHD[miha_id] <- abs(overlapping_GWASH_single_MiHA_stats[index[which(overlapping_GWASH_single_MiHA_stats[index, "GroupType"] == "non-aGVHD")], "Freq"])
+    
+    aGVHD_count <- overlap_GWASH_single_MiHA_table$aGVHD[miha_id]
+    nGVHD_count <- overlap_GWASH_single_MiHA_table$nGVHD[miha_id]
     
     iid <- which(KnownMiHA_table$HLA_SNP %in% unique(overlapping_GWASH_single_MiHA_stats$HLA_SNP[index]))
     # Gene_MiHA_name <- paste0(as.character(KnownMiHA_table[iid, c("Gene", "KnownMiHA", "rs.number")]), collapse = " <> ")
@@ -419,7 +425,7 @@ overlap_GWASH_single_MiHA_table <- overlap_GWASH_single_MiHA_table[which(overlap
 write.csv(overlap_GWASH_single_MiHA_table, file = "../ClinVar/GWASH/GWASH_overlapping_cohort_Overlapping_Restricted_MiHA_summary.csv", 
           row.names = F)
 
-write.csv(overlap_GWASH_single_MiHA_table, file = "../ClinVar/GWASH/GWASH_Non-overlapping_cohort_Overlapping_Restricted_MiHA_summary.csv", 
+write.csv(overlap_GWASH_single_MiHA_table, file = "../ClinVar/GWASH/GWASH_Non-overlapping_cohort_Overlapping_Restricted_MiHA_summary2.csv", 
           row.names = F)
 
 overlappling_mimatch_table$GroupID <- unlist(sapply(1:length(overlappling_mimatch_table$CaseNumber), function(x) if (length(which(ID_table$CaseNum %in%  overlappling_mimatch_table$CaseNumber[x])) ==1 ) unique(ID_table$GroupID[which(ID_table$CaseNum %in%  overlappling_mimatch_table$CaseNumber[x])])  
@@ -428,6 +434,13 @@ write.csv(overlappling_mimatch_table, file = "../ClinVar/GWASH/GWASH_overlapping
 
 
 write.csv(overlappling_mimatch_table, file = "../ClinVar/GWASH/GWASH_Non-overlapping_cohort_count_table.csv", row.names = F)
+
+
+overlap_GWASH_single_MiHA_table <- read.csv("../ClinVar/GWASH/GWASH_Non-overlapping_cohort_Overlapping_Restricted_MiHA_summary.csv")
+non_overlapping_mismatch_table <- read.csv("../ClinVar/GWASH/GWASH_Non-overlapping_cohort_count_table.csv")
+colnames(non_overlapping_mismatch_table)
+
+
 
 ###### HLI 
 load("../Data/GWAS_HLI_overlapping_SNPs.RData")

@@ -308,7 +308,7 @@ for(id in 1:(num_SNPs-1)){
   
 }
 
-
+save(mismatch_MiHA_table, file = "../Data/GWASH_mismatch_MiHA_table_AllSamples.RData")
 ##### 45 MiHA SNPs --- Outcome vs rs-rs association test
 a_joint_SNPs <- read.csv(file = "../ClinVar/Data/unrestricted_aGVHD_pairwise_summary_AP.csv", stringsAsFactors = F)
 n_joint_SNPs <- read.csv(file = "../ClinVar/Data/unrestricted_nonGVHD_pairwise_summary_AP.csv", stringsAsFactors = F)
