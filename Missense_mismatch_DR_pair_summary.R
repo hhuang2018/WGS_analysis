@@ -21,7 +21,7 @@ AML_RID_ids <- which(RID %in% Available_paired_table$RID[AML_ids])
 file_names <- file_names[AML_RID_ids]
 #####
 num_files <- length(file_names)  
-missense_mm_stats <- vector(mode = "numerical", length = num_files)
+missense_mm_stats <- vector(mode = "integer", length = num_files)
 for(id in 1:num_files){
   
   vcf_file <- paste0(VCF_file_dir, file_names[id])
