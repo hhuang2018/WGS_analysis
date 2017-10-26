@@ -9,8 +9,7 @@ output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/vcf_missense_variants_wwVers
 
 all_vcf_files <- list.files(VCF_file_dir, pattern = "\\.txt$")
 
-#file_names <- all_vcf_files[grepl("_R_", all_vcf_files)] # 216 donors; 240 recipients
-
+num_files <- length(all_vcf_files)
 for(id in 1:num_files){
   
   vcf_file <- paste0(VCF_file_dir, all_vcf_files[id])
