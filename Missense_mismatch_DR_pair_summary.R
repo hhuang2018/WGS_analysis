@@ -10,6 +10,7 @@ output_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/vcf_missense_variants_wwVers
 all_vcf_files <- list.files(VCF_file_dir, pattern = "\\.txt$")
 
 num_files <- length(all_vcf_files)
+missense_mm_stats <- vector(mode = 'integer', length = num_files)
 for(id in 1:num_files){
   
   vcf_file <- paste0(VCF_file_dir, all_vcf_files[id])
