@@ -9,7 +9,7 @@ This repository will be merged with ["gene-gene interaction" project](https://gi
 The final version of the scripts will be merged into one repository, and is set to release by the end of 2018.
 
 
-# Authors
+# Author(s)
 *  **Hu Huang**
 
 # License
