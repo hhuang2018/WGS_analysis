@@ -671,6 +671,7 @@ ggplot(mc_length_WGSonly, aes(x = Group , y = Proportion, fill = Group)) +
   guides(fill=FALSE) +
   #geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
   # geom_hline(yintercept = shared_DNA_theory$percent, color = "chocolate1", linetype="dashed") +
-  scale_y_continuous(limits = c(0, .06)) + scale_x_discrete(element_blank()) +
-  theme_light()
+  scale_y_continuous(limits = c(0, .02)) + scale_x_discrete(element_blank()) +
+  theme_light() +
+  scale_fill_manual(values=c("#af8dc3", "#7fbf7b"))
 

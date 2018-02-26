@@ -1,18 +1,19 @@
 library(ggplot2)
 # miha_table <- read.table("../Boxplot205pairs.txt", header = T) ### Old data -- wrong
-known_miha_freq <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F, stringsAsFactors = F)
-colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
 
-known_unrestricted_MiHA_table <- read.csv("../ClinVar/unRestrictedMiHAs.csv", header = F, stringsAsFactors = F)
-colnames(known_unrestricted_MiHA_table) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
-
-class(known_miha_freq$GroupID) <- "charater"
-known_Miha_stats <- as.data.frame(table(known_miha_freq$GroupID), stringsAsFactors = F)
-colnames(known_Miha_stats) <- c("GroupID", "KnownRestrictedMiHAs")
-
-class(known_unrestricted_MiHA_table$GroupID) <- "charater"
-known_unrestricted_stats <- as.data.frame(table(known_unrestricted_MiHA_table$GroupID),stringsAsFactors = F)
-colnames(known_unrestricted_stats) <- c("GroupID", "KnownUnRestrictedMiHAs")
+# known_miha_freq <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F, stringsAsFactors = F)
+# colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
+# 
+# known_unrestricted_MiHA_table <- read.csv("../ClinVar/unRestrictedMiHAs.csv", header = F, stringsAsFactors = F)
+# colnames(known_unrestricted_MiHA_table) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
+# 
+# class(known_miha_freq$GroupID) <- "charater"
+# known_Miha_stats <- as.data.frame(table(known_miha_freq$GroupID), stringsAsFactors = F)
+# colnames(known_Miha_stats) <- c("GroupID", "KnownRestrictedMiHAs")
+# 
+# class(known_unrestricted_MiHA_table$GroupID) <- "charater"
+# known_unrestricted_stats <- as.data.frame(table(known_unrestricted_MiHA_table$GroupID),stringsAsFactors = F)
+# colnames(known_unrestricted_stats) <- c("GroupID", "KnownUnRestrictedMiHAs")
 
 ############ check D-R missense mismatches
 load("../Data/HLI_available_pairs_dis_table.RData")
@@ -206,17 +207,17 @@ ggplot(beeswarm_unresMiHA, aes(x, y)) +
 ##### Restricted MiHA
 beeswarm_ResMiHA_all <- beeswarm(HLA.Restricted ~ GVHD, data = miha_table, 
                                  method = 'swarm',
-                                 spacing = 0.5)[, c(1,2,6)]
+                                 spacing = 0.4)[, c(1,2,6)]
 colnames(beeswarm_ResMiHA_all) <- c("x", "y", "GVHD") 
 
 ggplot(beeswarm_ResMiHA_all, aes(x, y)) +
   xlab("") +
   scale_y_continuous(expression("#Mismatched HLA Restricted Known MiHA SNPs")) + 
   # geom_point(aes(colour = GVHD), size = 3, alpha = 0.5) +
-  geom_jitter(width = 0.2, aes(color = GVHD), size = 3, alpha = 0.8) +
+  geom_jitter(width = 0.1, aes(color = GVHD), size = 3, alpha = 0.8) +
   scale_colour_manual(values = c("#D55E00", "#0072B2")) + 
   scale_x_continuous(breaks = c(1:2), 
-                     labels = c("acute GVHD", "non aGVHD"), expand = c(0, 0.05)) +
+                     labels = c("acute GVHD", "non-GVHD"), expand = c(0, 0.05)) +
   geom_boxplot(aes(x, y, group = round_any(beeswarm_ResMiHA_all$x, 1, round)), outlier.shape = NA, alpha = 0) +
   theme(legend.position = "none")
 
@@ -229,17 +230,17 @@ wilcox.test(y ~ GVHD, beeswarm_ResMiHA_all)
 
 beeswarm_UnResMiHA_all <- beeswarm(HLA.Unrestricted ~ GVHD, data = miha_table,
                                    method = 'swarm',
-                                   spacing = 1)[, c(1,2,6)]
+                                   spacing = 0.5)[, c(1,2,6)]
 colnames(beeswarm_UnResMiHA_all) <- c("x", "y", "GVHD") 
 
 ggplot(beeswarm_UnResMiHA_all, aes(x, y)) +
   xlab("") +
   scale_y_continuous(expression("#Mismatched HLA Unrestricted Known MiHA SNPs")) + 
   #geom_point(aes(colour = GVHD), size = 3, alpha = 0.7) +
-  geom_jitter(width = 0.2, aes(color = GVHD), size = 3, alpha = 0.8) +
+  geom_jitter(width = 0.1, aes(color = GVHD), size = 3, alpha = 0.7) +
   scale_colour_manual(values = c("#D55E00", "#0072B2")) + 
   scale_x_continuous(breaks = c(1:2), 
-                     labels = c("acute GVHD", "non aGVHD"), expand = c(0, 0.05)) +
+                     labels = c("acute GVHD", "non-GVHD"), expand = c(0, 0.05)) +
   geom_boxplot(aes(x, y, group = round_any(beeswarm_UnResMiHA_all$x, 1, round)), outlier.shape = NA, alpha = 0) + 
   theme(legend.position = "none")
 
@@ -251,7 +252,7 @@ wilcox.test(y ~ GVHD, beeswarm_UnResMiHA_all)
 ##### Number of Missense Mismatch
 beeswarm_MissenseMis <-  beeswarm(NumVar ~ GVHD, data = miha_table,
                                   method = 'swarm',
-                                  spacing = 0.6)[, c(1,2,6)]
+                                  spacing = 0.4)[, c(1,2,6)]
 colnames(beeswarm_MissenseMis) <- c("x", "y", "GVHD") 
 
 ggplot(beeswarm_MissenseMis, aes(x, y)) +
@@ -260,7 +261,7 @@ ggplot(beeswarm_MissenseMis, aes(x, y)) +
   geom_point(aes(colour = GVHD), size = 3, alpha = 0.6) +
   scale_colour_manual(values = c("#D55E00", "#0072B2")) + 
   scale_x_continuous(breaks = c(1:2), 
-                     labels = c("acute GVHD", "non aGVHD"), expand = c(0, 0.05)) +
+                     labels = c("acute GVHD", "non-GVHD"), expand = c(0, 0.05)) +
   geom_boxplot(aes(x, y, group = round_any(beeswarm_MissenseMis$x, 1, round)), outlier.shape = NA, alpha = 0)+ 
   theme(legend.position = "none")
 
