@@ -643,6 +643,7 @@ for(id in 1:num_unique_MiHAs){
 # restricted_miha_table <- read.delim(file = "../FirstPaper/Data/Updated_Restricted_KnownMiHA.txt", header = F, stringsAsFactors = F)
 restricted_miha_table <- read.delim(file = "../FirstPaper/Data/Restricted_MismatchMiHAs_with_correctedTyping(Wei_updated).txt", header = F, stringsAsFactors = F)
 restricted_miha_table <- restricted_miha_table[, c(1:8, 10)]
+
 colnames(restricted_miha_table) <- c("SNP", "Allele", "GroupID", "CHROM", "POS", "V6", "Donor", "Recipient", "Group")
 restricted_miha_table$HLA <- sapply(1:dim(restricted_miha_table)[1], function(x) {
   temp_allele <- unlist(strsplit(restricted_miha_table$Allele[x], ""))
@@ -727,3 +728,21 @@ for(id in 1:num_unique_MiHAs){
   MiHA_LLR$LLR[id] <- log10(MiHA_LLR$aGVHD_count[id] / MiHA_LLR$nGVHD_count[id])
   
 }
+
+save(MiHA_LLR, file = "../FirstPaper/Data/HLI_RestrictedMiHA_LLR_table_2018.RData")
+
+## 
+library(ggplot2)
+
+MiHA_LLR$MiHA_HLA_SNP_Gene <- factor(MiHA_LLR$MiHA_HLA_SNP_Gene, levels = MiHA_LLR$MiHA_HLA_SNP_Gene[order(MiHA_LLR$LLR)])
+
+MiHA_LLR2 <- MiHA_LLR[-which(MiHA_LLR$LLR == 0), ]
+
+ggplot(data = MiHA_LLR2, aes(y = LLR, x = MiHA_HLA_SNP_Gene)) + 
+  geom_bar(stat="identity", fill="#a50f15") + # , width=0.5
+  theme(axis.text.x=element_text(angle=90, hjust=1), axis.text.y = element_text(angle = 90, vjust = 1)) #+ 
+  #coord_flip()
+
+
+
+

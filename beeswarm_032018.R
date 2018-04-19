@@ -1,19 +1,33 @@
 library(ggplot2)
 # miha_table <- read.table("../Boxplot205pairs.txt", header = T) ### Old data -- wrong
 
-# known_miha_freq <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F, stringsAsFactors = F)
-# colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
+# Restricted MiHA 
+restricted_miha_table <- read.delim(file = "../FirstPaper/Data/Restricted_MismatchMiHAs_with_correctedTyping(Wei_updated).txt", header = F, stringsAsFactors = F)
+restricted_miha_table <- restricted_miha_table[, c(1:8, 10)]
+
+colnames(restricted_miha_table) <- c("SNP", "Allele", "GroupID", "CHROM", "POS", "V6", "Donor", "Recipient", "Group")
+restricted_miha_table$HLA <- sapply(1:dim(restricted_miha_table)[1], function(x) {
+  temp_allele <- unlist(strsplit(restricted_miha_table$Allele[x], ""))
+  temp_gene <-  paste0(temp_allele[1:(length(temp_allele)-4)], collapse = "")
+  paste0(temp_gene, "*", temp_allele[(length(temp_allele)-3)], temp_allele[(length(temp_allele)-2)], ":", temp_allele[(length(temp_allele)-1)], temp_allele[(length(temp_allele)-0)])
+  
+}
+)
+# load("../Data/HLI_reformatted_HLA_table_corrected.RData") ## reformated_HLA_typing_list
 # 
-# known_unrestricted_MiHA_table <- read.csv("../ClinVar/unRestrictedMiHAs.csv", header = F, stringsAsFactors = F)
-# colnames(known_unrestricted_MiHA_table) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
-# 
-# class(known_miha_freq$GroupID) <- "charater"
-# known_Miha_stats <- as.data.frame(table(known_miha_freq$GroupID), stringsAsFactors = F)
-# colnames(known_Miha_stats) <- c("GroupID", "KnownRestrictedMiHAs")
-# 
-# class(known_unrestricted_MiHA_table$GroupID) <- "charater"
-# known_unrestricted_stats <- as.data.frame(table(known_unrestricted_MiHA_table$GroupID),stringsAsFactors = F)
-# colnames(known_unrestricted_stats) <- c("GroupID", "KnownUnRestrictedMiHAs")
+# restricted_miha_table$Restricted_HLA <- sapply(1:dim(restricted_miha_table)[1], function(x) is.element(restricted_miha_table$HLA[x], reformated_HLA_typing_list[which(reformated_HLA_typing_list$GroupID == restricted_miha_table$GroupID[x]),8:17]))
+# which(!restricted_miha_table$Restricted_HLA)
+# restricted_miha_table$HLA_SNP <- sapply(1:dim(restricted_miha_table)[1], function(x) paste0(restricted_miha_table$HLA[x], "-", restricted_miha_table$SNP[x]))
+
+known_Miha_stats <- as.data.frame(table(restricted_miha_table$GroupID), stringsAsFactors = F)
+colnames(known_Miha_stats) <- c("GroupID", "KnownRestrictedMiHAs")
+
+## Unrestricted MiHA
+known_unrestricted_MiHA_table <- read.csv("../ClinVar/unRestrictedMiHAs.csv", header = F, stringsAsFactors = F)
+colnames(known_unrestricted_MiHA_table) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
+
+known_unrestricted_stats <- as.data.frame(table(known_unrestricted_MiHA_table$GroupID), stringsAsFactors = F)
+colnames(known_unrestricted_stats) <- c("GroupID", "KnownUnRestrictedMiHAs")
 
 ############ check D-R missense mismatches
 load("../Data/HLI_available_pairs_dis_table.RData")
@@ -51,30 +65,10 @@ WGS_woXY <- colSums(All_stats[-c(23,24), -1])
 WGS_woXY <- as.data.frame(WGS_woXY)
 #### Make miha_table: num_misense_mismatch, num_unrestricted_MiHA, num_Restricted_MiHa
 #load("../Data/ID_table.RData")
-#HLI_metadata <- read.csv("../HLI_hla_mg_v3.csv", stringsAsFactors = F)
+HLI_metadata <- read.csv("../HLI_hla_mg_v3.csv", stringsAsFactors = F)
 load("../Data/HLI_available_pairs_dis_table.RData")
-ID_table$caseNumber <- 0 
-for(id in 1:dim(ID_table)[1]){
-  
-  if(ID_table$subjectType[id] == "R"){ # recipients
-    
-    r_ind <- which(HLI_metadata$nmdp_rid %in% ID_table$R_D_ID[id])
-    if(length(r_ind) > 1) cat("id = ", id, "; r_ind = ", r_ind, "\n")
-    
-    ID_table$caseNumber[id] <- HLI_metadata$bmt_case_num[r_ind] 
-    
-  }else{  # donors
-    
-    d_ind <- which(HLI_metadata$nmdp_id %in% ID_table$R_D_ID[id])
-    if(length(d_ind) > 1) cat("id = ", id, "; d_ind = ", d_ind, "\n")
-    
-    ID_table$caseNumber[id] <- HLI_metadata$bmt_case_num[d_ind] 
-    
-  }
-  
-}
 
-n_cases <- 205
+n_cases <- dim(Available_paired_table)[1]
 miha_table <- data.frame(groupID = character(n_cases),
                          GVHD = character(n_cases),
                          SEX = character(n_cases),
@@ -88,12 +82,12 @@ for(id in 1:n_cases){
   miha_table$groupID[id] <- known_unrestricted_stats$GroupID[id]
   miha_table$HLA.Unrestricted[id] <- known_unrestricted_stats$KnownUnRestrictedMiHAs[id]
   
-  temp_ID_table_ind <- which(ID_table$GroupID %in% miha_table$groupID[id])
-  temp_HLI_ind <- which(HLI_metadata$bmt_case_num %in% unique(ID_table$caseNumber[temp_ID_table_ind]))
+  temp_ID_table_ind <- which(Available_paired_table$GroupID %in% miha_table$groupID[id])
+  temp_HLI_ind <- which(HLI_metadata$bmt_case_num %in% unique(Available_paired_table$BMT[temp_ID_table_ind]))
   
   miha_table$SEX[id] <- paste0(HLI_metadata$donor_sex[temp_HLI_ind], ">", HLI_metadata$rid_sex[temp_HLI_ind])
   
-  miha_table$GVHD[id] <- if(unique(ID_table$Group[temp_ID_table_ind]) == "a") "aGVHD" else "nonGVHD"
+  miha_table$GVHD[id] <- if(unique(Available_paired_table$GroupType[temp_ID_table_ind]) == "a") "aGVHD" else "nonGVHD"
   
   miha_table$NumVar[id] <- WGS_woXY[paste0(miha_table$groupID[id], ".txt"), ]
   
@@ -108,6 +102,8 @@ for(id in 1:n_cases){
 
 miha_table$SEX <- as.factor(miha_table$SEX)
 miha_table$GVHD <- as.factor(miha_table$GVHD)
+
+write.csv(miha_table, file = "../FirstPaper/Data/HLI_known_MiHA_table_032018.csv", row.names = F)
 ####### plots
 
 p1 <- ggplot(miha_table, aes(x = factor(GVHD), y = HLA.Restricted))

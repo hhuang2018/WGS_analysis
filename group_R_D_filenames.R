@@ -103,3 +103,4 @@ for(id in 1:length(unassigned_files_index)){
 # D_R_HLA_typing <- read.csv("../HLI_hla_mg_v1.csv")
 # 
 # aa <- intersect(D_R_HLA_typing$bmt_case_num, HLI_R_D_list$BMT)
+

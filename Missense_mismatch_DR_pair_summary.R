@@ -26,3 +26,6 @@ for(id in 1:num_files){
 }
 
 save(missense_mm_stats, file = paste0(output_dir, "All_missense_mismatch_stats_wwVersion.RData"))
+
+### 
+load("../Output/Missense_variant_stats/All_missense_mismatch_stats_wwVersion.RData")

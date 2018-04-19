@@ -1,7 +1,7 @@
 library(ggplot2)
 # miha_table <- read.table("../Boxplot205pairs.txt", header = T) ### Old data -- wrong
-known_miha_freq <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F, stringsAsFactors = F)
-colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
+# known_miha_freq <- read.delim("../WW_MiHA/Restricted_known_MiHAs.txt", header = F, stringsAsFactors = F)
+# colnames(known_miha_freq) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
 
 known_unrestricted_MiHA_table <- read.csv("../ClinVar/unRestrictedMiHAs.csv", header = F, stringsAsFactors = F)
 colnames(known_unrestricted_MiHA_table) <- c("GroupType", "GroupID",  "HLA_type", "SNP", "CHROM", "REF", "ALT")
