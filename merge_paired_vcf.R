@@ -2,7 +2,7 @@
 #vcf_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/hli_vcf_annotated_preprocessed/"
 vcf_file_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq/"
 #paired_vcf_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
-paired_vcf_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_paired/"
+paired_vcf_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_paired_noPadding/"
 
 # alternative_paired_vcf_dir <- "/mnt/scratch/hhuang/paired_vcf/"
 
@@ -37,11 +37,11 @@ for(id in 1:num_files){
   cat("Group # ", id, "\nCommand: \n")
   
   ptm <- proc.time() 
-  system(paste0("cd ", paired_vcf_dir,"; vcf-merge -R 0/0 ", vcf_file_dir, Recipient_file," ",
+  system(paste0("cd ", paired_vcf_dir,"; vcf-merge  ", vcf_file_dir, Recipient_file," ",
                 vcf_file_dir, Donor_file, " | bgzip > ", all_groupIDs[paired_IDs[id]], ".vcf.gz"))
   system(paste0("cd ", paired_vcf_dir, "; tabix -p vcf ", all_groupIDs[paired_IDs[id]], ".vcf.gz"))
   
-  cat(paste0("cd ", paired_vcf_dir,"; vcf-merge -R 0/0 ", vcf_file_dir, Recipient_file," ",
+  cat(paste0("cd ", paired_vcf_dir,"; vcf-merge ", vcf_file_dir, Recipient_file," ",
              vcf_file_dir, Donor_file, " | bgzip > ", all_groupIDs[paired_IDs[id]], ".vcf.gz"), "\n")
   cat(paste0("cd ", paired_vcf_dir, "; tabix -p vcf ", all_groupIDs[paired_IDs[id]], ".vcf.gz"), "\n")
   
