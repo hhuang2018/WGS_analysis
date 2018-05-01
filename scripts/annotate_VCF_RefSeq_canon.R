@@ -1,6 +1,6 @@
 # list .vcf.gz files
 original_file_dir = "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_renamed/"
-destination_dir = "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq/"
+destination_dir = "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical/"
 snpEff_dir = "/home/hhuang/tools/snpEff/"
 snpEff_database = "/mnt/common/data/reference/grch38/SnpEff_database/"
 
