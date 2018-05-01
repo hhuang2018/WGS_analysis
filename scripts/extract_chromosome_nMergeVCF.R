@@ -6,6 +6,9 @@ library("optparse")
 #chr <- 2
 #output_dir <- paste0("/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/vcf_chr", chr, "/")
 
+##
+# Rscript scripts/extract_chromosome_nMergeVCF.R -c 1 -i /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/ -o /mnt/cloudbiodata_nfs_2/users/hhuang/ > /mnt/cloudbiodata_nfs_2/users/hhuang/README_chr1
+#
 
 option_list = list(
   make_option(c("-c", "--chr"), type="numeric", default=NULL, 
