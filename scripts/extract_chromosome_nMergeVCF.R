@@ -7,7 +7,8 @@ library("optparse")
 #output_dir <- paste0("/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/vcf_chr", chr, "/")
 
 ##
-# Rscript scripts/extract_chromosome_nMergeVCF.R -c 1 -i /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/ -o /mnt/cloudbiodata_nfs_2/users/hhuang/ > /mnt/cloudbiodata_nfs_2/users/hhuang/README_chr1
+# Rscript scripts/extract_chromosome_nMergeVCF.R -c 1 -i /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/ -o /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_chr1 > /mnt/cloudbiodata_nfs_2/users/hhuang/README_chr1
+# Rscript scripts/extract_chromosome_nMergeVCF.R -c 2 -i /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/ -o /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_chr2 > /mnt/cloudbiodata_nfs_2/users/hhuang/README_chr2
 #
 
 option_list = list(
