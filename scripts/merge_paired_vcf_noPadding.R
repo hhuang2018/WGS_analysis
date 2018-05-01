@@ -1,8 +1,11 @@
 
 #vcf_file_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/hli_vcf_annotated_preprocessed/"
-vcf_file_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical/"
+#vcf_file_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical/"
+vcf_file_dir <- "/home/hhuang/data/HLI/"
+
 #paired_vcf_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
-paired_vcf_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/"
+#paired_vcf_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/"
+paired_vcf_dir <- "/home/hhuang/data/HLI_paired_fPASS/"
 
 # alternative_paired_vcf_dir <- "/mnt/scratch/hhuang/paired_vcf/"
 
