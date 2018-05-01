@@ -1,10 +1,12 @@
 
-paired_vcf_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
+#paired_vcf_dir <- "/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/paired_vcf/"
+paired_vcf_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/"
 
 all_vcf_files <- list.files(paired_vcf_dir, pattern = "\\.vcf.gz$")
 
 chr <- 8
-output_dir <- paste0("/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/vcf_chr", chr, "/")
+#output_dir <- paste0("/mnt/cloudbiodata_nfs_1/hli_scratch/hhuang/vcf_chr", chr, "/")
+output_dir <- paste0("/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/vcf_chr", chr, "/")
 
 dir.create(file.path(output_dir), showWarnings = FALSE)
 
@@ -26,8 +28,8 @@ all_vcf_files <- list.files(output_dir, pattern = "\\.vcf.gz$")
 file_list <- paste(all_vcf_files, collapse = " ")
 
 ptm <- proc.time()
-system(paste0("cd ", output_dir, "; vcf-merge -R 0/0 ", file_list, " | bgzip -c > all_chr", chr,".vcf.gz"))
+system(paste0("cd ", output_dir, "; vcf-merge ", file_list, " | bgzip -c > all_chr", chr,".vcf.gz"))
 system(paste0("cd ", output_dir, "; tabix -p vcf all_chr", chr,".vcf.gz"))
-cat(paste0("cd ", output_dir, "; vcf-merge -R 0/0 ", file_list, " | bgzip -c > all_chr", chr,".vcf.gz"), "\n")
+cat(paste0("cd ", output_dir, "; vcf-merge ", file_list, " | bgzip -c > all_chr", chr,".vcf.gz"), "\n")
 cat(paste0("cd ", output_dir, "; tabix -p vcf all_chr", chr,".vcf.gz"), "\n")
 print(proc.time() - ptm)
