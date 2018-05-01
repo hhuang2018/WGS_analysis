@@ -7,7 +7,23 @@ library("optparse")
 #output_dir <- paste0("/mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/vcf_chr", chr, "/")
 
 
+option_list = list(
+  make_option(c("-c", "--chr"), type="numeric", default=NULL, 
+              help="chromosome number", metavar="numeric"),
+  make_option(c("-i", "--input_dir"), type="character", default=NULL, 
+              help="chromosome number", metavar="character"),
+  make_option(c("-o", "--output_dir"), type="character", default="out.txt", 
+              help="output file name [default= %default]", metavar="character")
+)
 
+opt_parser = OptionParser(option_list=option_list)
+opt = parse_args(opt_parser)
+
+paired_vcf_dir <- opt$input_dir
+output_dir <- opt$output_dir
+chr <- opt$chr
+
+############
 
 all_vcf_files <- list.files(paired_vcf_dir, pattern = "\\.vcf.gz$")
 
