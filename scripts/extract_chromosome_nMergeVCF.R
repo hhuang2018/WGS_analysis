@@ -22,7 +22,7 @@ option_list = list(
               help="chromosome number", metavar="character"),
   make_option(c("-o", "--output_dir"), type="character", default="out.txt", 
               help="output file name [default= %default]", metavar="character"),
-  make_option(c("-m", "--merge_only"), action="store_false", default=FALSE, 
+  make_option(c("-m", "--merge_only"), action="store_true", default=FALSE, 
               help="output file name [default= %default]", metavar="character")
 )
 
