@@ -12,6 +12,8 @@ library("optparse")
 # 
 # Rscript scripts/extract_chromosome_nMergeVCF.R -c 14 -i ~/data/HLI_paired_fPASS/ -o ~/data/HLI_merged/chr14/ > ~/data/HLI_merged/README_chr14
 #
+# Rscript scripts/extract_chromosome_nMergeVCF.R -c 5 -i ~/data/HLI_paired_fPASS/ -o ~/data/HLI_merged/chr5/ -m > ~/data/HLI_merged/README_chr5
+#
 
 option_list = list(
   make_option(c("-c", "--chr"), action="store", type="numeric", default=NULL, 
