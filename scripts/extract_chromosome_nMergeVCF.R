@@ -8,15 +8,19 @@ library("optparse")
 
 ##
 # Rscript scripts/extract_chromosome_nMergeVCF.R -c 1 -i /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/ -o /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_chr1/ > /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_ch_log/README_chr1
-# Rscript scripts/extract_chromosome_nMergeVCF.R -c 2 -i /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/ -o /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_chr2/ > /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_ch_log/README_chr2
+# Rscript scripts/extract_chromosome_nMergeVCF.R -c 21 -i /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/ -o /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_chr21/ > /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_ch_log/README_chr21
+# 
+# Rscript scripts/extract_chromosome_nMergeVCF.R -c 14 -i ~/data/HLI_paired_fPASS/ -o ~/data/HLI_merged/chr14/ > ~/data/HLI_merged/README_chr14
 #
 
 option_list = list(
-  make_option(c("-c", "--chr"), type="numeric", default=NULL, 
+  make_option(c("-c", "--chr"), action="store", type="numeric", default=NULL, 
               help="chromosome number", metavar="numeric"),
-  make_option(c("-i", "--input_dir"), type="character", default=NULL, 
+  make_option(c("-i", "--input_dir"), action="store", type="character", default=NULL, 
               help="chromosome number", metavar="character"),
-  make_option(c("-o", "--output_dir"), type="character", default="out.txt", 
+  make_option(c("-o", "--output_dir"), action="store", type="character", default="out.txt", 
+              help="output file name [default= %default]", metavar="character"),
+  make_option(c("-m", "--merge_only"), action="store_false", type="boolean", default=FALSE, 
               help="output file name [default= %default]", metavar="character")
 )
 
@@ -26,6 +30,7 @@ opt = parse_args(opt_parser)
 paired_vcf_dir <- opt$input_dir
 output_dir <- opt$output_dir
 chr <- opt$chr
+merge_only <- opt$merge_only
 
 ############
 
@@ -35,24 +40,45 @@ dir.create(file.path(output_dir), showWarnings = FALSE)
 
 num_files <- length(all_vcf_files)
 
-for(id in 1:num_files){
-  ptm <- proc.time()
+if(!merge_only){
   
-  cat("Paired file #", id, "\n")
-  out.filename <- gsub(".vcf.gz", paste0("_chr", chr, ".vcf.gz"), all_vcf_files[id])
-  system(paste0("tabix -h ", paired_vcf_dir, all_vcf_files[id], " chr", chr," | bgzip > ", output_dir, out.filename))
-  system(paste0("cd ", output_dir, "; tabix -p vcf ", out.filename))
-  cat(paste0("tabix -h ", paired_vcf_dir, all_vcf_files[id], " chr", chr," | bgzip > ", output_dir, out.filename), "\n")
-  cat(paste0("cd ", output_dir, "; tabix -p vcf ", out.filename), "\n")
-  print(proc.time()-ptm)
+  
+  for(id in 1:num_files){
+    ptm <- proc.time()
+    
+    cat("Paired file #", id, "\n")
+    out.filename <- gsub(".vcf.gz", paste0("_chr", chr, ".vcf.gz"), all_vcf_files[id])
+    system(paste0("tabix -h ", paired_vcf_dir, all_vcf_files[id], " chr", chr," | bgzip > ", output_dir, out.filename))
+    system(paste0("cd ", output_dir, "; tabix -p vcf ", out.filename))
+    cat(paste0("tabix -h ", paired_vcf_dir, all_vcf_files[id], " chr", chr," | bgzip > ", output_dir, out.filename), "\n")
+    cat(paste0("cd ", output_dir, "; tabix -p vcf ", out.filename), "\n")
+    print(proc.time()-ptm)
+  }
+  cat("Extraction done! \n")
+  
+  all_vcf_files <- list.files(output_dir, pattern = "\\.vcf.gz$")
+  file_list <- paste(all_vcf_files, collapse = " ")
+  
+  ptm <- proc.time()
+  system(paste0("cd ", output_dir, "; vcf-merge ", file_list, " | bgzip -c > all_chr", chr,".vcf.gz"))
+  system(paste0("cd ", output_dir, "; tabix -p vcf all_chr", chr,".vcf.gz"))
+  cat(paste0("cd ", output_dir, "; vcf-merge ", file_list, " | bgzip -c > all_chr", chr,".vcf.gz"), "\n")
+  cat(paste0("cd ", output_dir, "; tabix -p vcf all_chr", chr,".vcf.gz"), "\n")
+  print(proc.time() - ptm)
+  
+  cat("Merging done! \n")
+  
+}else{
+  cat("Merge the extracted files only! \n")
+  all_vcf_files <- list.files(output_dir, pattern = "\\.vcf.gz$")
+  file_list <- paste(all_vcf_files, collapse = " ")
+  
+  ptm <- proc.time()
+  system(paste0("cd ", output_dir, "; vcf-merge ", file_list, " | bgzip -c > all_chr", chr,".vcf.gz"))
+  system(paste0("cd ", output_dir, "; tabix -p vcf all_chr", chr,".vcf.gz"))
+  cat(paste0("cd ", output_dir, "; vcf-merge ", file_list, " | bgzip -c > all_chr", chr,".vcf.gz"), "\n")
+  cat(paste0("cd ", output_dir, "; tabix -p vcf all_chr", chr,".vcf.gz"), "\n")
+  print(proc.time() - ptm)
+  
+  cat("Merging done! \n")
 }
-cat("Extraction done! \n")
-all_vcf_files <- list.files(output_dir, pattern = "\\.vcf.gz$")
-file_list <- paste(all_vcf_files, collapse = " ")
-
-ptm <- proc.time()
-system(paste0("cd ", output_dir, "; vcf-merge ", file_list, " | bgzip -c > all_chr", chr,".vcf.gz"))
-system(paste0("cd ", output_dir, "; tabix -p vcf all_chr", chr,".vcf.gz"))
-cat(paste0("cd ", output_dir, "; vcf-merge ", file_list, " | bgzip -c > all_chr", chr,".vcf.gz"), "\n")
-cat(paste0("cd ", output_dir, "; tabix -p vcf all_chr", chr,".vcf.gz"), "\n")
-print(proc.time() - ptm)
