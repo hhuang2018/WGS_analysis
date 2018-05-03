@@ -12,17 +12,17 @@ library("optparse")
 # 
 # Rscript scripts/extract_chromosome_nMergeVCF.R -c 14 -i ~/data/HLI_paired_fPASS/ -o ~/data/HLI_merged/chr14/ > ~/data/HLI_merged/README_chr14
 #
-# Rscript scripts/extract_chromosome_nMergeVCF.R -c 5 -i ~/data/HLI_paired_fPASS/ -o ~/data/HLI_merged/chr5/ -m > ~/data/HLI_merged/README_chr5
+# Rscript scripts/extract_chromosome_nMergeVCF.R -c 6 -i ~/data/HLI_paired_fPASS/ -o ~/data/HLI_merged/chr6/ -m > ~/data/HLI_merged/README_chr6
 #
 
 option_list = list(
-  make_option(c("-c", "--chr"), action="store", type="numeric", default=NULL, 
+  make_option(c("-c", "--chr"), type="numeric", default=NULL, 
               help="chromosome number", metavar="numeric"),
-  make_option(c("-i", "--input_dir"), action="store", type="character", default=NULL, 
+  make_option(c("-i", "--input_dir"), type="character", default=NULL, 
               help="chromosome number", metavar="character"),
-  make_option(c("-o", "--output_dir"), action="store", type="character", default="out.txt", 
+  make_option(c("-o", "--output_dir"), type="character", default="out.txt", 
               help="output file name [default= %default]", metavar="character"),
-  make_option(c("-m", "--merge_only"), action="store_false", type="boolean", default=FALSE, 
+  make_option(c("-m", "--merge_only"), action="store_false", default=FALSE, 
               help="output file name [default= %default]", metavar="character")
 )
 
