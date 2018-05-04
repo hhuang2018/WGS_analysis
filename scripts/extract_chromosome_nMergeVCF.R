@@ -10,7 +10,7 @@ library("optparse")
 # Rscript scripts/extract_chromosome_nMergeVCF.R -c 1 -i /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/ -o /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_chr1/ > /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_ch_log/README_chr1
 # Rscript scripts/extract_chromosome_nMergeVCF.R -c X -i /mnt/cloudbiodata_nfs_2/users/hhuang/hli_vcf_annotated_RefSeq_canonical_paired_noPadding/ -o /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_chrX/ > /mnt/cloudbiodata_nfs_2/users/hhuang/vcf_ch_log/README_chrX
 # 
-# Rscript scripts/extract_chromosome_nMergeVCF.R -c 16 -i ~/data/HLI_paired_fPASS/ -o ~/data/HLI_merged/chr16/ > ~/data/HLI_merged/README_chr16
+# Rscript scripts/extract_chromosome_nMergeVCF.R -c 22 -i ~/data/HLI_paired_fPASS/ -o ~/data/HLI_merged/chr22/ > ~/data/HLI_merged/README_chr22
 #
 # Rscript scripts/extract_chromosome_nMergeVCF.R -c 10 -i ~/data/HLI_paired_fPASS/ -o ~/data/HLI_merged/chr10/ -m >> ~/data/HLI_merged/README_chr10
 #
