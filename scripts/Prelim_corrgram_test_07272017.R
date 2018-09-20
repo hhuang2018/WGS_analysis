@@ -154,6 +154,7 @@ ggplot(mc_LLR, aes(x = MiHA_HLA_SNP_Gene, ymax = LLR, ymin = 0, color = "#D55E00
 # counts table
 ################
 library(corrplot)
+library(corrgram)
 
 table2matrix <- function(MiHA_count_table){
   #MiHA_count_table <-  aGVHD_Restricted_MiHA_table
