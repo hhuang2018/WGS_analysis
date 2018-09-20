@@ -6,7 +6,7 @@ source('utils/util.R', echo = FALSE)
 IBD_reformat_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/"
 IBD_segment_count_output_dir <-  "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/segment_stats_plots/"
 
-chr <- 2
+chr <- 18
 IBD_files <- paste0("ibdseq_output_all_chr",chr,"_IBD.RData")
 ###################
 # Overall IBD segments on genome
