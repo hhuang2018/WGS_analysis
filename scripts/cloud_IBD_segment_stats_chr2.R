@@ -1,7 +1,7 @@
 # process HBD/IBD result files from BEAGLE
-source('util.R', echo = FALSE)
+source('../utils/util.R', echo = FALSE)
 
-load("../Data/ID_table.RData")
+#load("../Data/ID_table.RData")
 
 IBD_reformat_dir <- "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/"
 IBD_segment_count_output_dir <-  "/mnt/cloudbiodata_nfs_2/users/hhuang/IBD/IBD_seq_output/segment_stats_plots/"
@@ -35,9 +35,6 @@ chrLengths <- c(248956422, # chr1
                 50818468   # chr22
 )
 
-
-# for(fid in 1:num_files){
-fid <- 1
 ptm <- proc.time()
 
 # IBD_table <- read.table(file = paste0(IBD_file_dir, IBD_files[fid]))
@@ -141,3 +138,6 @@ library(reshape)
 file.out.reshaped.RData <- gsub("_IBD.RData", "_stats_reshaped_plot_ready.RData", IBD_files)
 df_IBD_reshape <- melt(df_IBD, id='POS', variable_name = 'pair_counts')
 save(df_IBD_reshape, file = paste0(IBD_segment_count_output_dir, file.out.RData))
+
+cat(paste0("Reshaped IBD table for ", IBD_files," has been created and saved!\n"))
+cat('----------------------------------')
