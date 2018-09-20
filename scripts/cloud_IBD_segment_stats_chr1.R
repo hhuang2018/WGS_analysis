@@ -1,5 +1,5 @@
 # process HBD/IBD result files from BEAGLE
-source('../utils/util.R', echo = FALSE)
+source('utils/util.R', echo = FALSE)
 
 #load("../Data/ID_table.RData")
 
