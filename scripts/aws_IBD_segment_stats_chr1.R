@@ -5,7 +5,7 @@ source('utils/util.R', echo = FALSE)
 #load("../Data/ID_table.RData")
 
 IBD_reformat_dir <- "/home/hhuang/data/IBD/IBD_seq_output/"
-IBD_segment_count_output_dir <-  "/home/hhuang/data/IBD/IBD_seq_output/segment_stats_plots/"
+IBD_segment_count_output_dir <-  "/home/hhuang/data/IBD/segment_stats_plots/"
 
 chr <- 1
 window_size <- 1000
