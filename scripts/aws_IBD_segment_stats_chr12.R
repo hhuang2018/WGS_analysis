@@ -5,10 +5,10 @@ source('utils/util.R', echo = FALSE)
 #load("../Data/ID_table.RData")
 
 IBD_reformat_dir <- "/home/hhuang/data/IBD/IBD_seq_output/"
-IBD_segment_count_output_dir <-  "/home/hhuang/data/IBD/segment_stats_plots/"
+IBD_segment_count_output_dir <-  "/home/hhuang/data/IBD/segment_stats_winsize_1/"
 
 chr <- 12
-window_size <- 1000
+window_size <- 1
 
 IBD_files <- paste0("ibdseq_output_all_chr",chr,"_IBD.RData")
 ###################
