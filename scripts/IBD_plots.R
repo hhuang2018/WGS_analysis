@@ -62,7 +62,7 @@ for(chr in 1:22){
     RandomRD_205_pairs_id <- sample(1:length(Random_RD_IDs), 205, replace = F) # random donor-recipient pair
     RandomRD_205_points <- length(which(Random_RD_IBD[RandomRD_205_pairs_id,] == 1))
     RandomRD_205_pairs <- Random_RD_IDs[RandomRD_205_pairs_id]
-    save(RandomDD_205_pairs, file = paste0(IBD_count_fp, 'Random_RD_205paris.RData'))
+    save(RandomRD_205_pairs, file = paste0(IBD_count_fp, 'Random_RD_205paris.RData'))
   }else{
     load(paste0(IBD_count_fp, 'Random_RD_205paris.RData'))
     RandomRD_205_pairs_id <- which(Random_RD_IDs %in% RandomRD_205_pairs)
