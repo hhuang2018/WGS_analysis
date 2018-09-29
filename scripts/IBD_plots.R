@@ -2,7 +2,8 @@
 library(Matrix)
 library(ggplot2)
 library(reshape)
-IBD_count_fp <- '/Users/hhuang2 (Deleted)/Documents/NGSProject/2018WGS/Data/HLI/segment_stats_winsize_1000/'
+#IBD_count_fp <- '/Users/hhuang2 (Deleted)/Documents/NGSProject/2018WGS/Data/HLI/segment_stats_winsize_1000/'
+IBD_count_fp <- '/home/hhuang/data/IBD/segment_stats_winsize_1000/'
 
 ###
 chrLengths <- c(248956422, # chr1
@@ -154,7 +155,7 @@ for(chr in 1:22){
   png(filename = paste0(IBD_count_fp,'Plots/plots_IBD_by_pairs_chr_',chr,'.png'),
       width = 1500, height = 1000, units = "px")
   print(p1)
-  save(p1, file = paste0(IBD_count_fp, 'plots_IBD_by_pairs_chr_', chr, '.RData'))
+  save(p1, file = paste0(IBD_count_fp, 'Plots/plots_IBD_by_pairs_chr_', chr, '.RData'))
   dev.off()
   
   rm(p1)
