@@ -35,11 +35,11 @@ chrLengths <- c(248956422, # chr1
 # chr <- 1
 for(chr in 1:22){
   # Matched
-  load(paste0(IBD_count_fp, 'MatchedPair_IBD_chr', chr,'.rdata')) # MatchedPair_IBD and MatchedPairIDs  
+  load(paste0(IBD_count_fp, 'MatchedPair_IBD_chr', chr,'.RData')) # MatchedPair_IBD and MatchedPairIDs  
   matched_points <- length(which(MatchedPair_IBD ==1))
   
   # Random donor-donor pairs
-  load(paste0(IBD_count_fp, 'Random_DD_IBD_chr', chr,'.rdata')) # Random_DD_IBD  and Random_DD_IDs  
+  load(paste0(IBD_count_fp, 'Random_DD_IBD_chr', chr,'.RData')) # Random_DD_IBD  and Random_DD_IDs  
   
   Random_DD_points <- length(which(Random_DD_IBD == 1))
   
@@ -47,7 +47,7 @@ for(chr in 1:22){
   RandomDD_205_points <- length(which(Random_DD_IBD[RandomDD_205_pairs_index,] == 1))
   
   # Random donor-recipient pairs
-  load(paste0(IBD_count_fp, 'Random_RD_IBD_chr', chr,'.rdata')) # Random_RD_IBD  and Random_RD_IDs  
+  load(paste0(IBD_count_fp, 'Random_RD_IBD_chr', chr,'.RData')) # Random_RD_IBD  and Random_RD_IDs  
   
   Random_RD_points <- length(which(Random_RD_IBD == 1))
   
@@ -55,7 +55,7 @@ for(chr in 1:22){
   RandomRD_205_points <- length(which(Random_RD_IBD[RandomRD_205_pairs_id,] == 1))
   
   # Random recipient-recipient pairs
-  load(paste0(IBD_count_fp, 'Random_RR_IBD_chr', chr,'.rdata')) # Random_RR_IBD  and Random_RR_IDs  
+  load(paste0(IBD_count_fp, 'Random_RR_IBD_chr', chr,'.RData')) # Random_RR_IBD  and Random_RR_IDs  
   
   Random_RR_points <- length(which(Random_RR_IBD == 1))
   
