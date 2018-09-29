@@ -2,8 +2,8 @@
 library(Matrix)
 library(ggplot2)
 #library(reshape)
-IBD_count_fp <- '/Users/hhuang2 (Deleted)/Documents/NGSProject/2018WGS/Data/HLI/segment_stats_winsize_1000/'
-# IBD_count_fp <- '/home/hhuang/data/IBD/segment_stats_winsize_1000/'
+# IBD_count_fp <- '/Users/hhuang2 (Deleted)/Documents/NGSProject/2018WGS/Data/HLI/segment_stats_winsize_1000/'
+IBD_count_fp <- '/home/hhuang/data/IBD/segment_stats_winsize_1000/'
 
 ###
 chrLengths <- c(248956422, # chr1
