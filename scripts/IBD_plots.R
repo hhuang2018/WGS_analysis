@@ -118,45 +118,50 @@ for(chr in 1:22){
       
       counter <- counter+length(POS)
     }
-    ### Random donor-donor pairs nrow*1 + id  
-    POS <- which(Random_DD_IBD[RandomDD_205_pairs_index[id],] == 1)
-    
-    if (length(POS)>0){
-      index <- (counter+1):(counter+length(POS))
+    ### Random donor-donor pairs nrow*1 + id
+    if(id <= length(RandomDD_205_pairs_index)){
+      POS <- which(Random_DD_IBD[RandomDD_205_pairs_index[id],] == 1)
       
-      IBD_dataFrame$PairID[index] <- id + nrow * 1
-      IBD_dataFrame$POS[index] <- POS
-      
-      IBD_dataFrame$Type[index] <- 'Random D-D'
-      
-      counter <- counter+length(POS)
+      if (length(POS)>0){
+        index <- (counter+1):(counter+length(POS))
+        
+        IBD_dataFrame$PairID[index] <- id + nrow * 1
+        IBD_dataFrame$POS[index] <- POS
+        
+        IBD_dataFrame$Type[index] <- 'Random D-D'
+        
+        counter <- counter+length(POS)
+      }
     }
-    
     ### Random donor-recipient pairs: nrow * 2 + id  
-    POS <- which(Random_RD_IBD[RandomRD_205_pairs_id[id],] == 1)
-    
-    if (length(POS)>0){
-      index <- (counter+1):(counter+length(POS))
+    if(id <= length(RandomRD_205_pairs_id)){
+      POS <- which(Random_RD_IBD[RandomRD_205_pairs_id[id],] == 1)
       
-      IBD_dataFrame$PairID[index] <- id + nrow * 2
-      IBD_dataFrame$POS[index] <- POS
-      
-      IBD_dataFrame$Type[index] <- 'Random D-R'
-      
-      counter <- counter+length(POS)
+      if (length(POS)>0){
+        index <- (counter+1):(counter+length(POS))
+        
+        IBD_dataFrame$PairID[index] <- id + nrow * 2
+        IBD_dataFrame$POS[index] <- POS
+        
+        IBD_dataFrame$Type[index] <- 'Random D-R'
+        
+        counter <- counter+length(POS)
+      }
     }
     ### Random recipient-recipient pairs: nrow * 3 + id  
-    POS <- which(Random_RR_IBD[RandomRR_205_pairs_id[id],] == 1)
-    
-    if (length(POS)>0){
-      index <- (counter+1):(counter+length(POS))
+    if(id <= length(RandomRR_205_pairs_id)){
+      POS <- which(Random_RR_IBD[RandomRR_205_pairs_id[id],] == 1)
       
-      IBD_dataFrame$PairID[index] <- id + nrow * 3
-      IBD_dataFrame$POS[index] <- POS
-      
-      IBD_dataFrame$Type[index] <- 'Random R-R'
-      
-      counter <- counter+length(POS)
+      if (length(POS)>0){
+        index <- (counter+1):(counter+length(POS))
+        
+        IBD_dataFrame$PairID[index] <- id + nrow * 3
+        IBD_dataFrame$POS[index] <- POS
+        
+        IBD_dataFrame$Type[index] <- 'Random R-R'
+        
+        counter <- counter+length(POS)
+      }
     }
   }
   
