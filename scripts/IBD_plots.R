@@ -41,27 +41,47 @@ for(chr in 1:22){
   # Random donor-donor pairs
   load(paste0(IBD_count_fp, 'Random_DD_IBD_chr', chr,'.RData')) # Random_DD_IBD  and Random_DD_IDs  
   
-  Random_DD_points <- length(which(Random_DD_IBD == 1))
+  #Random_DD_points <- length(which(Random_DD_IBD == 1))
   
-  RandomDD_205_pairs_index <- sample(1:length(Random_DD_IDs), 205, replace = F) # random donor-donor pair
-  RandomDD_205_points <- length(which(Random_DD_IBD[RandomDD_205_pairs_index,] == 1))
+  if(chr == 1){
+    RandomDD_205_pairs_index <- sample(1:length(Random_DD_IDs), 205, replace = F) # random donor-donor pair
+    RandomDD_205_points <- length(which(Random_DD_IBD[RandomDD_205_pairs_index,] == 1))
+    RandomDD_205_pairs <- Random_DD_IDs[RandomDD_205_pairs_index]
+    save(RandomDD_205_pairs, file = paste0(IBD_count_fp, 'Random_DD_205paris.RData'))
+  }else{
+    load(paste0(IBD_count_fp, 'Random_DD_205paris.RData'))
+    RandomDD_205_pairs_index <- which(Random_DD_IDs %in% RandomDD_205_pairs)
+    RandomDD_205_points <- length(which(Random_DD_IBD[RandomDD_205_pairs_index,] == 1))
+  }
   
   # Random donor-recipient pairs
   load(paste0(IBD_count_fp, 'Random_RD_IBD_chr', chr,'.RData')) # Random_RD_IBD  and Random_RD_IDs  
   
-  Random_RD_points <- length(which(Random_RD_IBD == 1))
-  
-  RandomRD_205_pairs_id <- sample(1:length(Random_RD_IDs), 205, replace = F) # random donor-recipient pair
-  RandomRD_205_points <- length(which(Random_RD_IBD[RandomRD_205_pairs_id,] == 1))
+  #Random_RD_points <- length(which(Random_RD_IBD == 1))
+  if(chr == 1){
+    RandomRD_205_pairs_id <- sample(1:length(Random_RD_IDs), 205, replace = F) # random donor-recipient pair
+    RandomRD_205_points <- length(which(Random_RD_IBD[RandomRD_205_pairs_id,] == 1))
+    RandomRD_205_pairs <- Random_RD_IDs[RandomRD_205_pairs_id]
+    save(RandomDD_205_pairs, file = paste0(IBD_count_fp, 'Random_RD_205paris.RData'))
+  }else{
+    load(paste0(IBD_count_fp, 'Random_RD_205paris.RData'))
+    RandomRD_205_pairs_id <- which(Random_RD_IDs %in% RandomRD_205_pairs)
+    RandomRD_205_points <- length(which(Random_RD_IBD[RandomRD_205_pairs_id,] == 1))
+  }
   
   # Random recipient-recipient pairs
   load(paste0(IBD_count_fp, 'Random_RR_IBD_chr', chr,'.RData')) # Random_RR_IBD  and Random_RR_IDs  
   
-  Random_RR_points <- length(which(Random_RR_IBD == 1))
-  
-  RandomRR_205_pairs_id <- sample(1:length(Random_RR_IDs), 205, replace = F) # random recipient-recipient pair
-  RandomRR_205_points <- length(which(Random_RR_IBD[RandomRR_205_pairs_id,] == 1))
-  
+  if(chr==1){
+    RandomRR_205_pairs_id <- sample(1:length(Random_RR_IDs), 205, replace = F) # random recipient-recipient pair
+    RandomRR_205_points <- length(which(Random_RR_IBD[RandomRR_205_pairs_id,] == 1))
+    RandomRR_205_pairs <- Random_RR_IDs[RandomRR_205_pairs_id]
+    save(RandomRR_205_pairs, file = paste0(IBD_count_fp, 'Random_RR_205paris.RData'))
+  }else{
+    load(paste0(IBD_count_fp, 'Random_RR_205paris.RData'))
+    RandomRR_205_pairs_id <- which(Random_RR_IDs %in% RandomRR_205_pairs)
+    RandomRR_205_points <- length(which(Random_RR_IBD[RandomRR_205_pairs_id,] == 1))
+  }
   
   ###### Total
   total_points <- matched_points + RandomDD_205_points + RandomRD_205_points + RandomRR_205_points
