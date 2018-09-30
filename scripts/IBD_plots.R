@@ -43,7 +43,7 @@ for(chr in 1:22){
   
   #Random_DD_points <- length(which(Random_DD_IBD == 1))
   
-  if(chr == 1){
+  if(chr == 0){
     RandomDD_205_pairs_index <- sample(1:length(Random_DD_IDs), 205, replace = F) # random donor-donor pair
     RandomDD_205_points <- length(which(Random_DD_IBD[RandomDD_205_pairs_index,] == 1))
     RandomDD_205_pairs <- Random_DD_IDs[RandomDD_205_pairs_index]
@@ -58,7 +58,7 @@ for(chr in 1:22){
   load(paste0(IBD_count_fp, 'Random_RD_IBD_chr', chr,'.RData')) # Random_RD_IBD  and Random_RD_IDs  
   
   #Random_RD_points <- length(which(Random_RD_IBD == 1))
-  if(chr == 1){
+  if(chr == 0){
     RandomRD_205_pairs_id <- sample(1:length(Random_RD_IDs), 205, replace = F) # random donor-recipient pair
     RandomRD_205_points <- length(which(Random_RD_IBD[RandomRD_205_pairs_id,] == 1))
     RandomRD_205_pairs <- Random_RD_IDs[RandomRD_205_pairs_id]
@@ -72,7 +72,7 @@ for(chr in 1:22){
   # Random recipient-recipient pairs
   load(paste0(IBD_count_fp, 'Random_RR_IBD_chr', chr,'.RData')) # Random_RR_IBD  and Random_RR_IDs  
   
-  if(chr==1){
+  if(chr==0){
     RandomRR_205_pairs_id <- sample(1:length(Random_RR_IDs), 205, replace = F) # random recipient-recipient pair
     RandomRR_205_points <- length(which(Random_RR_IBD[RandomRR_205_pairs_id,] == 1))
     RandomRR_205_pairs <- Random_RR_IDs[RandomRR_205_pairs_id]
@@ -180,7 +180,7 @@ for(chr in 1:22){
   png(filename = paste0(IBD_count_fp,'Plots/plots_IBD_by_pairs_chr_',chr,'.png'),
       width = 1500, height = 1000, units = "px")
   print(p1)
-  save(p1, file = paste0(IBD_count_fp, 'Plots/plots_IBD_by_pairs_chr_', chr, '.RData'))
+  save(p1, IBD_dataFrame, file = paste0(IBD_count_fp, 'Plots/plots_IBD_by_pairs_chr_', chr, '.RData'))
   dev.off()
   
   rm(p1)
